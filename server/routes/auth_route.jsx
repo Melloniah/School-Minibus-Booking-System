@@ -1,0 +1,1 @@
+// Defines routes like POST /api/auth/register and POST /login.
