@@ -1,0 +1,1 @@
+//Logic for creating bookings, calculating total price, and managing associations.
