@@ -9,6 +9,7 @@ from flask_restful import Api
 
 from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
+from routes.auth_route import registration_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
@@ -17,6 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 CORS(app)
+
 api = Api(app)
 
 # register blueprints eg(app.register_blueprint(auth_bp, url_prefix='/auth'))
@@ -24,6 +26,8 @@ api = Api(app)
 #(e.g., auth.py, bookings.py), and then register them in app.py using Blueprint.
 
 app.register_blueprint(booking_bp, url_prefix="/bookings")
+app.register_blueprint(registration_bp, url_prefix="/register")
+
 # This is where you tell Flask to include those route groups into the main app.
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
 # so falsk knows when I see a request atarting with /auth , go use the auth_bp
