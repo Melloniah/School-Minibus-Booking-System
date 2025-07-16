@@ -52,7 +52,9 @@ def get_booking_by_id(id):
     try:
         booking = Booking.query.get(id)
         if not booking:
-            return jsonify({'error': 'booking not found'}), 404
+            return jsonify({'error': 'Booking not found'}), 404
+        return jsonify(booking.serialize()), 200
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 # DELETE a booking
@@ -60,12 +62,12 @@ def delete_booking(id):
     try:
         booking = Booking.query.get(id)
         if not booking:
-            return jsonify({'error': 'Booking not found'}),404
+            return jsonify({'error': 'Booking not found'}), 404
 
         db.session.delete(booking)
         db.session.commit()
         return jsonify({'message': 'Booking deleted successfully'}), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
-

@@ -1,6 +1,6 @@
 # configures flaks , database, resources
 from flask import Flask 
-from flask_sqlalchemy import SQLALchemy 
+from flask_sqlalchemy import SQLAlchemy 
 from flask_migrate import Migrate 
 from flask_cors import CORS 
 from flask_restful import Api
@@ -11,10 +11,10 @@ from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://minibus.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
-db = SQLALchemy(app)
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 CORS(app)
 api = Api(app)
