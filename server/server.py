@@ -1,9 +1,5 @@
-from app import create_app
-from models import db
+# this starts the app
+from app import app
 
-app = create_app() # calls factory to create instance
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all() # tells to create all database tables
-    app.run(port=5555,debug=True)
+if __name__ = "__main__":
+    app.run(debug=True, port=5000)
