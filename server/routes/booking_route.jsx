@@ -1,1 +1,0 @@
-// Booking endpoints (e.g., POST /api/bookings).
