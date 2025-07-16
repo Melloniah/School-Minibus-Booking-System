@@ -1,6 +1,7 @@
 from . import db
+from .serialize_mixin import SerializeMixin
 
-class Route(db.Model):
+class Route(db.Model, SerializeMixin):
     __tablename__ = 'routes'
 
     id = db.Column(db.Integer, primary_key=True)

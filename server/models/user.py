@@ -1,7 +1,7 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
-class User (db.Model):
+from .serialize_mixin import SerializeMixin
+class User (db.Model, SerializeMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,6 @@
 from . import db
-
-class Bus(db.Model):
+from .serialize_mixin import SerializeMixin
+class Bus(db.Model, SerializeMixin):
     __tablename__ = 'buses'
 
     id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,7 @@
 from . import db
+from .serialize_mixin import SerializeMixin
 
-class Booking(db.Model):
+class Booking(db.Model, SerializeMixin):
     __tablename__ = 'bookings'
 
     id = db.Column(db.Integer, primary_key=True)
