@@ -10,7 +10,7 @@ class User (db.Model, SerializeMixin):
     _password_hash = db.Column('passwordhash', db.String(255))
     role = db.Column(db.String(20), default='user')
 
-    booking = db.relationship('Booking', back_populates='user')
+    bookings = db.relationship('Booking', back_populates='user')
 
     # password setter and verification
     @property
