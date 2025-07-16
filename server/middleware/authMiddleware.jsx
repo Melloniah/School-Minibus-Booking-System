@@ -1,1 +1,0 @@
-// Middleware to protect routes. It verifies JWT tokens and attaches the user to the request.

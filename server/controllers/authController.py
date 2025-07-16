@@ -1,0 +1,1 @@
+#Handles registration, login, password validation, and token generation.
