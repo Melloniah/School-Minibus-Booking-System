@@ -15,14 +15,14 @@ export default function LoginPage(){
             const res= await fetch("http://localhost:5000/login",{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
-                body: JSON-Stringify({email, password}),
+                body: JSON.stringify({email, password}),
             });
 
             const data= await res.json();
 
-            if (res.ok){
+            if (res.ok && data?.user){
                 localStorage.setItem("token", data.user);
-                localStorage.setItem("user", JSON.Stringify(data.user));
+                localStorage.setItem("user", JSON.stringify(data.user));
 
                 const role= data.user.role;
                 Router.push(role==="admin" ? "/admin/dashboard": "/book-seat");
@@ -39,7 +39,7 @@ export default function LoginPage(){
     return (
          <main className="p-4">
           <h1 className="text-xl font-bold mb-4">Login</h1>
-          <form onSubmit={handleLoginclassName="flex flex-col gap-4 max-w-md"}>
+          <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-md">
             <input
             type="email"
             placeholder="Enter email"
