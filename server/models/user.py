@@ -5,10 +5,10 @@ class User (db.Model, SerializeMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Stirng)
-    email = db.Column(db.Stirng(120), unique=True)
+    name = db.Column(db.String)
+    email = db.Column(db.String(120), unique=True)
     _password_hash = db.Column('passwordhash', db.String(255))
-    role = db.Column(db.String(20) default='user')
+    role = db.Column(db.String(20), default='user')
 
     booking = db.relationship('Booking', back_populates='user')
 
