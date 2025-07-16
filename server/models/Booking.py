@@ -13,8 +13,8 @@ class Booking(db.Model, SerializeMixin):
     booking_date = db.Column(db.Date, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    user = db.relationship('User', back_populates='booking')
-    bus = db.relationship('Bus', back_populates='booking')
+    user = db.relationship('User', back_populates='bookings')
+    bus = db.relationship('Bus', back_populates='bookings')
 
     def __repr__(self):
         return f'<Booking {self.id} for User {self.user_id} ,Bus {self.bus_id} on {self.date}>'
