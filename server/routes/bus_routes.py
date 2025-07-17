@@ -8,11 +8,10 @@ from controllers.busController import (
 )
 
 
-bus_bp = Blueprint('bus_bp', __name__)
+bus_bp = Blueprint('buses', __name__)
     
-
-bus_bp.route('/buses', methods=['POST'])(busController.create_bus)
-bus_bp.route('/buses', methods=['GET'])(busController.get_buses)
-bus_bp.route('/buses/<int:id>', methods=['GET'])(busController.get_bus)
-bus_bp.route('/buses/<int:id>', methods=['PUT'])(busController.update_bus)
-bus_bp.route('/buses/<int:id>', methods=['DELETE'])(busController.delete_bus)
+bus_bp.route('/', methods=['POST'])(create_bus)
+bus_bp.route('/', methods=['GET'])(get_buses)
+bus_bp.route('<int:id>', methods=['GET'])(get_bus)
+bus_bp.route('/<int:id>', methods=['PUT'])(update_bus)
+bus_bp.route('/<int:id>', methods=['DELETE'])(delete_bus)

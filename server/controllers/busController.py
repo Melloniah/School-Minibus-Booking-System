@@ -1,73 +1,62 @@
-#Logic for creating bookings, calculating total price, and managing associations.
 from flask import request, jsonify
-from models.Booking import Booking
+from models.route import Route
+from middleware.authMiddleware import jwt_protected
+from models.bus import Bus  
 from models import db
-from datetime import datetime 
 
-# create a new booking 
-def create_booking():
-    data = request.get_json()
-    try:
-        user_id = data['user_id']
-        bus_id = data['bus_id']
-        pickup_location = data['pickup_location']
-        dropoff_location = data['dropoff_location']
-        seats_booked = int(data['seats_booked'])
-        booking_date = datetime.strptime(data['booking_date'], "%Y-%m-%d").date()
-        price = float(data['price'])
+@jwt_protected()
+def create_bus():
+    data = request.json
+    if not Route.query.get(data['routeid']):
+        return jsonify({'error': 'Route not found'}), 400
+    bus = Bus(routeid=data['routeid'], numberplate=data['numberplate'], capacity=data['capacity'])
+    db.session.add(bus)
+    db.session.commit()
+    return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity}), 201
 
-        if seats_booked <= 0:
-            return jsonify({'error': 'seats_booked must be at least 1'}),400
-        if price <= 0:
-            return jsonify({'error': 'price must be greater than o'}),400
+@jwt_protected()
+def get_buses():
+    routeid = request.args.get('routeid')
+    origin = request.args.get('origin')
+    destination = request.args.get('destination')
+    query = Bus.query
+    if routeid:
+        query = query.filter_by(routeid=routeid)
+    if origin or destination:
+        query = query.join(Route)
+        if origin:
+            query = query.filter(Route.origin == origin)
+        if destination:
+            query = query.filter(Route.destination == destination)
+    buses = query.all()
+    return jsonify([
+        {'id': b.id, 'routeid': b.routeid, 'numberplate': b.numberplate, 'capacity': b.capacity}
+        for b in buses
+    ])
 
-        new_booking = Booking(
-            user_id=user_id,
-            bus_id=bus_id,
-            pickup_location=pickup_location,
-            dropoff_location=dropoff_location,
-            seats_booked=seats_booked,
-            booking_date=booking_date,
-            price=price
-        )
+@jwt_protected()
+def get_bus(id):
+    bus = Bus.query.get_or_404(id)
+    return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
 
-        db.session.add(new_booking)
-        db.sesssion.commit()
-        return jsonify(new_booking.serialize()),201
+@jwt_protected()
+def update_bus(id):
+    bus = Bus.query.get_or_404(id)
+    data = request.json
+    if 'routeid' in data:
+        if not Route.query.get(data['routeid']):
+            return jsonify({'error': 'Route not found'}), 400
+        bus.routeid = data['routeid']
+    if 'numberplate' in data:
+        bus.numberplate = data['numberplate']
+    if 'capacity' in data:
+        bus.capacity = data['capacity']
+    db.session.commit()
+    return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}),400
-
-# GET all bookings
-def get_all_bookings():
-    try:
-        bookings = Booking.query.all()
-        return jsonify([b.serialize() for b in bookings]), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# GET booking by ID
-def get_booking_by_id(id):
-    try:
-        booking = Booking.query.get(id)
-        if not booking:
-            return jsonify({'error': 'Booking not found'}), 404
-        return jsonify(booking.serialize()), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# DELETE a booking
-def delete_booking(id):
-    try:
-        booking = Booking.query.get(id)
-        if not booking:
-            return jsonify({'error': 'Booking not found'}), 404
-
-        db.session.delete(booking)
-        db.session.commit()
-        return jsonify({'message': 'Booking deleted successfully'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+@jwt_protected()
+def delete_bus(id):
+    bus = Bus.query.get_or_404(id)
+    db.session.delete(bus)
+    db.session.commit()
+    return jsonify({'message': 'Bus deleted'})
