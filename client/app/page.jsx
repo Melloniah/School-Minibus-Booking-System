@@ -15,6 +15,7 @@ export default function HomePage() {
       <AboutSafeRide />
       <Mission />
       <StatsCards />
+      <OurSpecialty/>
       <Footer />
     </div>
   );
