@@ -12,6 +12,7 @@ from routes.booking_route import booking_bp
 from routes.auth_route import registration_bp
 from routes.routes import route_bp
 from routes.bus_routes import bus_bp
+from routes.pickup_dropoff_route import pickup_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
@@ -31,6 +32,7 @@ app.register_blueprint(booking_bp, url_prefix="/bookings")
 app.register_blueprint(registration_bp, url_prefix="/register")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
+app.register_blueprint(pickup_bp, url_prefix="/location")
 
 # This is where you tell Flask to include those route groups into the main app.
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
