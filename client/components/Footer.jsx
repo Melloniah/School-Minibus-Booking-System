@@ -6,10 +6,10 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-2">SafeRide</h3>
           <p className="text-sm mb-4">
-            Providing super safe, reliable, and fun school transportation for amazing families across the city.
-            Your child's safety and happiness is our top priority! 🚌
+            Providing super safe, reliable, and comfortable school transportation for school children across the city.
+            Your child's safety is our top priority! 
           </p>
-          <p className="text-sm">📞 +1 (555) 123-4567</p>
+          <p className="text-sm">📞+254 737973042</p>
           <p className="text-sm">✉️ hello@saferide.com</p>
         </div>
 
@@ -29,10 +29,9 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-2">⭐ Our Super Services</h3>
           <ul className="space-y-1 text-sm">
-            <li>Daily School Adventures</li>
-            <li>Real-time GPS Magic</li>
+            <li>Daily School pick-up and drop offs</li>
+            <li>Real-time GPS Tracking</li>
             <li>Field Trip Fun</li>
-            <li>After-school Programs</li>
             <li>Emergency Transport</li>
           </ul>
         </div>
@@ -40,15 +39,15 @@ export default function Footer() {
         {/* Office Hours */}
         <div>
           <h3 className="text-lg font-semibold mb-2">⏰ Office Hours</h3>
-          <p className="text-sm">Monday - Friday: 6:00 AM - 7:00 PM</p>
+          <p className="text-sm">Monday - Friday: 5:30 AM - 7:00 PM</p>
           <p className="text-sm">Weekend Support: 8:00 AM - 4:00 PM</p>
-          <p className="text-sm mt-2">📞 24/7 Emergency Line: +1 (555) 911-SAFE</p>
+          <p className="text-sm mt-2">📞 24/7 Emergency Line: +254 737973042</p>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/30 mt-8 pt-4 text-center text-xs">
-        © 2025 SafeRide. Made with love for amazing families | Privacy Policy | Terms of Service
+        © 2025 SafeRide. The solution to your child's school pick-up and drop off| Privacy Policy | Terms of Service
       </div>
     </footer>
   );
