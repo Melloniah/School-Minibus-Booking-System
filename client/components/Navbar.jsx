@@ -32,8 +32,8 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2">
-            {/* <Image src={logo} alt="SafeRide Logo" width={40} height={40} /> */}
-            <span className="text-white font-bold text-xl">SafeRide</span>
+            {/* <Image src={logo} alt="School Ride Logo" width={40} height={40} /> */}
+            <span className="text-white font-bold text-xl" > <span className="text-4xl animate-bounce-gentle"> 🚌</span> School Ride</span>
           </div>
         </Link>
 
@@ -43,10 +43,10 @@ export default function Navbar() {
             <Link href="/">🏠 Home</Link>
           </li>
           <li>
-            <Link href="/routes">🗺️ Routes</Link>
+            <Link href="/routes">Routes</Link>
           </li>
           <li>
-            <Link href="/book-seat">📅 Book Now</Link>
+            <Link href="/book-seat">Book Now</Link>
           </li>
           <li>
             <Link href="/about">👥 About</Link>
