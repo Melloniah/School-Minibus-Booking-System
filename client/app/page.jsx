@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import StatsCards from "../components/StatsCards";
 import Mission from "../components/Mission";
 import AboutSafeRide from "../components/AboutSafeRide";
+import RouteMapSection from "../components/RouteMapSection";
 
 
 
@@ -12,6 +13,7 @@ export default function HomePage() {
     <div>
       <Navbar />
       <HeroSection />
+      <RouteMapSection />
       <AboutSafeRide />
       <Mission />
       <StatsCards />
