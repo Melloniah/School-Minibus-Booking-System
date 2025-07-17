@@ -10,6 +10,8 @@ from flask_restful import Api
 from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
 from routes.auth_route import registration_bp
+from routes.routes import route_bp
+from routes.bus_routes import bus_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
@@ -27,6 +29,8 @@ api = Api(app)
 
 app.register_blueprint(booking_bp, url_prefix="/bookings")
 app.register_blueprint(registration_bp, url_prefix="/register")
+app.register_blueprint(route_bp, url_prefix="/routes")
+app.register_blueprint(bus_bp, url_prefix="/buses") 
 
 # This is where you tell Flask to include those route groups into the main app.
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
