@@ -10,12 +10,13 @@ class User (db.Model, SerializeMixin):
     # _password_hash = db.Column('passwordhash', db.String(255))
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='user')
+    
     bookings = db.relationship('Booking', back_populates='user')
 
-    # password setter and verification
-    @property
-    def password(self):
-        raise AttributeError("Password is write-only")
+    # # password setter and verification
+    # @property
+    # def password(self):
+    #     raise AttributeError("Password is write-only")
 
     # @password.setter
     # def password(self, raw_password):
