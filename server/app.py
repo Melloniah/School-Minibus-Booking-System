@@ -8,13 +8,16 @@ from flask_jwt_extended import JWTManager
 from routes.auth_route import registration_bp
 from routes.routes import route_bp
 from routes.bus_routes import bus_bp
+from models import db
 
 from routes.pickup_dropoff_route import pickup_bp
-
 from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
-
 from routes.auth_route import registration_bp, login_bp
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 # JWT Config
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'
@@ -22,13 +25,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
 
-
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
-
-db = SQLAlchemy(app)
+db.init_app(app) 
 migrate = Migrate(app, db)
 CORS(app)
 
@@ -49,5 +46,5 @@ app.register_blueprint(pickup_bp, url_prefix="/location")
 
 # This is where you tell Flask to include those route groups into the main app.
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
-# so flask knows when I see a request atarting with /auth , go use the auth_bp
+# so flask knows when I see a request starting with /auth , go use the auth_bp
 
