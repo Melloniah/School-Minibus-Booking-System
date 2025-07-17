@@ -47,7 +47,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/30 mt-8 pt-4 text-center text-xs">
-        © 2025 SafeRide. The solution to your child's school pick-up and drop off| Privacy Policy | Terms of Service
+        © 2025 School Ride. The solution to your child's school pick-up and drop off| Privacy Policy | Terms of Service
       </div>
     </footer>
   );
