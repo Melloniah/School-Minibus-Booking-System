@@ -3,7 +3,7 @@ from models.pickup_dropoff_location import Pickup_Dropoff_Location
 from middleware.authMiddleware import jwt_protected
 from models import db 
 
-@jwt_protected
+@jwt_protected()
 def create_location():
     data = request.get_json()
     loc = Pickup_Dropoff_Location(

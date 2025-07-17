@@ -17,6 +17,6 @@ flask-sqlalchemy = "*"
 faker = "*"
 
 [requires]
-python_full_version = "3.10.12"
+python_full_version = "3.8.13"
 
 [dev-packages]
