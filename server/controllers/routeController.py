@@ -1,8 +1,10 @@
 from flask import request, jsonify
 from models.route import Route
 from models.bus import Bus
+from middleware.authMiddleware import jwt_protected
 from models import db
 
+@jwt_protected
 def create_route():
     data = request.json
     route = Route(origin=data['origin'], destination=data['destination'])
@@ -10,6 +12,7 @@ def create_route():
     db.session.commit()
     return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination}), 201
 
+@jwt_protected
 def get_routes():
     origin = request.args.get('origin')
     destination = request.args.get('destination')
@@ -24,6 +27,7 @@ def get_routes():
         for r in routes
     ])
 
+@jwt_protected
 def get_route(id):
     route = Route.query.get_or_404(id)
     buses = [
@@ -37,6 +41,7 @@ def get_route(id):
         'buses': buses
     })
 
+@jwt_protected
 def update_route(id):
     route = Route.query.get_or_404(id)
     data = request.json
@@ -47,6 +52,7 @@ def update_route(id):
     db.session.commit()
     return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination})
 
+@jwt_protected
 def delete_route(id):
     route = Route.query.get_or_404(id)
     db.session.delete(route)

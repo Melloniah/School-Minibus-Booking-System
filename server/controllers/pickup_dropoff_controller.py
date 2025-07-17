@@ -1,7 +1,9 @@
 from flask import request, jsonify
-from models.pickup_dropoff_location from Pickup_Dropoff_Location
+from models.pickup_dropoff_location import Pickup_Dropoff_Location
+from middleware.authMiddleware import jwt_protected
 from models import db 
 
+@jwt_protected
 def create_location():
     data = request.get_json()
     loc = Pickup_Dropoff_Location(
@@ -13,6 +15,7 @@ def create_location():
     db.session.commit()
     return jsonify(loc.serialize()),201
 
+    
     def get_all_location():
         loc = Pickup_Dropoff_Location.query.all()
         return jsonify([l.serialize() for l in locs]), 200
