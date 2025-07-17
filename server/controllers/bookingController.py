@@ -1,5 +1,6 @@
 #Logic for creating bookings, calculating total price, and managing associations.
 from flask import request, jsonify
+from middleware.authMiddleware import jwt_protected
 from models.Booking import Booking
 from models import db
 from datetime import datetime 
@@ -25,6 +26,7 @@ def seats_available(bus_id):
         .filter(Booking.bus_id == bus_id).scalar() or 0
     return bus.capacity - booked
 # create a new booking 
+@jwt_protected
 def create_booking():
     data = request.get_json()
     try:
@@ -74,6 +76,7 @@ def create_booking():
         return jsonify({'error': str(e)}),400
 
 # GET all bookings
+@jwt_protected
 def get_all_bookings():
     try:
         bookings = Booking.query.all()
@@ -82,6 +85,7 @@ def get_all_bookings():
         return jsonify({'error': str(e)}), 500
 
 # GET booking by ID
+@jwt_protected
 def get_booking_by_id(id):
     try:
         booking = Booking.query.get(id)
@@ -92,6 +96,7 @@ def get_booking_by_id(id):
         return jsonify({'error': str(e)}), 500
 
 # DELETE a booking
+@jwt_protected
 def delete_booking(id):
     try:
         booking = Booking.query.get(id)
