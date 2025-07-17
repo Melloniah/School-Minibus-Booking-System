@@ -8,4 +8,4 @@ class Route(db.Model, SerializeMixin):
     origin = db.Column(db.String(100))
     destination = db.Column(db.String(100))
     buses = db.relationship('Bus', back_populates='route')
-    pickup_dropoff_locations = db.relationship('PickupDropoffLocation', back_populates='route')
+    pickup_dropoff_locations = db.relationship('Pickup_Dropoff_Location', back_populates='route')
