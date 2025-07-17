@@ -10,4 +10,4 @@ class Pickup_Dropoff_Location(db.Model,SerializeMixin):
 
     route_id = db.Column(db.Integer, db.ForeignKey('routes.id'))
 
-    route = db.relationship('Route', back_populates='pickup_dropoff_location')
+    route = db.relationship('Route', back_populates='pickup_dropoff_locations')
