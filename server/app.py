@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager
 from routes.auth_route import registration_bp
 from routes.routes import route_bp
 from routes.bus_routes import bus_bp
+
 from routes.pickup_dropoff_route import pickup_bp
 
 from routes.booking_route import booking_bp
@@ -39,7 +40,7 @@ jwt = JWTManager(app)
 #(e.g., auth.py, bookings.py), and then register them in app.py using Blueprint.
 
 app.register_blueprint(booking_bp, url_prefix="/bookings")
-
+app.register_blueprint(registration_bp, url_prefix="/register")
 app.register_blueprint(login_bp, url_prefix="/login")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
