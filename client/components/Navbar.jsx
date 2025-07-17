@@ -49,7 +49,7 @@ export default function Navbar() {
             <Link href="/book-seat">Book Now</Link>
           </li>
           <li>
-            <Link href="/about">👥 About</Link>
+            <Link href="/about">👥 About Us</Link>
           </li>
           <li>
             <Link href="/contact">📞 Contact</Link>
