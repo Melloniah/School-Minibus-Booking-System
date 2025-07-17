@@ -1,4 +1,4 @@
-export function StatsCards() {
+export default function StatsCards() {
     const stats = [
       { value: '500+', label: '😊 Happy Families' },
       { value: '15', label: '🛣️ Active Routes' },
