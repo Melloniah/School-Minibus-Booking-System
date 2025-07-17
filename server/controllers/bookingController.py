@@ -4,7 +4,27 @@ from middleware.authMiddleware import jwt_protected
 from models.Booking import Booking
 from models import db
 from datetime import datetime 
+from models.bus import Bus 
+from models.pickup_dropoff_location import Pickup_Dropoff_Location
+import math
+from sqlalchemy import func 
 
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371.0
+    φ1, φ2 = math.radians(lat1), math.radians(lat2)
+    Δφ = math.radians(lat2 - lat1)
+    Δλ = math.radians(lon2 - lon1)
+
+    a = math.sin(Δφ/2)**2 + math.cos(φ1)*math.cos(φ2)*math.sin(Δλ/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
+
+def seats_available(bus_id):
+    bus = Bus.query.get(bus_id)
+    booked = db.session.query(func.sum(Booking.seats_booked)) \
+        .filter(Booking.bus_id == bus_id).scalar() or 0
+    return bus.capacity - booked
 # create a new booking 
 @jwt_protected
 def create_booking():
@@ -18,10 +38,24 @@ def create_booking():
         booking_date = datetime.strptime(data['booking_date'], "%Y-%m-%d").date()
         price = float(data['price'])
 
-        if seats_booked <= 0:
-            return jsonify({'error': 'seats_booked must be at least 1'}),400
-        if price <= 0:
-            return jsonify({'error': 'price must be greater than o'}),400
+        if seats_booked <= 0 or price <= 0:
+            return jsonify({'error': 'Seats and price must be positive'}), 400
+
+        available = seats_available(bus_id)
+        if seats_booked > available:
+            return jsonify({'error': f'Only {available} seats available'}), 400
+        # Look GPS coordinates
+        pu = Pickup_Dropoff_Location.query.filter_by(name_location=pickup_name).first()
+        do = Pickup_Dropoff_Location.query.filter_by(name_location=dropoff_name).first()
+        if not pu or not do:
+            return jsonify({'error': 'Invalid pickup/dropoff location'}),400
+        lat1, lon1 = map(float, pu.GPSystem.split(",")) 
+        lat2, lon2 = map(float, do.GPSystem.split(","))
+
+        # caculate price
+        distance = haversine(lat1, lon1, lat2, lon2)
+        rate = 1.25 # KES per km
+        total_price = round(distance * rate * seats, 2)
 
         new_booking = Booking(
             user_id=user_id,
@@ -30,11 +64,11 @@ def create_booking():
             dropoff_location=dropoff_location,
             seats_booked=seats_booked,
             booking_date=booking_date,
-            price=price
+            price=total_price
         )
 
         db.session.add(new_booking)
-        db.sesssion.commit()
+        db.session.commit()
         return jsonify(new_booking.serialize()),201
 
     except Exception as e:
