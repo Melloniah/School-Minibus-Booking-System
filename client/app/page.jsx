@@ -5,6 +5,7 @@ import StatsCards from "../components/StatsCards";
 import Mission from "../components/Mission";
 import AboutSafeRide from "../components/AboutSafeRide";
 import RouteMapSection from "../components/RouteMapSection";
+import OurSpecialty from '../components/OurSpecialty';
 
 
 
