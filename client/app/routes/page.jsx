@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { routes } from '../../lib/routes'; // fix path if needed
+import { routes } from '../../lib/routes';
 import InteractiveMap from '../../components/InteractiveMap';
 
 function Card({ children, className = '', ...props }) {
