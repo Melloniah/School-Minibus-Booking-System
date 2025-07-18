@@ -4,13 +4,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">SafeRide</h3>
+          <h3 className="text-lg font-semibold mb-2">School Ride</h3>
           <p className="text-sm mb-4">
             Providing super safe, reliable, and comfortable school transportation for school children across the city.
             Your child's safety is our top priority! 
           </p>
           <p className="text-sm">📞+254 737973042</p>
-          <p className="text-sm">✉️ hello@saferide.com</p>
+          <p className="text-sm">✉️ hello@schoolride.com</p>
         </div>
 
         {/* Quick Links */}
