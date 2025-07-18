@@ -2,14 +2,21 @@
 
 import Image from "next/image";
 import { MapPin, Shield, Clock, Heart, Star } from "lucide-react";
+import { useRouter } from 'next/navigation';
+
 
 export default function HeroSection() {
+  const router = useRouter();
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const handleBookNow = () =>{
+    router.push('/book-seat') //takes you to booking page then opens the booking form
+  }
 
   return (
     <section id="home" className="bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 py-20 relative overflow-hidden">
@@ -50,7 +57,8 @@ export default function HeroSection() {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button
                       className="text-lg px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-600 shadow-lg transform hover:scale-105 transition-all"
-              >
+                      onClick={handleBookNow}
+                      >
                 🚌 Book a Ride Now
               </button>
 
