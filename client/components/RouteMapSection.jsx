@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import InteractiveMap from "./InteractiveMap"; // adjust path if needed
+import InteractiveMap from "./InteractiveMap"; 
 import { routes } from "../lib/routes";
 
 export default function RouteMapSection() {
@@ -17,7 +17,7 @@ export default function RouteMapSection() {
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Choose Your Child's Route! 🗺️
+            Choose Your Child's Route! 
           </h2>
           <p className="mt-1 text-gray-700 max-w-md mx-auto text-sm sm:text-base">
             Pick from safe, reliable routes covering the most stages in your area. ✨
