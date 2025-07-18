@@ -1,59 +1,61 @@
-export default function OurSpecialty() {
+'use client';
+
+export default function SpecialtySection() {
+  const specialties = [
+    {
+      icon: '🛡️',
+      title: 'Safety First',
+      description: 'Advanced GPS tracking, background-checked drivers, and real-time monitoring ensure your child’s security.',
+      bgColor: 'bg-red-500',
+    },
+    {
+      icon: '🗺️',
+      title: 'Smart Routing',
+      description: 'Optimized routes covering key areas with convenient pickup and drop-off points.',
+      bgColor: 'bg-blue-500',
+    },
+    {
+      icon: '⏰',
+      title: 'Real-Time Updates',
+      description: 'Live notifications keep parents informed about pickup times and arrival updates.',
+      bgColor: 'bg-green-500',
+    },
+    {
+      icon: '👥',
+      title: 'Community Focused',
+      description: 'Building connections between families while providing reliable transportation solutions.',
+      bgColor: 'bg-purple-500',
+    },
+    {
+      icon: '💰',
+      title: 'Affordable Pricing',
+      description: 'Transparent, family-friendly pricing that makes safe transportation accessible to everyone.',
+      bgColor: 'bg-yellow-500',
+    },
+    {
+      icon: '⚡',
+      title: 'Easy Booking',
+      description: 'Simple online booking system with flexible scheduling and easy payment options.',
+      bgColor: 'bg-pink-500',
+    },
+  ];
+
   return (
-    <div className="py-12 px-4 md:px-16 bg-gray-50">
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-        What Makes SchoolRide Special
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Card 1 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">Safety First</h3>
-          <p className="text-gray-600">
-            Advanced GPS tracking, background-checked drivers, and real-time monitoring ensure your child's security.
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">Smart Routing</h3>
-          <p className="text-gray-600">
-            Optimized routes covering key areas with convenient pickup and drop-off points.
-          </p>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">Real-Time Updates</h3>
-          <p className="text-gray-600">
-            Live notifications keep parents informed about pickup times and arrival updates.
-          </p>
-        </div>
-
-        {/* Card 4 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">Community Focused</h3>
-          <p className="text-gray-600">
-            Empowering low income familes while providing reliable and price friendly school transportation solutions.
-          </p>
-        </div>
-
-        {/* Card 5 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">Affordable Pricing</h3>
-          <p className="text-gray-600">
-            Transparent, family-friendly pricing that makes safe transportation accessible to everyone.
-          </p>
-        </div>
-
-        {/* Card 6 */}
-        <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-          <h3 className="text-xl font-semibold mb-2">⚡ Easy Booking</h3>
-          <p className="text-gray-600">
-            Simple online booking system with flexible scheduling and easy payment options.
-          </p>
-        </div>
+    <section className="py-10 px-4 md:px-16 bg-gray-100">
+      <h2 className="text-3xl font-bold text-center mb-8">🚀 What Makes SafeRide Special</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {specialties.map((item, index) => (
+          <div
+            key={index}
+            className={`rounded-lg p-6 shadow-lg text-white ${item.bgColor} 
+                        transition-transform transform hover:scale-105 active:scale-95 cursor-pointer`}
+          >
+            <div className="text-4xl mb-3">{item.icon}</div>
+            <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+            <p className="text-sm leading-relaxed">{item.description}</p>
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
