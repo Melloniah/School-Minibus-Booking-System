@@ -5,6 +5,8 @@ import { Toaster } from "react-hot-toast";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import 'leaflet/dist/leaflet.css';
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 
 const geistSans = Geist({
