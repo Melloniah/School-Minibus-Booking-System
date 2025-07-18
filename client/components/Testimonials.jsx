@@ -45,28 +45,24 @@ const testimonials = [
   }
 ];
 
-export default function Testimonials() {
+export default function TestimonialsSection() {
+  const renderStars = (count) => '★'.repeat(count) + '☆'.repeat(5 - count);
+
   return (
-    <section className="bg-gray-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-10">What Other Parents Are Saying</h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-            >
-              <p className="text-gray-700 italic mb-4">“{testimonial.quote}”</p>
-              <div className="flex items-center text-yellow-500 mb-2">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <FaStar key={i} />
-                ))}
-              </div>
-              <p className="font-semibold text-gray-900">{testimonial.name}</p>
-              <p className="text-sm text-gray-500">{testimonial.role}</p>
-            </div>
-          ))}
-        </div>
+    <section className="py-12 px-4 md:px-16 bg-white">
+      <h2 className="text-3xl font-bold text-center mb-10">💬 What Parents Are Saying</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {testimonials.map((t, index) => (
+          <div
+            key={index}
+            className="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition duration-300"
+          >
+            <p className="text-gray-700 italic mb-4">“{t.message}”</p>
+            <div className="text-yellow-400 text-sm mb-1">{renderStars(t.stars)}</div>
+            <div className="text-sm font-semibold">{t.name}</div>
+            <div className="text-xs text-gray-500">{t.title}</div>
+          </div>
+        ))}
       </div>
     </section>
   );
