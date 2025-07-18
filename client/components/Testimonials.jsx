@@ -1,16 +1,20 @@
+
+
+
 import { FaStar } from 'react-icons/fa';
+
 
 const testimonials = [
   
   {
     quote: "The app is super easy to use and I love tracking the minibus in real-time.",
-    name: "Peter Mwangi",
+    name: "Peter Wanyonyi",
     role: "Father & Tech Professional",
     rating: 4,
   },
   {
     quote: "My twins love the fun ride and I love the peace of mind it brings me!",
-    name: "Mary Njeri",
+    name: "Mary Mwamburi",
     role: "Mother of Twins",
     rating: 5,
   },
@@ -35,8 +39,8 @@ const testimonials = [
   },
   {
     quote: "The booking process is seamless, and the support team is very responsive.",
-    name: "Daniel Otieno",
-    role: "Father of 1",
+    name: "Ruth Kerubo",
+    role: "Mother of 1",
     rating: 4,
   }
 ];
