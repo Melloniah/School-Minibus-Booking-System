@@ -22,13 +22,13 @@
 
     // fetch me
     useEffect(()=>{
-        fetch('/me', {Credential: 'include'})
+        fetch('/me', {credential: 'include'})
         .then(res =>{
             if (res.status===401){
                 router.push('/login');
                 return null
             }
-            return res.json
+            return res.json();
         })
         .then(data=>{
             if (data) setUser(data);
@@ -109,7 +109,7 @@
         required
       >
         <option value="">Select Pickup</option>
-        {locations.map(loc => (
+        {location.map(loc => (
           <option key={loc.id} value={loc.name_location}>{loc.name_location}</option>
         ))}
       </select>
@@ -120,7 +120,7 @@
         required
       >
         <option value="">Select Dropoff</option>
-        {locations.map(loc => (
+        {location.map(loc => (
           <option key={loc.id} value={loc.name_location}>{loc.name_location}</option>
         ))}
       </select>
