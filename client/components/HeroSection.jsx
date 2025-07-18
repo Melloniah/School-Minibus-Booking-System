@@ -11,6 +11,10 @@ export default function HeroSection() {
     }
   };
 
+  const handleBookNow = () =>{
+    router.push('/book')
+  }
+
   return (
     <section id="home" className="bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 py-20 relative overflow-hidden">
        <div className="px-4 py-8 text-center drop-shadow-md">
