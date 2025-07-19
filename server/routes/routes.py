@@ -8,14 +8,14 @@ from controllers.routeController import (
     delete_route
 )
 
-route_bp = Blueprint('route_bp', __name__)
+route_bp = Blueprint('routes', __name__)
 
-route_bp.route('/routes', methods=['POST'])(routeController.create_route)
+route_bp.route('/', methods=['POST'])(create_route)
 
-route_bp.route('/routes', methods=['GET'])(routeController.get_routes)
+route_bp.route('/', methods=['GET'])(get_routes)
 
-route_bp.route('/routes/<int:id>', methods=['GET'])(routeController.get_route)
+route_bp.route('/<int:id>', methods=['GET'])(get_route)
 
-route_bp.route('/routes/<int:id>', methods=['PUT'])(routeController.update_route)
+route_bp.route('/<int:id>', methods=['PUT'])(update_route)
 
-route_bp.route('/routes/<int:id>', methods=['DELETE'])(routeController.delete_route)
+route_bp.route('/<int:id>', methods=['DELETE'])(delete_route)
