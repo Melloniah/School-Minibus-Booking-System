@@ -2,7 +2,7 @@ export default function StatsCards() {
     const stats = [
       { value: '500+', label: '😊 Happy Families' },
       { value: '15', label: '🛣️ Active Routes' },
-      { value: '99.8%', label: '⏰ On-time Rate' },
+      { value: '96%', label: '⏰ On-time Rate' },
       { value: '50K+', label: '👥 Students Transported' },
     ]
   
