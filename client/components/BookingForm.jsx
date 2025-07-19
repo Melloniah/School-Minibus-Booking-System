@@ -1,3 +1,4 @@
+
 'use client';
  import {useState, useEffect} from 'react';
  import {useRouter} from 'next/navigation';
@@ -22,10 +23,11 @@
 
     // fetch me
     useEffect(()=>{
-        fetch('/me', {credential: 'include'})
+      
+        fetch('/me', {credentials: 'include'})
         .then(res =>{
             if (res.status===401){
-                router.push('/login');
+                router.push("/login");
                 return null
             }
             return res.json();
@@ -38,16 +40,23 @@
 
     // fetch locations and buses
     useEffect(()=>{
-        fetch('/location')
+        fetch("/location/")
         .then(res=> res.json())
-        .then(setLocation)
-    });
+        .then(data => {
+          console.log("Fetched locations:", data);
+          setLocation(data);
+        });
+    }, []);
     
     useEffect(()=>{
-        fetch('/buses')
+        fetch('/buses/')
         .then(res=>res.json())
-        .then(setBuses)
+        .then(data => {
+          console.log("Fetched buses", data);
+          setBuses(data)
     });
+        
+    }, []);
 
     // price calculation
     useEffect(() => {
@@ -93,71 +102,55 @@
     })
     .then(()=>{
         toast.success('Booking Successful');
-        router.push('/my-bookings');
+        router.push('/my-bookings'); //come back to create this end point
     })
     .catch(() => toast.error('Booking failed.'));
+
+    console.log("Location data:", location);
+
   }
-  if (loading) return <p>Loading...</p>;
+ 
 
     return (
-    <form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-xl mx-auto">
-      <h2 className="text-xl font-semibold">Book a School Ride</h2>
+    <form className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md space-y-4">
+  <h2 className="text-xl font-bold mb-4">Book School Ride</h2>
 
-      <select
-        value={formData.pickup}
-        onChange={e => setFormData({ ...formData, pickup: e.target.value })}
-        required
-      >
-        <option value="">Select Pickup</option>
-        {location.map(loc => (
-          <option key={loc.id} value={loc.name_location}>{loc.name_location}</option>
-        ))}
-      </select>
+  <div>
+    <label className="block mb-1 text-sm font-medium">Pick-up Location</label>
+    <select className="w-full border border-gray-300 rounded px-3 py-2">
+      {/* Options will go here dynamically */}
+    </select>
+  </div>
 
-      <select
-        value={formData.dropoff}
-        onChange={e => setFormData({ ...formData, dropoff: e.target.value })}
-        required
-      >
-        <option value="">Select Dropoff</option>
-        {location.map(loc => (
-          <option key={loc.id} value={loc.name_location}>{loc.name_location}</option>
-        ))}
-      </select>
+  <div>
+    <label className="block mb-1 text-sm font-medium">Drop-off Location</label>
+    <select className="w-full border border-gray-300 rounded px-3 py-2">
+      {/* Options will go here dynamically */}
+    </select>
+  </div>
 
-      <select
-        value={formData.busId}
-        onChange={e => setFormData({ ...formData, busId: e.target.value })}
-        required
-      >
-        <option value="">Select Bus</option>
-        {buses.map(bus => (
-          <option key={bus.id} value={bus.id}>
-            {bus.name} (Route: {bus.route?.distance} km)
-          </option>
-        ))}
-      </select>
+  <div>
+    <label className="block mb-1 text-sm font-medium">Seats Booked</label>
+    <input type="number" className="w-full border border-gray-300 rounded px-3 py-2" />
+  </div>
 
-      <input
-        type="number"
-        min="1"
-        value={formData.seats}
-        onChange={e => setFormData({ ...formData, seats: e.target.value })}
-        placeholder="Seats"
-        required
-      />
+  <div>
+    <label className="block mb-1 text-sm font-medium">Booking Date</label>
+    <input type="date" className="w-full border border-gray-300 rounded px-3 py-2" />
+  </div>
 
-      <div>
-        <p className="font-bold">Total Price: KES {price}</p>
-      </div>
+  <div>
+    <label className="block mb-1 text-sm font-medium">Price</label>
+    <input type="number" step="0.01" className="w-full border border-gray-300 rounded px-3 py-2" />
+  </div>
 
-      <button
-        type="submit"
-        disabled={formData.pickup === formData.dropoff}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-      >
-        Submit Booking Request
-      </button>
-    </form>
+  <button
+    type="submit"
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+  >
+    Submit Booking Request
+  </button>
+</form>
+
   );
 }

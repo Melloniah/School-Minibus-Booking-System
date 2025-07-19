@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -59,7 +60,7 @@ export default function HeroSection() {
                       className="text-lg px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-600 shadow-lg transform hover:scale-105 transition-all"
                       onClick={handleBookNow}
                       >
-                🚌 Book a Ride Now
+                🚌 Book a School Minibus
               </button>
 
               <button
