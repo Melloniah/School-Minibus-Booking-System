@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -49,7 +50,7 @@ export default function Navbar() {
             <Link href="/book-seat">Book Now</Link>
           </li>
           <li>
-            <Link href="/about">👥 About Us</Link>
+            <Link href="/about">👥 About</Link>
           </li>
           <li>
             <Link href="/contact">📞 Contact</Link>

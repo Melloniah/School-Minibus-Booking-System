@@ -28,16 +28,16 @@ export default function SpecialtySection() {
       bgColor: 'bg-purple-400',
     },
     {
-     
-      title: 'Affordable Pricing',
-      description: 'Transparent, family-friendly pricing that makes safe transportation accessible to everyone.',
-      bgColor: 'bg-yellow-280',
-    },
-    {
       title: 'Easy Booking',
       description: 'Simple online booking system with flexible scheduling and easy payment options.',
       bgColor: 'bg-pink-300',
 
+    },
+     {
+     
+      title: 'Affordable Pricing',
+      description: 'Transparent, family-friendly pricing that makes safe transportation accessible to everyone.',
+      bgColor: 'bg-yellow-400',
     },
   ];
 
