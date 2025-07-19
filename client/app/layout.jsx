@@ -4,10 +4,15 @@ import { Toaster } from "react-hot-toast";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+<<<<<<< HEAD
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+=======
 import 'leaflet/dist/leaflet.css';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+>>>>>>> b5c095de10fc2b27f46d9bf6d8b5b598c9cfdfa7
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
