@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
-import Footer from "../components/Footer";
+// import Footer from "../components/Footer";
 import StatsCards from "../components/StatsCards";
 import Mission from "../components/Mission";
 import AboutSafeRide from "../components/AboutSafeRide";
@@ -21,7 +21,7 @@ export default function HomePage() {
       <Mission />
       <StatsCards />
       <OurSpecialty/>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
