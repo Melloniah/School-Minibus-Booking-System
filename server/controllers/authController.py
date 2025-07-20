@@ -2,7 +2,7 @@
 #All crud operations for user authentication.
 
 from flask import request, jsonify, make_response
-from flask_jwt_extended import create_access_token, set_access_cookies
+from flask_jwt_extended import create_access_token, set_access_cookies, jwt_required, get_jwt_identity
 from models import db 
 from models.user import User
 import bcrypt
@@ -44,3 +44,15 @@ def login():
 def read_cookie():
     cookie_value = request.cookies.get("name")
     return make_response(f"cookie: {cookie_value}")
+
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+# Get current logged-in user info
+@jwt_required()
+def get_current_user():
+    user_email = get_jwt_identity()
+    user = User.query.filter_by(email=user_email).first()
+
+    if user:
+        return jsonify(user.to_dict()), 200
+    return jsonify({"error": "User not found"}), 404
