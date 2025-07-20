@@ -1,51 +1,78 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import { GoogleMap, LoadScript, Marker, Polyline, InfoWindow } from '@react-google-maps/api';
+import { useState } from 'react';
+
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+const center = {
+  lat: 1.2860, // Kencom
+  lng: 36.8257,
+};
 
 export default function InteractiveMap({ selectedRoute }) {
-  const mapRef = useRef(null);
+  const [activeStopIndex, setActiveStopIndex] = useState(null);
 
-  useEffect(() => {
-    if (!mapRef.current) {
-      // Initialize map only once
-      mapRef.current = L.map('map', {
-        center: [-1.2841, 36.8235], // Moi Avenue Primary center
-        zoom: 13,
-        scrollWheelZoom: false,
-      });
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-      }).addTo(mapRef.current);
-    }
-
-    // Clear previous layers (markers, polylines)
-    mapRef.current.eachLayer((layer) => {
-      if (layer.options && (layer.options.pane === 'markerPane' || layer instanceof L.Polyline)) {
-        mapRef.current.removeLayer(layer);
-      }
-    });
-
-    if (selectedRoute && selectedRoute.coordinates.length > 0) {
-      // Add markers for each stop with popups showing stop names
-      selectedRoute.coordinates.forEach((coord, idx) => {
-        const marker = L.marker([coord.lat, coord.lng]).addTo(mapRef.current);
-        marker.bindPopup(selectedRoute.stops[idx] || `Stop ${idx + 1}`);
-      });
-
-      // Draw polyline connecting all stops
-      const latlngs = selectedRoute.coordinates.map(({ lat, lng }) => [lat, lng]);
-      L.polyline(latlngs, { color: 'purple', weight: 4, dashArray: '6 10' }).addTo(mapRef.current);
-
-      // Adjust map view to fit the route bounds nicely
-      const bounds = L.latLngBounds(latlngs);
-      mapRef.current.flyToBounds(bounds, { padding: [50, 50] });
-    }
-
-  }, [selectedRoute]);
+  const polylineOptions = {
+    strokeColor: '#8b5cf6', // purple
+    strokeOpacity: 1,
+    strokeWeight: 4,
+    icons: [
+      {
+        icon: {
+          path: 'M 0,-1 0,1',
+          strokeOpacity: 1,
+          scale: 4,
+        },
+        offset: '0',
+        repeat: '20px',
+      },
+    ],
+  };
 
   return (
-    <div id="map" style={{ height: '100vh', width: '100%' }} />
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+    >
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={13}
+      >
+        {selectedRoute && selectedRoute.coordinates.length > 0 && (
+          <>
+            {/* Polyline */}
+            <Polyline
+              path={selectedRoute.coordinates}
+              options={polylineOptions}
+            />
+
+            {/* Markers */}
+            {selectedRoute.coordinates.map((coord, idx) => (
+              <Marker
+                key={idx}
+                position={coord}
+                onClick={() => setActiveStopIndex(idx)}
+              />
+            ))}
+
+            {/* InfoWindows */}
+            {activeStopIndex !== null && (
+              <InfoWindow
+                position={selectedRoute.coordinates[activeStopIndex]}
+                onCloseClick={() => setActiveStopIndex(null)}
+              >
+                <div>
+                  {selectedRoute.stops[activeStopIndex] || `Stop ${activeStopIndex + 1}`}
+                </div>
+              </InfoWindow>
+            )}
+          </>
+        )}
+      </GoogleMap>
+    </LoadScript>
   );
 }
