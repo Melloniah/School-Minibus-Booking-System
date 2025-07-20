@@ -4,6 +4,7 @@ export const routes = [
   {
     id: 1,
     name: "Thika Road",
+    featured: true,
     description: "From Kasarani via Muthaiga to Moi Avenue Primary",
     emoji: "🚐",
     stops: [
@@ -22,6 +23,7 @@ export const routes = [
   {
     id: 2,
     name: "Mombasa Road",
+    featured: true,
     description: "From Syokimau via South B to Moi Avenue Primary",
     emoji: "🚌",
     stops: [
@@ -40,6 +42,7 @@ export const routes = [
   {
     id: 3,
     name: "Waiyaki Way",
+
     description: "From Kikuyu via Uthiru and Westlands to Moi Avenue Primary",
     emoji: "🚎",
     stops: [
@@ -58,6 +61,7 @@ export const routes = [
   {
     id: 4,
     name: "Jogoo Road",
+    featured: true,
     description: "From Donholm via Jericho to Moi Avenue Primary",
     emoji: "🚐",
     stops: [
@@ -76,6 +80,7 @@ export const routes = [
   {
     id: 5,
     name: "Kilimani",
+    featured: true,
     description: "From Adams Arcade via Yaya Centre to Moi Avenue Primary",
     emoji: "🚌",
     stops: [
