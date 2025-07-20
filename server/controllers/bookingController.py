@@ -25,9 +25,10 @@ def seats_available(bus_id):
     booked = db.session.query(func.sum(Booking.seats_booked)) \
         .filter(Booking.bus_id == bus_id).scalar() or 0
     return bus.capacity - booked
-# create a new booking 
-@jwt_protected()
-def create_booking():
+
+# create a new booking
+@jwt_protected() 
+def create_booking(current_user_or_admin):
     data = request.get_json()
     try:
         user_id = data['user_id']
@@ -77,7 +78,7 @@ def create_booking():
 
 # GET all bookings
 @jwt_protected()
-def get_all_bookings():
+def get_all_bookings(current_user_or_admin):
     try:
         bookings = Booking.query.all()
         return jsonify([b.serialize() for b in bookings]), 200
@@ -86,7 +87,7 @@ def get_all_bookings():
 
 # GET booking by ID
 @jwt_protected()
-def get_booking_by_id(id):
+def get_booking_by_id(current_user_or_admin,id):
     try:
         booking = Booking.query.get(id)
         if not booking:
@@ -97,7 +98,7 @@ def get_booking_by_id(id):
 
 # DELETE a booking
 @jwt_protected()
-def delete_booking(id):
+def delete_booking(current_user_or_admin):
     try:
         booking = Booking.query.get(id)
         if not booking:
