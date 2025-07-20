@@ -9,7 +9,7 @@ class User (db.Model, SerializeMixin):
     email = db.Column(db.String(120), unique=True)
     # _password_hash = db.Column('passwordhash', db.String(255))
     password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default='user')
+    role = db.Column(db.String(40), default='user')
     
     bookings = db.relationship('Booking', back_populates='user')
 

@@ -4,8 +4,8 @@ from middleware.authMiddleware import jwt_protected
 from models.bus import Bus  
 from models import db
 
-@jwt_protected()
-def create_bus():
+@jwt_protected(role='admin')
+def create_bus(current_admin):
     data = request.json
     if not Route.query.get(data['routeid']):
         return jsonify({'error': 'Route not found'}), 400
@@ -14,8 +14,8 @@ def create_bus():
     db.session.commit()
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity}), 201
 
-@jwt_protected()
-def get_buses():
+@jwt_protected()  # Both users and admins can access
+def get_buses(current_user_or_admin):
     routeid = request.args.get('routeid')
     origin = request.args.get('origin')
     destination = request.args.get('destination')
@@ -34,13 +34,13 @@ def get_buses():
         for b in buses
     ])
 
-@jwt_protected()
-def get_bus(id):
+@jwt_protected()  # Both users and admins can access
+def get_bus(current_user_or_admin, id):
     bus = Bus.query.get_or_404(id)
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
 
-@jwt_protected()
-def update_bus(id):
+@jwt_protected(role='admin')
+def update_bus(current_admin, id):
     bus = Bus.query.get_or_404(id)
     data = request.json
     if 'routeid' in data:
@@ -54,8 +54,8 @@ def update_bus(id):
     db.session.commit()
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
 
-@jwt_protected()
-def delete_bus(id):
+@jwt_protected(role='admin')
+def delete_bus(current_admin, id):
     bus = Bus.query.get_or_404(id)
     db.session.delete(bus)
     db.session.commit()

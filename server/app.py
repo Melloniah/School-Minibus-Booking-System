@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 # JWT Config
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_TOKEN_LOCATION'] = ['headers','cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
 
