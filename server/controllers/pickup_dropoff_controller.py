@@ -3,8 +3,8 @@ from middleware.authMiddleware import jwt_protected
 from models.pickup_dropoff_location import Pickup_Dropoff_Location
 from models import db 
 
-@jwt_protected()
-def create_location():
+@jwt_protected(role='admin')
+def create_location(current_admin):
     data = request.get_json()
     loc = Pickup_Dropoff_Location(
         name_location=data['name_location'],
@@ -16,19 +16,19 @@ def create_location():
     return jsonify(loc.serialize()),201
 
 @jwt_protected()
-def get_all_location():
+def get_all_location(current_user_or_admin):
     loc = Pickup_Dropoff_Location.query.all()
-    return jsonify([l.serialize() for l in locs]), 200
+    return jsonify([l.serialize() for l in loc]), 200
 
 @jwt_protected()
-def get_location(id):
+def get_location(current_user_or_admin,id):
     loc = Pickup_Dropoff_Location.query.get(id)
     if not loc:
         return jsonify({'error': 'Not found'}), 404
     return jsonify(loc.serialize()),200
 
-@jwt_protected()
-def update_location(id):
+@jwt_protected(role='admin')
+def update_location(current_admin,id):
     loc = Pickup_Dropoff_Location.query.get(id)
     if not loc:
         return jsonify({'error': 'Not found'}), 404
@@ -39,8 +39,8 @@ def update_location(id):
             db.session.commit()
             return jsonify(loc.serialize()), 200
 
-@jwt_protected()
-def delete_location(id):
+@jwt_protected(role='admin')
+def delete_location(current_admin,id):
     loc = Pickup_Dropoff_Location.query.get(id)
     if not loc:
         return jsonify({'error': 'Not found'}), 404
