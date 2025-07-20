@@ -4,8 +4,8 @@ from models.route import Route
 from middleware.authMiddleware import jwt_protected
 from models import db
 
-@jwt_protected()
-def create_route():
+@jwt_protected(role='admin')
+def create_route(current_admin):
     data = request.json
     route = Route(origin=data['origin'], destination=data['destination'])
     db.session.add(route)
@@ -13,7 +13,7 @@ def create_route():
     return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination}), 201
 
 @jwt_protected()
-def get_routes():
+def get_routes(current_user_or_admin):
     origin = request.args.get('origin')
     destination = request.args.get('destination')
     query = Route.query
@@ -28,7 +28,7 @@ def get_routes():
     ])
 
 @jwt_protected()
-def get_route(id):
+def get_route(current_user_or_admin,id):
     route = Route.query.get_or_404(id)
     buses = [
         {'id': b.id, 'numberplate': b.numberplate, 'capacity': b.capacity}
@@ -41,8 +41,8 @@ def get_route(id):
         'buses': buses
     })
 
-@jwt_protected()
-def update_route(id):
+@jwt_protected(role='admin')
+def update_route(current_admin,id):
     route = Route.query.get_or_404(id)
     data = request.json
     if 'origin' in data:
@@ -52,8 +52,8 @@ def update_route(id):
     db.session.commit()
     return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination})
 
-@jwt_protected()
-def delete_route(id):
+@jwt_protected(role='admin')
+def delete_route(current_admin,id):
     route = Route.query.get_or_404(id)
     db.session.delete(route)
     db.session.commit()
