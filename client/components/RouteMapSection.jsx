@@ -7,6 +7,11 @@ import { routes } from "../lib/routes";
 
 export default function RouteMapSection() {
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [searchTerm, setSearchTerm]=useState(null);
+
+  const filteredRoutes= routes.filter((route) =>
+    route.name.toLowerCase().includes((searchTerm || '').toLowerCase())
+  );
 
   return (
     <section
@@ -23,11 +28,19 @@ export default function RouteMapSection() {
             Pick from safe, reliable routes covering the most stages in your area. ✨
           </p>
         </div>
+        <input
+             type="text"
+             placeholder="Search a route..."
+             className="mb-4 p-2 w-full border rounded"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
 
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Routes List */}
           <div className="lg:w-1/3 space-y-3 max-h-[320px] sm:max-h-[380px] overflow-y-auto pr-2">
-            {routes.map((route) => (
+            {filteredRoutes.map((route) => (
               <div
                 key={route.id}
                 onClick={() => setSelectedRoute(route)}
