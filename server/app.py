@@ -1,19 +1,19 @@
 # configures flaks , database, resources
 from flask import Flask 
+from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from flask_migrate import Migrate 
 from flask_cors import CORS 
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from routes.auth_route import registration_bp
 from routes.routes import route_bp
 from routes.bus_routes import bus_bp
 from models import db
-
+from routes.auth_route import auth_bp #helps solve the CORS issue
 from routes.pickup_dropoff_route import pickup_bp
 from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
-from routes.auth_route import registration_bp, login_bp
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
@@ -27,7 +27,7 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
 db.init_app(app) 
 migrate = Migrate(app, db)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://192.168.0.107:3000"])
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -37,8 +37,7 @@ jwt = JWTManager(app)
 #(e.g., auth.py, bookings.py), and then register them in app.py using Blueprint.
 
 app.register_blueprint(booking_bp, url_prefix="/bookings")
-app.register_blueprint(registration_bp, url_prefix="/register")
-app.register_blueprint(login_bp, url_prefix="/login")
+app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
 app.register_blueprint(pickup_bp, url_prefix="/location")
