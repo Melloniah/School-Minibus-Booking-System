@@ -59,11 +59,9 @@ export default function Navbar() {
 
         {/* Buttons */}
         <div className="hidden md:flex gap-2">
-          <Link href="/login">
-            <button className="border border-white text-white px-4 py-1 rounded-full">
-              Sign In
-            </button>
-          </Link>
+        <Link href="/login" className="border border-white text-white px-4 py-1 rounded-full">
+  Sign In
+</Link>
           <Link href="/register">
             <button className="bg-yellow-400 px-4 py-1 rounded-full text-black font-semibold">
             🌠 Get Started
