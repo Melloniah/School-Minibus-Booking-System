@@ -17,17 +17,20 @@ from routes.booking_route import booking_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'
 app.config['JWT_TOKEN_LOCATION'] = ['headers','cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
+app.config['JWT_COOKIE_SECURE'] = False  # Allow cookies over HTTP (not HTTPS)
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # Or 'None' if cross-site requests with credentials are needed
+
 
 db.init_app(app) 
 migrate = Migrate(app, db)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://192.168.0.107:3000"])
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 api = Api(app)
 jwt = JWTManager(app)
