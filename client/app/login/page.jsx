@@ -1,14 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginPage() {
+  const { user, login } = useAuth(); // Use context user
   const router = useRouter();
+
+  // Remove local user state - use context instead
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  // Check if already logged in and redirect
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else if (user.role === 'user') {
+        router.push('/');
+      }
+    }
+  }, [user, router]);
+
+  // Handle form submit to login
   async function handleLogin(e) {
     e.preventDefault();
 
@@ -27,18 +43,18 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.user?.role === 'admin') {
-        router.push('/admin');
-      } else if (data.user?.role === 'user') {
-        router.push('/');
-      } else {
-        setError('Invalid user role');
-      }
+      // Update auth context
+      login(data.user);
 
+      // Redirect will happen via useEffect when user state updates
     } catch (err) {
       setError('Server error');
       console.error(err);
     }
+  }
+
+  if (user) {
+    return <p>You are already logged in as {user.name}</p>;
   }
 
   return (
@@ -52,6 +68,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-4 py-2 border rounded"
+          required
         />
         <input
           type="password"
@@ -59,6 +76,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-2 border rounded"
+          required
         />
         <button
           type="submit"

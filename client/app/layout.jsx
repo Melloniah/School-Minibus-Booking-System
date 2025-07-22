@@ -1,13 +1,14 @@
 // client/app/layout.jsx
 
-import { Toaster } from "react-hot-toast";
 
+import { Toaster } from "react-hot-toast";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import 'leaflet/dist/leaflet.css';
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
+import AuthProvider from "../context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,11 @@ export default function RootLayout({ children }) {
       >
         <Toaster position="top-center" />
 
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
         <Navbar />
         <main className="flex-grow pt-20">{children}</main>
         <Footer />
