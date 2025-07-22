@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
         <Toaster position="top-center" />
         <AuthProvider>
           <Navbar />
-          <main>{children}</main>
+          <main className="flex-grow pt-20 mb-10">{children}</main>
           <Footer />
         </AuthProvider>
       </body>
