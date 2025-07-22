@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function AdminPage() {
   const [authorized, setAuthorized] = useState(true); // Simulate auth check
@@ -27,10 +28,19 @@ export default function AdminPage() {
         <StatCard title="Available Seats" value="65" color="bg-purple-500" />
       </div>
 
-      {/* Placeholder for more */}
-      <div className="bg-white shadow-md rounded-lg p-4">
+      {/* Placeholder for recent bookings */}
+      <div className="bg-white shadow-md rounded-lg p-4 mb-6">
         <h2 className="text-xl font-semibold mb-2">Recent Bookings</h2>
         <p className="text-gray-600">Booking data coming soon...</p>
+      </div>
+
+      {/* Switch to Parent Dashboard Button */}
+      <div className="mt-6">
+        <Link href="/">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+            Switch to Parent Dashboard
+          </button>
+        </Link>
       </div>
     </div>
   );
