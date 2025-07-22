@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AuthProvider from "../context/AuthContext";
+import {AuthProvider} from "../context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
