@@ -29,14 +29,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <Toaster position="top-center" />
+
         <AuthProvider>
           <Navbar />
           <main>{children}</main>
           <Footer />
         </AuthProvider>
+        <Navbar />
+        <main className="flex-grow pt-20">{children}</main>
+        <Footer />
       </body>
     </html>
   );
