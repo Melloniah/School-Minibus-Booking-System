@@ -44,6 +44,7 @@ export default function Navbar() {
           <li><Link href="/book-seat">Book Now</Link></li>
           <li><Link href="/about">👥 About</Link></li>
           <li><Link href="/contact">📞 Contact</Link></li>
+          <li><Link href="/admin">Dashboard</Link></li>
         </ul>
 
         {/* Buttons */}
@@ -67,6 +68,9 @@ export default function Navbar() {
                 <button className="bg-yellow-400 px-4 py-1 rounded-full text-black font-semibold">
                   🌠 Get Started
                 </button>
+              </Link>
+              <Link href="/admin" className="border border-white text-white px-4 py-1 rounded-full">
+              Dashboard
               </Link>
             </>
           )}
