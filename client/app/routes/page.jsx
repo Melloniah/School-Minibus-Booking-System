@@ -38,7 +38,10 @@ export default function RouteMapPage() {
 
       {/* Right: Interactive Map */}
       <div className="w-2/3">
-        <InteractiveMap selectedRoute={selectedRoute} />
+         <InteractiveMap
+         apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+         selectedRoute={selectedRoute}
+         />
       </div>
     </div>
   );
