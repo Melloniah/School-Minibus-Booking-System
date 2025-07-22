@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AuthProvider from "../context/AuthContext";
+import {AuthProvider} from "../context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
 
         <AuthProvider>
           <Navbar />
-          <main>{children}</main>
+          <main className="flex-grow pt-20 mb-10">{children}</main>
           <Footer />
         </AuthProvider>
         <Navbar />
