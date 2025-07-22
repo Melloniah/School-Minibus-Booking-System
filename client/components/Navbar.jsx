@@ -1,15 +1,13 @@
-
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-// import logo from "@/public/logo.png";
-// import menuIcon from "@/public/menu_icon.svg";
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [sticky, setSticky] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logout, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,45 +30,51 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center p-4">
         {/* Logo */}
         <Link href="/">
-          <div className="flex items-center gap-2">
-            {/* <Image src={logo} alt="School Ride Logo" width={40} height={40} /> */}
-            <span className="text-white font-bold text-xl" > <span className="text-4xl animate-bounce-gentle"> 🚌</span> School Ride</span>
+          <div className="flex items-center gap-2 cursor-pointer">
+            <span className="text-white font-bold text-xl">
+              <span className="text-4xl animate-bounce-gentle"> 🚌</span> School Ride
+            </span>
           </div>
         </Link>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-6 text-white font-medium">
-          <li>
-            <Link href="/">🏠 Home</Link>
-          </li>
-          <li>
-            <Link href="/routes">Routes</Link>
-          </li>
-          <li>
-            <Link href="/book-seat">Book Now</Link>
-          </li>
-          <li>
-            <Link href="/about">👥 About</Link>
-          </li>
-          <li>
-            <Link href="/contact">📞 Contact</Link>
-          </li>
+          <li><Link href="/">🏠 Home</Link></li>
+          <li><Link href="/routes">Routes</Link></li>
+          <li><Link href="/book-seat">Book Now</Link></li>
+          <li><Link href="/about">👥 About</Link></li>
+          <li><Link href="/contact">📞 Contact</Link></li>
         </ul>
 
         {/* Buttons */}
-        <div className="hidden md:flex gap-2">
-        <Link href="/login" className="border border-white text-white px-4 py-1 rounded-full">
-  Sign In
-</Link>
-          <Link href="/register">
-            <button className="bg-yellow-400 px-4 py-1 rounded-full text-black font-semibold">
-            🌠 Get Started
-            </button>
-          </Link>
+        <div className="hidden md:flex gap-4 items-center">
+          {user ? (
+            <>
+              <span className="text-white">Welcome, {user.name}!</span>
+              <button 
+                onClick={logout}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="border border-white text-white px-4 py-1 rounded-full">
+                Sign In
+              </Link>
+              <Link href="/register">
+                <button className="bg-yellow-400 px-4 py-1 rounded-full text-black font-semibold">
+                  🌠 Get Started
+                </button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Icon */}
         <div className="md:hidden">
+          {/* Uncomment and implement mobile menu toggle icon */}
           {/* <Image
             src={menuIcon}
             alt="menu"
@@ -89,27 +93,27 @@ export default function Navbar() {
         }`}
       >
         <ul className="flex flex-col gap-6">
-          <li>
-            <Link href="/">🏠 Home</Link>
-          </li>
-          <li>
-            <Link href="/routes">🗺️ Routes</Link>
-          </li>
-          <li>
-            <Link href="/book-seat">📅 Book Now</Link>
-          </li>
-          <li>
-            <Link href="/about">👥 About</Link>
-          </li>
-          <li>
-            <Link href="/contact">📞 Contact</Link>
-          </li>
-          <li>
-            <Link href="/login">🔐 Sign In</Link>
-          </li>
-          <li>
-            <Link href="/register">🌠 Get Started</Link>
-          </li>
+          <li><Link href="/">🏠 Home</Link></li>
+          <li><Link href="/routes"> Routes</Link></li>
+          <li><Link href="/book-seat">Book Now</Link></li>
+          <li><Link href="/about"> About Us</Link></li>
+          <li><Link href="/contact">📞 Contact Us</Link></li>
+          {!user && (
+            <>
+              <li><Link href="/login">🔐 Sign In</Link></li>
+              <li><Link href="/register">🌠 Get Started</Link></li>
+            </>
+          )}
+          {user && (
+            <li>
+              <button
+                onClick={logout}
+                className="bg-red-500 w-full py-2 rounded"
+              >
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
