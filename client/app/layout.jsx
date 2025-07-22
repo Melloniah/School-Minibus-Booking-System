@@ -1,6 +1,5 @@
 // client/app/layout.jsx
 
-// client/app/layout.jsx
 
 import { Toaster } from "react-hot-toast";
 import { Geist, Geist_Mono } from "next/font/google";
