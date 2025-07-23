@@ -15,13 +15,14 @@ const defaultCenter = {
 
 export default function InteractiveMap({ apiKey, selectedRoute }) {
   const [activeStopIndex, setActiveStopIndex] = useState(null);
+
   const mapRef = useRef(null);
 
   const onLoad = (map) => {
     mapRef.current = map;
   };
 
-  useEffect(() => {
+  useEffect(() => { // zoom to selected routes
     if (selectedRoute?.coordinates?.length && mapRef.current) {
       const bounds = new window.google.maps.LatLngBounds();
       selectedRoute.coordinates.forEach(coord => bounds.extend(coord));
@@ -45,7 +46,6 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
   };
 
   return (
-      <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={defaultCenter}
@@ -60,6 +60,11 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
                         key={idx}
                         position={coord}
                         onClick={() => setActiveStopIndex(idx)}
+                        icon={{
+                          url: '/school-busIcon-32.png', // Bus icon URL
+                          scaledSize: new window.google.maps.Size(32, 32),      
+                          }}
+                          title={selectedRoute.stops?.[idx] || `Stop ${idx + 1}`} // stop hover shows description
                     />
                 ))}
                 {activeStopIndex !== null && (
@@ -75,6 +80,5 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
               </>
           )}
         </GoogleMap>
-      </LoadScript>
   );
 }
