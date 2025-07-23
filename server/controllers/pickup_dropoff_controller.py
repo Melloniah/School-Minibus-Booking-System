@@ -9,7 +9,7 @@ def create_location(current_admin):
     loc = Pickup_Dropoff_Location(
         name_location=data['name_location'],
         GPSystem=data['GPSystem'],
-        route_id=data['route_id']
+        routeid=data['routeid']
     )
     db.session.add(loc)
     db.session.commit()
