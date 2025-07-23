@@ -55,9 +55,7 @@ export default function Navbar() {
           <li>
             <Link href="/contact">📞 Contact</Link>
           </li>
-          <li>
-            <Link href="/admin">Admin Dashboard</Link>
-          </li>
+          
         </ul>
 
         {/* Buttons */}
