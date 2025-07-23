@@ -1,43 +1,18 @@
-
 'use client';
- import {useState, useEffect} from 'react';
- import {useRouter} from 'next/navigation';
- import toast from 'react-hot-toast';
 
- export default function BookingForm(){
+import { useEffect, useState } from 'react';
+import ConfirmationModal from './ConfirmationModal';
+import { useRouter } from 'next/navigation';
 
-    const router=useRouter();
-    const [formData, setFormData]=useState({
-        bus_id: '',
-    pickup_location: '',
-    dropoff_location: '',
-    seats_booked: 1,
-    booking_date: '',
-  
-    });
-    const [user, setUser]=useState(null);
-    const [location, setLocation]= useState([]);
-    const [buses, setBuses]=useState([]);
-    const [price, setPrice]=useState(0);
-    const [loading, setLoading]=useState("true");
+export default function BookingForm({ onRouteSelect }) {
 
-    // fetch me
-    useEffect(()=>{
-      
-        fetch('/me', {credentials: 'include'})
-        .then(res =>{
-            if (res.status===401){
-                router.push("/login");
-                return null
-            }
-            return res.json();
-        })
-        .then(data=>{
-            if (data) setUser(data);
-        })
-        .finally(()=> setLoading(false));
-    }, [])
+   const router = useRouter();
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [buses, setBuses] = useState([]);
+  const [stops, setStops] = useState([]);
 
+<<<<<<< HEAD
     // fetch locations and buses
     useEffect(()=>{
         fetch("http://127.0.0.1:5000/location")
@@ -57,100 +32,307 @@
     });
         
     }, []);
+=======
+  const [pickup, setPickup] = useState('');
+  const [dropoff, setDropoff] = useState('');
+  const [bus, setBus] = useState('');
+>>>>>>> 7ee792ced2a448cd8aeca68003576a25fd0ba311
 
-    // price calculation
-    useEffect(() => {
-    const { pickup, dropoff, busId, seats } = formData;
-    if (pickup && dropoff && pickup !== dropoff && busId) {
-      const selectedBus = buses.find(b => b.id === parseInt(busId));
-      const routeDistance = selectedBus?.route?.distance || 0;
-      const cost = routeDistance * 1.25 * seats;
-      setPrice(Math.round(cost));
+  const [isReturn, setIsReturn] = useState(false);
+  const [returnPickup, setReturnPickup] = useState('');
+  const [returnDropoff, setReturnDropoff] = useState('');
+
+  const [seats, setSeats] = useState(1);
+  const [date, setDate] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState(null);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+
+  // Fetch routes on mount
+  useEffect(() => {
+    fetch('/api/routes')
+      .then(res => res.json())
+      .then(data => setRoutes(data))
+      .catch(err => console.error('Failed to fetch routes', err));
+  }, []);
+
+  // Fetch buses and stops when route changes
+  useEffect(() => {
+    if (selectedRoute) {
+      setStops(selectedRoute.stops);
+      fetch(`/api/buses?route_id=${selectedRoute.id}`)
+        .then(res => res.json())
+        .then(data => setBuses(data))
+        .catch(err => console.error('Failed to fetch buses', err));
     } else {
-      setPrice(0);
+      setStops([]);
+      setBuses([]);
     }
-  }, [formData, buses]);
+    // Reset stops & buses related inputs on route change
+    setPickup('');
+    setDropoff('');
+    setBus('');
+    setReturnPickup('');
+    setReturnDropoff('');
+  }, [selectedRoute]);
 
-  //handling form submission
-  function handleSubmit(event){
-    event.preventDefault();
+  // Handle route select and notify parent if needed
+  const handleRouteChange = (e) => {
+    const route = routes.find(r => r.id === parseInt(e.target.value));
+    setSelectedRoute(route || null);
+    if (onRouteSelect) onRouteSelect(route || null);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (formData.pickup === formData.dropoff){
-        toast.error("Pickup and drop off cannot be the same");
+    // Validate required fields
+    if (!selectedRoute || !bus || !pickup || !dropoff || !date || !seats) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    if (pickup === dropoff) {
+      alert('Pick-up and drop-off stops cannot be the same.');
+      return;
+    }
+    if (isReturn) {
+      if (!returnPickup || !returnDropoff) {
+        alert('Please fill in return trip stops.');
         return;
+      }
+      if (returnPickup === returnDropoff) {
+        alert('Return pick-up and drop-off cannot be the same.');
+        return;
+      }
     }
-    
-    const payLoad={
-      bus_id: parseInt(formData.busId),
-      pickup_location: formData.pickup,
-      dropoff_location: formData.dropoff,
-      seats_booked: parseInt(formData.seats),
-      booking_date: new Date().toISOString().slice(0, 10),
-      price: price
+
+    // Prepare price fetch payload
+    const priceRequestData = {
+      routeId: selectedRoute.id,
+      busId: bus,
+      seats,
+      pickup,
+      dropoff,
+      isReturn,
+      returnPickup,
+      returnDropoff,
+      date,
     };
 
+<<<<<<< HEAD
     fetch('http://127.0.0.1:5000/bookings',{
+=======
+    try {
+      setLoadingPrice(true);
+      const priceResponse = await fetch('/api/price', {
+>>>>>>> 7ee792ced2a448cd8aeca68003576a25fd0ba311
         method: 'POST',
-        credentials: 'include',
-        headers: {'Content-Type': 'application/json'},
-        body:JSON.stringify(payLoad),
-    })
-    .then(res =>{
-        if (!res.ok) throw new Error();
-        return res.json();
-    })
-    .then(()=>{
-        toast.success('Booking Successful');
-        router.push('/my-bookings'); //come back to create this end point
-    })
-    .catch(() => toast.error('Booking failed.'));
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(priceRequestData),
+      });
 
-    console.log("Location data:", location);
+      if (!priceResponse.ok) {
+        throw new Error('Failed to fetch price.');
+      }
 
-  }
- 
+      const priceData = await priceResponse.json();
 
-    return (
-    <form className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md space-y-4">
-  <h2 className="text-xl font-bold mb-4">Book School Ride</h2>
+      // Show confirmation modal with details + price
+      setBookingDetails({
+        ...priceRequestData,
+        routeName: selectedRoute.name,
+        busName: buses.find(b => b.id === bus)?.name || '',
+        price: priceData.price,
+      });
 
-  <div>
-    <label className="block mb-1 text-sm font-medium">Pick-up Location</label>
-    <select className="w-full border border-gray-300 rounded px-3 py-2">
-      {/* Options will go here dynamically */}
-    </select>
-  </div>
+      setIsModalOpen(true);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoadingPrice(false);
+    }
+  };
 
-  <div>
-    <label className="block mb-1 text-sm font-medium">Drop-off Location</label>
-    <select className="w-full border border-gray-300 rounded px-3 py-2">
-      {/* Options will go here dynamically */}
-    </select>
-  </div>
+  const resetForm = () => {
+    setSelectedRoute(null);
+    setBuses([]);
+    setStops([]);
+    setPickup('');
+    setDropoff('');
+    setBus('');
+    setIsReturn(false);
+    setReturnPickup('');
+    setReturnDropoff('');
+    setSeats(1);
+    setDate('');
+    setBookingDetails(null);
+  };
 
-  <div>
-    <label className="block mb-1 text-sm font-medium">Seats Booked</label>
-    <input type="number" className="w-full border border-gray-300 rounded px-3 py-2" />
-  </div>
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="p-4 space-y-4 max-w-md mx-auto">
 
-  <div>
-    <label className="block mb-1 text-sm font-medium">Booking Date</label>
-    <input type="date" className="w-full border border-gray-300 rounded px-3 py-2" />
-  </div>
+        {/* Route Selector */}
+        <div>
+          <label className="block font-medium mb-1">Select Route</label>
+          <select
+            value={selectedRoute?.id || ''}
+            onChange={handleRouteChange}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="">-- Select Route --</option>
+            {routes.map(route => (
+              <option key={route.id} value={route.id}>{route.name}</option>
+            ))}
+          </select>
+        </div>
 
-  <div>
-    <label className="block mb-1 text-sm font-medium">Price</label>
-    <input type="number" step="0.01" className="w-full border border-gray-300 rounded px-3 py-2" />
-  </div>
+        {/* Pick-up Stop */}
+        <div>
+          <label className="block font-medium mb-1">Pick-up Stop</label>
+          <select
+            value={pickup}
+            onChange={e => setPickup(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+            disabled={!selectedRoute}
+          >
+            <option value="">{selectedRoute ? '-- Select Pick-up --' : 'Select a route first'}</option>
+            {stops.map((stop, i) => (
+              <option key={i} value={stop}>{stop}</option>
+            ))}
+          </select>
+        </div>
 
-  <button
-    type="submit"
-    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
-  >
-    Submit Booking Request
-  </button>
-</form>
+        {/* Drop-off Stop */}
+        <div>
+          <label className="block font-medium mb-1">Drop-off Stop</label>
+          <select
+            value={dropoff}
+            onChange={e => setDropoff(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+            disabled={!selectedRoute}
+          >
+            <option value="">{selectedRoute ? '-- Select Drop-off --' : 'Select a route first'}</option>
+            {stops.map((stop, i) => (
+              <option key={i} value={stop}>{stop}</option>
+            ))}
+          </select>
+        </div>
 
+        {/* Bus Select */}
+        <div>
+          <label className="block font-medium mb-1">Select Bus</label>
+          <select
+            value={bus}
+            onChange={e => setBus(parseInt(e.target.value))}
+            className="w-full p-2 border rounded"
+            required
+            disabled={!selectedRoute}
+          >
+            <option value="">-- Select Bus --</option>
+            {buses.map(b => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Date */}
+        <div>
+          <label className="block font-medium mb-1">Select Date</label>
+          <input
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+            disabled={!selectedRoute}
+          />
+        </div>
+
+        {/* Seats */}
+        <div>
+          <label className="block font-medium mb-1">Number of Seats</label>
+          <input
+            type="number"
+            min={1}
+            max={10}
+            value={seats}
+            onChange={e => setSeats(parseInt(e.target.value) || 1)}
+            className="w-full p-2 border rounded"
+            required
+            disabled={!selectedRoute}
+          />
+        </div>
+
+        {/* Return Trip Checkbox */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="returnTrip"
+            checked={isReturn}
+            onChange={e => setIsReturn(e.target.checked)}
+            disabled={!selectedRoute}
+          />
+          <label htmlFor="returnTrip">Book return trip</label>
+        </div>
+
+        {/* Return Pick-up Stop */}
+        <div>
+          <label className="block font-medium mb-1">Return Pick-up Stop</label>
+          <select
+            value={returnPickup}
+            onChange={e => setReturnPickup(e.target.value)}
+            className="w-full p-2 border rounded"
+            required={isReturn}
+            disabled={!selectedRoute || !isReturn}
+          >
+            <option value="">{isReturn ? '-- Select Return Pick-up --' : 'Select return trip'}</option>
+            {stops.map((stop, i) => (
+              <option key={i} value={stop}>{stop}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Return Drop-off Stop */}
+        <div>
+          <label className="block font-medium mb-1">Return Drop-off Stop</label>
+          <select
+            value={returnDropoff}
+            onChange={e => setReturnDropoff(e.target.value)}
+            className="w-full p-2 border rounded"
+            required={isReturn}
+            disabled={!selectedRoute || !isReturn}
+          >
+            <option value="">{isReturn ? '-- Select Return Drop-off --' : 'Select return trip'}</option>
+            {stops.map((stop, i) => (
+              <option key={i} value={stop}>{stop}</option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loadingPrice || !selectedRoute}
+          className={`w-full py-2 rounded text-white ${loadingPrice ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+        >
+          {loadingPrice ? 'Calculating Price...' : 'Book Seat'}
+        </button>
+      </form>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        bookingDetails={bookingDetails}
+        onConfirmed={() => {
+          resetForm();
+          setIsModalOpen(false);
+          toast.success("Booking confirmed!");
+        }}
+      />
+    </>
   );
 }
