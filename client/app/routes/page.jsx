@@ -8,7 +8,7 @@ import InteractiveMap from '../../components/InteractiveMap';
 import RouteSearchBar from '../../components/RouteSearchBar';
 import RouteList from '../../components/RouteList';
 import RouteBookingForm from '../../components/RouteBookingForm';
-import {useAuth} from '../..context/AuthContext'
+import {useAuth} from '../../context/AuthContext'
 
 export default function RouteMapPage() {
   const {user}= useAuth(); //confirming the user logged in
