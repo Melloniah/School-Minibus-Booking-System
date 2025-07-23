@@ -20,7 +20,11 @@ export default function HeroSection() {
   }
 
   return (
-    <section id="home" className="bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 py-20 relative overflow-hidden">
+   <section
+  id="home"
+  style={{ marginTop: '-80px', paddingTop: '80px' }}
+  className="bg-gradient-to-br from-blue-300 via-purple-300 to-pink-300 pb-20 relative overflow-hidden"
+>
        <div className="px-4 py-8 text-center drop-shadow-md">
         <h1 className="text-3xl font-bold">Welcome to the School Minibus Booking System</h1>
         <p className="text-grey-800 mt-2">Book a seat for your child quickly and easily.</p>
