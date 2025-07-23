@@ -62,7 +62,7 @@ export default function RouteBookingForm({ selectedRoute }) {
       <h2 className="text-lg font-semibold mb-4">Book Your Child a Bus</h2>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Pickup POint</label>
+        <label className="block text-sm font-medium mb-1">Pickup Point</label>
         <select
           className="w-full border rounded p-2"
           value={pickup}
