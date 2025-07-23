@@ -40,7 +40,7 @@
 
     // fetch locations and buses
     useEffect(()=>{
-        fetch("/location/")
+        fetch("http://127.0.0.1:5000/location")
         .then(res=> res.json())
         .then(data => {
           console.log("Fetched locations:", data);
@@ -49,7 +49,7 @@
     }, []);
     
     useEffect(()=>{
-        fetch('/buses/')
+        fetch('http://127.0.0.1:5000/buses/')
         .then(res=>res.json())
         .then(data => {
           console.log("Fetched buses", data);
@@ -90,7 +90,7 @@
       price: price
     };
 
-    fetch('/bookings',{
+    fetch('http://127.0.0.1:5000/bookings',{
         method: 'POST',
         credentials: 'include',
         headers: {'Content-Type': 'application/json'},
