@@ -1,14 +1,14 @@
 # --------------------------------
 # Frontend - Next.js
 # --------------------------------
-/node_modules
+/node_modules/
 /.next/
 /out/
-/build
+/build/
 /.pnp
 .pnp.js
 
-# Local envs
+# Local environment files
 .env*.local
 .DS_Store
 *.pem
@@ -19,44 +19,44 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Vercel
-.vercel
+# Vercel deployment
+.vercel/
 
-# Typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
 # Coverage reports
-/coverage
+/coverage/
 
 # --------------------------------
 # Backend - Flask / Python
 # --------------------------------
-# Ignore compiled files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Ignore database file
+# Ignore SQLite DB
 /server/instance/minibus.db
 
 # Flask instance folder (keep folder, ignore contents)
 server/instance/*
 !server/instance/.gitignore
 
-# Env files
+# Environment and virtual environments
 .env
-.venv
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
 
-# PyInstaller
+# PyInstaller files
 *.spec
 
-# Packaging and build
+# Build and packaging
 build/
 dist/
 *.egg-info/
@@ -65,7 +65,7 @@ MANIFEST
 *.egg
 *.whl
 
-# Test and coverage tools
+# Test and coverage
 .tox/
 .nox/
 .coverage
@@ -78,27 +78,27 @@ coverage.xml
 *.py,cover
 .hypothesis/
 
-# IDEs & Tools
+# IDEs and tooling cache
 .pytype/
 .mypy_cache/
 .pyre/
-.ropeproject
-.spyderproject
+.ropeproject/
+.spyderproject/
 .dmypy.json
 cython_debug/
-.site
-.ipynb_checkpoints
+.site/
+.ipynb_checkpoints/
 __pypackages__/
 .pybuilder/
 docs/_build/
 
-# Pipenv, Poetry, PDM
+# Package managers lock files
 Pipfile.lock
 poetry.toml
 .pdm.toml
 pdm.lock
 
-# Celery
+# Celery files
 celerybeat-schedule
 celerybeat.pid
 
