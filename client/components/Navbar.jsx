@@ -107,7 +107,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Drawer */}
-      <div
+      {/* <div
         className={`md:hidden fixed top-0 right-0 h-full w-60 bg-[#0f2500] text-white p-6 z-40 transform transition-transform duration-300 ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -149,7 +149,7 @@ export default function Navbar() {
             </li>
           )}
         </ul>
-      </div>
+      </div> */}
     </nav>
   );
 }
