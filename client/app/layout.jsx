@@ -9,6 +9,7 @@ import 'leaflet/dist/leaflet.css';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {AuthProvider} from "../context/AuthContext";
+import GoogleMapsProvider from '../components/GoogleMapsProvider';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +35,11 @@ export default function RootLayout({ children }) {
         <Toaster position="top-center" />
 
         <AuthProvider>
+         <GoogleMapsProvider>
           <Navbar />
           <main className="flex-grow pt-20 mb-10">{children}</main>
-        <Footer />
+         <Footer />
+        </GoogleMapsProvider>
         </AuthProvider>
       </body>
     </html>

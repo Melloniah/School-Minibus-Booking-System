@@ -1,48 +1,53 @@
-"use client";
-import { useState } from 'react';
+
+// combines everything
+
+'use client';
+import { useState, useEffect } from 'react';
 import { routes } from '../../lib/routes';
 import InteractiveMap from '../../components/InteractiveMap';
-
-function Card({ children, className = '', ...props }) {
-  return (
-    <div
-      className={`border border-gray-300 rounded-lg shadow-sm p-4 cursor-pointer transition hover:shadow-lg ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
+import RouteSearchBar from '../../components/RouteSearchBar';
+import RouteList from '../../components/RouteList';
 
 export default function RouteMapPage() {
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedRoute, setSelectedRoute] = useState(null);
 
+  useEffect(() => {
+    const featured = routes.find(route => route.featured);
+    setSelectedRoute(featured); // finds popular routes
+  }, []);
+
+  const filteredRoutes = searchTerm
+    ? routes.filter(route => route.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : routes.filter(route => route.featured);
+
   return (
-    <div className="flex h-screen">
-      {/* Left: Route List */}
-      <div className="w-1/3 p-6 overflow-y-auto bg-gray-100">
-        <h1 className="text-2xl font-bold mb-6">Available Routes</h1>
-        {routes.map((route) => (
-          <Card
-            key={route.id}
-            onClick={() => setSelectedRoute(route)}
-            className={selectedRoute?.id === route.id ? 'bg-blue-200' : 'bg-white'}
-          >
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <span>{route.emoji}</span> {route.name}
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">{route.description}</p>
-          </Card>
-        ))}
+    <section className="min-h-screen flex flex-col p-6 lg:flex-row gap-8 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+      {/* Left: Route Cards and Search */}
+      <div className="flex-[2]">
+        <RouteSearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          routes={routes}
+          onSelectSuggestion={(route) => {
+            setSelectedRoute(route);
+            setSearchTerm(route.name);
+          }}
+        />
+        <RouteList
+          routes={filteredRoutes}
+          selectedRoute={selectedRoute}
+          onSelectRoute={setSelectedRoute}
+        />
       </div>
 
-      {/* Right: Interactive Map */}
-      <div className="w-2/3">
-         <InteractiveMap
-         apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-         selectedRoute={selectedRoute}
-         />
+      {/* Right: Map */}
+      <div className="flex-[3] h-[400px] lg:h-auto lg:min-h-full rounded-lg shadow-xl overflow-hidden">
+        <InteractiveMap
+          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+          selectedRoute={selectedRoute}
+        />
       </div>
-    </div>
+    </section>
   );
 }
