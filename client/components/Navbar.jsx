@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [sticky, setSticky] = useState(false);
@@ -32,18 +32,32 @@ export default function Navbar() {
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
             <span className="text-white font-bold text-xl">
-              <span className="text-4xl animate-bounce-gentle"> 🚌</span> School Ride
+              <span className="text-4xl animate-bounce-gentle"> 🚌</span> School
+              Ride
             </span>
           </div>
         </Link>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-6 text-white font-medium">
-          <li><Link href="/">🏠 Home</Link></li>
-          <li><Link href="/routes">Routes</Link></li>
-          <li><Link href="/book-seat">Book Now</Link></li>
-          <li><Link href="/about">👥 About</Link></li>
-          <li><Link href="/contact">📞 Contact</Link></li>
+          <li>
+            <Link href="/">🏠 Home</Link>
+          </li>
+          <li>
+            <Link href="/routes">Routes</Link>
+          </li>
+          <li>
+            <Link href="/book-seat">Book Now</Link>
+          </li>
+          <li>
+            <Link href="/about">👥 About</Link>
+          </li>
+          <li>
+            <Link href="/contact">📞 Contact</Link>
+          </li>
+          <li>
+            <Link href="/admin">Admin Dashboard</Link>
+          </li>
         </ul>
 
         {/* Buttons */}
@@ -51,7 +65,7 @@ export default function Navbar() {
           {user ? (
             <>
               <span className="text-white">Welcome, {user.name}!</span>
-              <button 
+              <button
                 onClick={logout}
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
@@ -60,13 +74,21 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="border border-white text-white px-4 py-1 rounded-full">
+              <Link
+                href="/login"
+                className="border border-white text-white px-4 py-1 rounded-full"
+              >
                 Sign In
               </Link>
               <Link href="/register">
                 <button className="bg-yellow-400 px-4 py-1 rounded-full text-black font-semibold">
                   🌠 Get Started
                 </button>
+              </Link>
+              <Link
+                href="/admin"
+                className="border border-white text-white px-4 py-1 rounded-full">
+                Admin Dashboard
               </Link>
             </>
           )}
@@ -93,15 +115,29 @@ export default function Navbar() {
         }`}
       >
         <ul className="flex flex-col gap-6">
-          <li><Link href="/">🏠 Home</Link></li>
-          <li><Link href="/routes"> Routes</Link></li>
-          <li><Link href="/book-seat">Book Now</Link></li>
-          <li><Link href="/about"> About Us</Link></li>
-          <li><Link href="/contact">📞 Contact Us</Link></li>
+          <li>
+            <Link href="/">🏠 Home</Link>
+          </li>
+          <li>
+            <Link href="/routes"> Routes</Link>
+          </li>
+          <li>
+            <Link href="/book-seat">Book Now</Link>
+          </li>
+          <li>
+            <Link href="/about"> About Us</Link>
+          </li>
+          <li>
+            <Link href="/contact">📞 Contact Us</Link>
+          </li>
           {!user && (
             <>
-              <li><Link href="/login">🔐 Sign In</Link></li>
-              <li><Link href="/register">🌠 Get Started</Link></li>
+              <li>
+                <Link href="/login">🔐 Sign In</Link>
+              </li>
+              <li>
+                <Link href="/register">🌠 Get Started</Link>
+              </li>
             </>
           )}
           {user && (
