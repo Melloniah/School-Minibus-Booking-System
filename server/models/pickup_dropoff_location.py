@@ -2,7 +2,7 @@ from . import db
 from .serialize_mixin import SerializeMixin
 
 class Pickup_Dropoff_Location(db.Model,SerializeMixin):
-    __tablename__ = 'pickup_dropoff_location'
+    __tablename__ = 'pickup_dropoff_locations'
 
     id = db.Column(db.Integer,primary_key=True)
     name_location = db.Column(db.String)

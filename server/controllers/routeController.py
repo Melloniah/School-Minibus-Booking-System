@@ -7,24 +7,17 @@ from models import db
 @jwt_protected(role='admin')
 def create_route(current_admin):
     data = request.json
-    route = Route(origin=data['origin'], destination=data['destination'])
+    route = Route(route_name=data['route_name'])
     db.session.add(route)
     db.session.commit()
-    return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination}), 201
+    return jsonify({'id': route.id, 'route_name': route.route_name}), 201
 
 @jwt_protected()
 def get_routes(current_user_or_admin):
-    origin = request.args.get('origin')
-    destination = request.args.get('destination')
-    query = Route.query
-    if origin:
-        query = query.filter_by(origin=origin)
-    if destination:
-        query = query.filter_by(destination=destination)
-    routes = query.all()
+    
     return jsonify([
         {'id': r.id, 'origin': r.origin, 'destination': r.destination}
-        for r in routes
+
     ])
 
 @jwt_protected()
