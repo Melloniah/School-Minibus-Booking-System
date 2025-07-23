@@ -16,7 +16,8 @@ def create_route(current_admin):
 def get_routes(current_user_or_admin):
     routes= Route.query.all()
     return jsonify([
-        {routes}
+         {'id': r.id, 'route_name': r.route_name}
+        for r in routes
     ])
 
 @jwt_protected()
@@ -28,8 +29,7 @@ def get_route(current_user_or_admin,id):
     ]
     return jsonify({
         'id': route.id,
-        'origin': route.origin,
-        'destination': route.destination,
+        'route_name':route.route_name,
         'buses': buses
     })
 
@@ -37,12 +37,10 @@ def get_route(current_user_or_admin,id):
 def update_route(current_admin,id):
     route = Route.query.get_or_404(id)
     data = request.json
-    if 'origin' in data:
-        route.origin = data['origin']
-    if 'destination' in data:
-        route.destination = data['destination']
+    if 'route_name' in data:
+        route.route_name = data['route_name']
     db.session.commit()
-    return jsonify({'id': route.id, 'origin': route.origin, 'destination': route.destination})
+    return jsonify({'id': route.id, 'route_name': route.route_name})
 
 @jwt_protected(role='admin')
 def delete_route(current_admin,id):
