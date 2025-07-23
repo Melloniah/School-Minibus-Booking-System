@@ -65,6 +65,10 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
                     <InfoWindow
                         position={selectedRoute.coordinates[activeStopIndex]}
                         onCloseClick={() => setActiveStopIndex(null)}
+                         icon={{
+                          url: 'https://img.icons8.com/emoji/48/school-bus.png', // Bus icon URL
+                          scaledSize: new window.google.maps.Size(32, 32),      
+                          }}
                     >
                       <div>
                         {selectedRoute.stops?.[activeStopIndex] || `Stop ${activeStopIndex + 1}`}
