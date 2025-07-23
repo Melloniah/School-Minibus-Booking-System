@@ -7,8 +7,14 @@ import { routes } from '../../lib/routes';
 import InteractiveMap from '../../components/InteractiveMap';
 import RouteSearchBar from '../../components/RouteSearchBar';
 import RouteList from '../../components/RouteList';
+import RouteBookingForm from '../../components/RouteBookingForm';
+import {useAuth} from '../..context/AuthContext'
 
 export default function RouteMapPage() {
+  const {user}= useAuth(); //confirming the user logged in
+  const userId= user?.id;
+
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRoute, setSelectedRoute] = useState(null);
 
@@ -48,6 +54,10 @@ export default function RouteMapPage() {
           selectedRoute={selectedRoute}
         />
       </div>
+
+      {selectedRoute && (
+        <RouteBookingForm selectedRoute={selectedRoute} userId={userId}/>
+      )}
     </section>
   );
 }
