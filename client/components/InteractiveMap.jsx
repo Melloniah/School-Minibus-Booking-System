@@ -59,16 +59,16 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
                         key={idx}
                         position={coord}
                         onClick={() => setActiveStopIndex(idx)}
+                        icon={{
+                          url: '/school-busIcon-32.png', // Bus icon URL
+                          scaledSize: new window.google.maps.Size(32, 32),      
+                          }}
                     />
                 ))}
                 {activeStopIndex !== null && (
                     <InfoWindow
                         position={selectedRoute.coordinates[activeStopIndex]}
                         onCloseClick={() => setActiveStopIndex(null)}
-                         icon={{
-                          url: 'https://img.icons8.com/emoji/48/school-bus.png', // Bus icon URL
-                          scaledSize: new window.google.maps.Size(32, 32),      
-                          }}
                     >
                       <div>
                         {selectedRoute.stops?.[activeStopIndex] || `Stop ${activeStopIndex + 1}`}
