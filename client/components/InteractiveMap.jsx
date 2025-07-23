@@ -45,7 +45,6 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
   };
 
   return (
-      <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={defaultCenter}
@@ -75,6 +74,5 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
               </>
           )}
         </GoogleMap>
-      </LoadScript>
   );
 }
