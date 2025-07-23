@@ -7,8 +7,14 @@ import { routes } from '../../lib/routes';
 import InteractiveMap from '../../components/InteractiveMap';
 import RouteSearchBar from '../../components/RouteSearchBar';
 import RouteList from '../../components/RouteList';
+import RouteBookingForm from '../../components/RouteBookingForm';
+import {useAuth} from '../../context/AuthContext'
 
 export default function RouteMapPage() {
+  const {user}= useAuth(); //confirming the user logged in
+  const userId= user?.id;
+
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRoute, setSelectedRoute] = useState(null);
 
@@ -22,9 +28,9 @@ export default function RouteMapPage() {
     : routes.filter(route => route.featured);
 
   return (
-    <section className="min-h-screen flex flex-col p-6 lg:flex-row gap-8 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+    <section className="flex flex-col lg:flex-row gap-6 px-4 py-6 min-h-screen bg-gray-50">
       {/* Left: Route Cards and Search */}
-      <div className="flex-[2]">
+      <div className="w-full lg:w-1/4">
         <RouteSearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -41,13 +47,18 @@ export default function RouteMapPage() {
         />
       </div>
 
-      {/* Right: Map */}
-      <div className="flex-[3] h-[400px] lg:h-auto lg:min-h-full rounded-lg shadow-xl overflow-hidden">
+      {/* middle: Map */}
+      <div className="w-full lg:w-2/4 h-[400px] lg:h-auto">
         <InteractiveMap
           apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
           selectedRoute={selectedRoute}
         />
       </div>
+
+       {/* Right: Booking Form */}
+        <div className="w-full lg:w-1/4">
+        <RouteBookingForm selectedRoute={selectedRoute} />
+        </div>
     </section>
   );
 }
