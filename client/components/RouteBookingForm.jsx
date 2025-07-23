@@ -48,7 +48,7 @@ export default function RouteBookingForm({ selectedRoute }) {
 
       if (response.ok) {
         toast.success('Booking confirmed!');
-        router.push('/my-bookings');// needs to be created
+        router.push('/my-bookings');// needs to be created GET booking 
       } else {
         toast.error(data?.message || 'Booking failed');
       }
