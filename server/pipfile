@@ -1,22 +1,11 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
+name = "pypi"
 
 [packages]
-ipdb = "0.13.9"
-flask = "*"
-Werkzeug = "2.2.2"
-sqlalchemy-serializer = "*"
-flask-restful = "*"
-flask-cors = "*"
-flask-bcrypt = "1.0.1"
-flask-jwt-extended = "*"
-flask-migrate = "*"
-flask-sqlalchemy = "*"
-faker = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.12.7"
