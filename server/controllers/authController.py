@@ -52,7 +52,7 @@ def login():
 
         admin = Admin.query.filter_by(email=email).first()
         if admin and bcrypt.checkpw(password.encode('utf-8'), admin.password.encode('utf-8')):
-            token = create_access_token(identity={"email": email, "role": "admin"})
+            token = create_access_token( identity= email,additional_claims={"role": "admin"})
             res = jsonify({
                 "message": f"Welcome Admin {admin.name}",
                 "user": {
@@ -67,7 +67,7 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            token = create_access_token(identity={"email": email, "role": "user"})
+            token = create_access_token(identity= email,additional_claims={"role": "user"})
             res = jsonify({
                 "message": f"Welcome {user.name}",
                 "user": {
