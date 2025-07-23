@@ -1,4 +1,6 @@
 
+
+// for individual individual route card
 export default function RouteCard({ route, isSelected, onSelect }) {
   return (
     <div

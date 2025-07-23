@@ -1,3 +1,6 @@
+
+// handles search input  and suggestions
+
 'use client';
 
 import { useState, useEffect } from 'react'
@@ -11,7 +14,7 @@ export default function RouteSearchBar({ searchTerm, setSearchTerm, routes, onSe
             return;
         }
 
-        const matches= routes.filter(route => route.name.toLowerCase().include(searchTerm.toLowerCase())
+        const matches= routes.filter(route => route.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setSuggestions(matches.slice(0, 5)); // maximum of five suggestions
     }, [searchTerm, routes]);
