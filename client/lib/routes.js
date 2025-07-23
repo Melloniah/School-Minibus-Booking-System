@@ -3,6 +3,7 @@
 export const routes = [
   {
     id: 1,
+    bus_id: 1,
     name: "Thika Road",
     featured: true,
     description: "From Kasarani via Muthaiga to Moi Avenue Primary",
@@ -22,6 +23,7 @@ export const routes = [
   },
   {
     id: 2,
+    bus_id: 3,
     name: "Mombasa Road",
     featured: true,
     description: "From Syokimau via South B to Moi Avenue Primary",
@@ -41,8 +43,9 @@ export const routes = [
   },
   {
     id: 3,
+    bus_id: 2,
     name: "Waiyaki Way",
-
+    featured: true,
     description: "From Kikuyu via Uthiru and Westlands to Moi Avenue Primary",
     emoji: "🚎",
     stops: [
@@ -60,6 +63,7 @@ export const routes = [
   },
   {
     id: 4,
+    bus_id: 5,
     name: "Jogoo Road",
     featured: true,
     description: "From Donholm via Jericho to Moi Avenue Primary",
@@ -79,8 +83,8 @@ export const routes = [
   },
   {
     id: 5,
+    bus_id: 4,
     name: "Kilimani",
-    featured: true,
     description: "From Adams Arcade via Yaya Centre to Moi Avenue Primary",
     emoji: "🚌",
     stops: [
@@ -98,6 +102,7 @@ export const routes = [
   },
   {
     id: 6,
+    bus_id: 6,
     name: "Parklands Area",
     description: "From Parlands area to Moi Avenue Primary",
     emoji: "🚎",

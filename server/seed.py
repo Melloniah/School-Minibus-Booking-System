@@ -8,7 +8,7 @@ with app.app_context():
     db.create_all()
 
     # ---------------- Admin ----------------
-    hashed_password = bcrypt.hashpw("alice123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = bcrypt.hashpw("admin123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     admin = Admin(
         name="Admin",
@@ -17,6 +17,7 @@ with app.app_context():
         role="Superadmin"
     )
     db.session.add(admin)
+    db.session.commit()
 
     # ---------------- Users ----------------
     leala = bcrypt.hashpw("leala123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -31,73 +32,51 @@ with app.app_context():
 
 
     db.session.add_all([user1, user2, user3, user4])
+    db.session.commit()
 
     # ---------------- Routes ----------------
     routes = [
-        Route(origin="Thika", destination="Ruiru"),
-        Route(origin="Survey", destination="CBD"),
-        Route(origin="CBD", destination="Westlands"),
-        Route(origin="Allsops", destination="Utawala"),
-        Route(origin="CBD", destination="Kiserian"),
-        Route(origin="Karen", destination="Kiambu Road")
+        Route(route_name="Thika Road"),
+        Route(route_name="Ngong Road"),
+        Route(route_name="Mombasa Road"),
+        Route(route_name="Kiambu Road")
     ]
     db.session.add_all(routes)
+    db.session.commit()
 
     # ---------------- Buses ----------------
     buses = [
         Bus(route=routes[0], numberplate="KCA 123A", capacity=33),
-        Bus(route=routes[1], numberplate="KCB 456B", capacity=25),
-        Bus(route=routes[2], numberplate="KCC 789C", capacity=40),
-        Bus(route=routes[3], numberplate="KCD 321D", capacity=28),
-        Bus(route=routes[4], numberplate="KCE 654E", capacity=30),
-        Bus(route=routes[5], numberplate="KCF 987F", capacity=35),
+        Bus(route=routes[0], numberplate="KCB 456B", capacity=25),
+        Bus(route=routes[1], numberplate="KCC 789C", capacity=40),
+        Bus(route=routes[1], numberplate="KCD 321D", capacity=28),
+        Bus(route=routes[2], numberplate="KCE 654E", capacity=30),
+        Bus(route=routes[2], numberplate="KCF 987F", capacity=35),
+        Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
+        Bus(route=routes[3], numberplate="KBE 527R", capacity=35),
     ]
     db.session.add_all(buses)
+    db.session.commit()
 
     # ---------------- Pickup & Dropoff Locations with real coordinates ----------------
     pickup_dropoffs = [
         Pickup_Dropoff_Location(name_location="Thika Main Stage", GPSystem="-1.0341, 37.0693", route=routes[0]),
         Pickup_Dropoff_Location(name_location="Ruiru Spur Mall", GPSystem="-1.1450, 36.9566", route=routes[0]),
+        Pickup_Dropoff_Location(name_location="Survey Bus Stop", GPSystem="-1.2290, 36.8835", route=routes[0]),
+        Pickup_Dropoff_Location(name_location="Junction Mall", GPSystem="1.2985, 36.7625", route=routes[1]),
+        Pickup_Dropoff_Location(name_location="Moringa School", GPSystem="1.2860, 36.7997", route=routes[1]),
+        Pickup_Dropoff_Location(name_location="Lenana School", GPSystem="1.3000, 36.7284", route=routes[1]),
+        Pickup_Dropoff_Location(name_location="The Imaara Mall", GPSystem="1.3283, 36.8819", route=routes[2]),
+        Pickup_Dropoff_Location(name_location="Nairobi South Primary", GPSystem="-1.38, 36.83", route=routes[2]),
+        Pickup_Dropoff_Location(name_location="Signature Mall", GPSystem="-1.41752, 36.9535", route=routes[2]),
+        Pickup_Dropoff_Location(name_location="Two Rivers Mall", GPSystem="1.2118, 36.7957", route=routes[3]),
+        Pickup_Dropoff_Location(name_location="Ridgeways Mall", GPSystem="-1.22547, 36.83993", route=routes[3]),
 
-        Pickup_Dropoff_Location(name_location="Survey Bus Stop", GPSystem="-1.2290, 36.8835", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="Kencom CBD", GPSystem="-1.2866, 36.8219", route=routes[1]),
-
-        Pickup_Dropoff_Location(name_location="Kencom CBD", GPSystem="-1.2866, 36.8219", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Westlands Sarit Centre", GPSystem="-1.2648, 36.8032", route=routes[2]),
-
-        Pickup_Dropoff_Location(name_location="Allsops", GPSystem="-1.2232, 36.8826", route=routes[3]),
-        Pickup_Dropoff_Location(name_location="Utawala Stage", GPSystem="-1.2880, 36.9558", route=routes[3]),
-
-        Pickup_Dropoff_Location(name_location="Kencom CBD", GPSystem="-1.2866, 36.8219", route=routes[4]),
-        Pickup_Dropoff_Location(name_location="Kiserian Town", GPSystem="-1.3956, 36.7070", route=routes[4]),
-
-        Pickup_Dropoff_Location(name_location="Karen Hub Mall", GPSystem="-1.3176, 36.7198", route=routes[5]),
-        Pickup_Dropoff_Location(name_location="Kiambu Road Quickmart", GPSystem="-1.2087, 36.8400", route=routes[5]),
     ]
     db.session.add_all(pickup_dropoffs)
+    db.session.commit()
 
     # ---------------- Bookings ----------------
-    booking1 = Booking(
-        user=user1,
-        bus=buses[0],
-        pickup_location="Thika Main Stage",
-        dropoff_location="Ruiru Spur Mall",
-        seats_booked=2,
-        booking_date=date.today(),
-        price=200.0
-    )
-
-    booking2 = Booking(
-        user=user2,
-        bus=buses[2],
-        pickup_location="Kencom CBD",
-        dropoff_location="Westlands Sarit Centre",
-        seats_booked=1,
-        booking_date=date.today(),
-        price=150.0
-    )
-
-    db.session.add_all([booking1, booking2])
-    db.session.commit()
+   
 
     print("Seeding Complete !")
