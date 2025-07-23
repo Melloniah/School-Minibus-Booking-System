@@ -4,6 +4,7 @@ import { routes } from '../../lib/routes';
 import InteractiveMap from '../../components/InteractiveMap';
 
 function Card({ children, className = '', ...props }) {
+  
   return (
     <div
       className={`border border-gray-300 rounded-lg shadow-sm p-4 cursor-pointer transition hover:shadow-lg ${className}`}
@@ -16,13 +17,26 @@ function Card({ children, className = '', ...props }) {
 
 export default function RouteMapPage() {
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredRoutes= searchTerm? 
+  routes.filter(route=> route.name.toLowerCase(searchTerm.toLowerCase())
+): routes;
 
   return (
     <div className="flex h-screen">
       {/* Left: Route List */}
       <div className="w-1/3 p-6 overflow-y-auto bg-gray-100">
         <h1 className="text-2xl font-bold mb-6">Available Routes</h1>
-        {routes.map((route) => (
+        <input
+        type="text"
+        placeholder='Search a route ...'
+        className="mb-6 p-2 w-full border rounded"
+        value={searchTerm}
+        onChange={(e)=> setSearchTerm(e.target.value)}
+
+        />
+        {filteredRoutes.map((route) => (
           <Card
             key={route.id}
             onClick={() => setSelectedRoute(route)}
