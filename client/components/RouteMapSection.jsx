@@ -20,7 +20,7 @@ export default function RouteMapSection() {
       : routes.filter(route => route.featured);
 
   return (
-      <section className="min-h-[95vh] py-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <section className="w-screen py-24 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="text-center mb-6">
             <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -43,7 +43,7 @@ export default function RouteMapSection() {
             <div className="w-full lg:w-[48%] h-full overflow-y-auto">
               <h3 className="text-lg font-bold text-purple-700 mb-2">Popular Routes</h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 h-[600px] w-full">
                 {filteredRoutes.length === 0 ? (
                     <p className="text-center text-gray-500 text-sm">
                       We currently do not offer services to that area.
