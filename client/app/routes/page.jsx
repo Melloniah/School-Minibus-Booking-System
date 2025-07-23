@@ -1,3 +1,6 @@
+
+// combines everything
+
 'use client';
 import { useState, useEffect } from 'react';
 import { routes } from '../../lib/routes';
