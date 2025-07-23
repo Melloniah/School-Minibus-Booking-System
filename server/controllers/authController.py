@@ -58,7 +58,8 @@ def login():
                 "user": {
                     "name": admin.name,
                     "email": admin.email,
-                    "role": "admin"
+                    "role": "admin",
+                    "token":token
                 }
             })
             set_access_cookies(res, token)
@@ -72,7 +73,8 @@ def login():
                 "user": {
                     "name": user.name,
                     "email": user.email,
-                    "role": "user"
+                    "role": "user",
+                    "token": token
                 }
             })
             set_access_cookies(res, token)
