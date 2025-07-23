@@ -12,31 +12,9 @@ export default function BookingForm({ onRouteSelect }) {
   const [buses, setBuses] = useState([]);
   const [stops, setStops] = useState([]);
 
-<<<<<<< HEAD
-    // fetch locations and buses
-    useEffect(()=>{
-        fetch("http://127.0.0.1:5000/location")
-        .then(res=> res.json())
-        .then(data => {
-          console.log("Fetched locations:", data);
-          setLocation(data);
-        });
-    }, []);
-    
-    useEffect(()=>{
-        fetch('http://127.0.0.1:5000/buses/')
-        .then(res=>res.json())
-        .then(data => {
-          console.log("Fetched buses", data);
-          setBuses(data)
-    });
-        
-    }, []);
-=======
   const [pickup, setPickup] = useState('');
   const [dropoff, setDropoff] = useState('');
   const [bus, setBus] = useState('');
->>>>>>> 7ee792ced2a448cd8aeca68003576a25fd0ba311
 
   const [isReturn, setIsReturn] = useState(false);
   const [returnPickup, setReturnPickup] = useState('');
@@ -120,13 +98,9 @@ export default function BookingForm({ onRouteSelect }) {
       date,
     };
 
-<<<<<<< HEAD
-    fetch('http://127.0.0.1:5000/bookings',{
-=======
     try {
       setLoadingPrice(true);
       const priceResponse = await fetch('/api/price', {
->>>>>>> 7ee792ced2a448cd8aeca68003576a25fd0ba311
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(priceRequestData),
