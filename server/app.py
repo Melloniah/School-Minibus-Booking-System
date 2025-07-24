@@ -13,10 +13,11 @@ from routes.auth_route import auth_bp #helps solve the CORS issue
 from routes.pickup_dropoff_route import pickup_bp
 from routes.booking_route import booking_bp
 # import booking management logic(user bookings,canceling,etc)
-
+import os 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'minibus.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config

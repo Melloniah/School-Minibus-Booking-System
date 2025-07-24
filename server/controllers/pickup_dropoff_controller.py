@@ -34,7 +34,7 @@ def update_location(current_admin,id):
         return jsonify({'error': 'Not found'}), 404
     data = request.get_json()
     for key in ['name_location', 'GPSystem', 'route_id']:
-        if key in date:
+        if key in data:
             setattr(loc, key, data[key])
             db.session.commit()
             return jsonify(loc.serialize()), 200
