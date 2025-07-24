@@ -31,7 +31,9 @@ app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # Or 'None' if cross-site requests wi
 
 db.init_app(app) 
 migrate = Migrate(app, db)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+CORS(app, supports_credentials=True, origins=["*"],  expose_headers=["Content-Type"],
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 api = Api(app)
 jwt = JWTManager(app)

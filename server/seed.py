@@ -77,6 +77,49 @@ with app.app_context():
     db.session.commit()
 
     # ---------------- Bookings ----------------
-   
+   booking1 = Booking(
+        user_id=user1.id,
+        bus_id=bus1.id,
+        pickup_location=location1.name_location,
+        dropoff_location=location2.name_location,
+        seats_booked=2,
+        booking_date=date(2025, 8, 1),
+        price=100.0
+    )
+
+    booking2 = Booking(
+        user_id=user2.id,
+        bus_id=bus2.id,
+        pickup_location=location3.name_location,
+        dropoff_location=location1.name_location,
+        seats_booked=1,
+        booking_date=date(2025, 8, 3),
+        price=60.0
+    )
+    
+    # New bookings
+    booking3 = Booking(
+        user_id=user1.id,
+        bus_id=bus2.id,
+        pickup_location=location2.name_location,
+        dropoff_location=location3.name_location,
+        seats_booked=3,
+        booking_date=date(2025, 8, 5),
+        price=90.0
+    )
+    
+    booking4 = Booking(
+        user_id=user2.id,
+        bus_id=bus1.id,
+        pickup_location=location3.name_location,
+        dropoff_location=location2.name_location,
+        seats_booked=4,
+        booking_date=date(2025, 8, 7),
+        price=180.0
+    )
+
+    db.session.add_all([booking1, booking2, booking3, booking4])
+    db.session.commit()
+
 
     print("Seeding Complete !")
