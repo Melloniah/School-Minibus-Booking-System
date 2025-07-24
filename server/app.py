@@ -12,6 +12,7 @@ from models import db
 from routes.auth_route import auth_bp #helps solve the CORS issue
 from routes.pickup_dropoff_route import pickup_bp
 from routes.booking_route import booking_bp
+from routes.pickup_dropoff_route import pickup_dropoff_bp
 # import booking management logic(user bookings,canceling,etc)
 import os 
 
@@ -47,6 +48,7 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
 app.register_blueprint(pickup_bp, url_prefix="/location")
+app.register_blueprint(pickup_dropoff_bp, url_prefix="/pickup_dropoff")
 
 
 # This is where you tell Flask to include those route groups into the main app.
