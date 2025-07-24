@@ -47,5 +47,17 @@ def delete_location(current_admin,id):
     db.session.delete(loc)
     db.session.commit()
     return jsonify({'message': 'deleted'}), 200
+
+@jwt_protected()
+def get_locations_by_route(current_user_or_admin):
+    route_id = request.args.get('route_id')
+
+    if not route_id:
+        return jsonify({'error': 'Route ID is required'}), 400
+
+    locations = Pickup_Dropoff_Location.query.filter_by(routeid=route_id).all()
+
+    return jsonify([loc.serialize() for loc in locations]), 200
+
         
         
