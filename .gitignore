@@ -1,17 +1,18 @@
+
 # --------------------------------
 # Frontend - Next.js
 # --------------------------------
-cclient/node_modules/
+client/node_modules/  
 server/node_modules/
 client/.next/
 /out/
 /build/
 /.pnp
 .pnp.js
-server/node_modules/
 
 # Local environment files
 .env*.local
+.env  # Added this - important!
 .DS_Store
 *.pem
 
@@ -54,6 +55,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+server/venv/  
 
 # PyInstaller files
 *.spec
@@ -93,6 +95,8 @@ cython_debug/
 __pypackages__/
 .pybuilder/
 docs/_build/
+.vscode/  # Added common IDE
+.idea/    # Added common IDE
 
 # Package managers lock files
 Pipfile.lock
@@ -109,3 +113,4 @@ celerybeat.pid
 
 # Local settings
 local_settings.py
+EOF
