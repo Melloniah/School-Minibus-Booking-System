@@ -46,34 +46,34 @@ with app.app_context():
 
     # ---------------- Buses ----------------
     
-    bus1=Bus(route=routes[0], numberplate="KCA 123A", capacity=33),
-    bus2=Bus(route=routes[0], numberplate="KCB 456B", capacity=25),
-    bus3=Bus(route=routes[1], numberplate="KCC 789C", capacity=40),
-    bus4=Bus(route=routes[1], numberplate="KCD 321D", capacity=28),
-    bus5=Bus(route=routes[2], numberplate="KCE 654E", capacity=30),
-    bus6=Bus(route=routes[2], numberplate="KCF 987F", capacity=35),
-    bus7=Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
+    bus1=Bus(route=routes[0], numberplate="KCA 123A", capacity=33)
+    bus2=Bus(route=routes[0], numberplate="KCB 456B", capacity=25)
+    bus3=Bus(route=routes[1], numberplate="KCC 789C", capacity=40)
+    bus4=Bus(route=routes[1], numberplate="KCD 321D", capacity=28)
+    bus5=Bus(route=routes[2], numberplate="KCE 654E", capacity=30)
+    bus6=Bus(route=routes[2], numberplate="KCF 987F", capacity=35)
+    bus7=Bus(route=routes[3], numberplate="KCR 881F", capacity=40)
     bus8=Bus(route=routes[3], numberplate="KBE 527R", capacity=35)
     
     db.session.add_all(bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8)
     db.session.commit()
 
     # ---------------- Pickup & Dropoff Locations with real coordinates ----------------
-    pickup_dropoffs = [
-        Pickup_Dropoff_Location(name_location="Thika Main Stage", GPSystem="-1.0341, 37.0693", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Ruiru Spur Mall", GPSystem="-1.1450, 36.9566", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Survey Bus Stop", GPSystem="-1.2290, 36.8835", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Junction Mall", GPSystem="1.2985, 36.7625", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="Moringa School", GPSystem="1.2860, 36.7997", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="Lenana School", GPSystem="1.3000, 36.7284", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="The Imaara Mall", GPSystem="1.3283, 36.8819", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Nairobi South Primary", GPSystem="-1.38, 36.83", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Signature Mall", GPSystem="-1.41752, 36.9535", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Two Rivers Mall", GPSystem="1.2118, 36.7957", route=routes[3]),
-        Pickup_Dropoff_Location(name_location="Ridgeways Mall", GPSystem="-1.22547, 36.83993", route=routes[3]),
+   
+    location1= Pickup_Dropoff_Location(name_location="Thika Main Stage", GPSystem="-1.0341, 37.0693", route=routes[0])
+    location2=Pickup_Dropoff_Location(name_location="Ruiru Spur Mall", GPSystem="-1.1450, 36.9566", route=routes[0])
+    location3=Pickup_Dropoff_Location(name_location="Survey Bus Stop", GPSystem="-1.2290, 36.8835", route=routes[0])
+    location4=Pickup_Dropoff_Location(name_location="Junction Mall", GPSystem="1.2985, 36.7625", route=routes[1])
+    location5=Pickup_Dropoff_Location(name_location="Moringa School", GPSystem="1.2860, 36.7997", route=routes[1])
+    location6=Pickup_Dropoff_Location(name_location="Lenana School", GPSystem="1.3000, 36.7284", route=routes[1]),
+    location7=Pickup_Dropoff_Location(name_location="The Imaara Mall", GPSystem="1.3283, 36.8819", route=routes[2])
+    location8=Pickup_Dropoff_Location(name_location="Nairobi South Primary", GPSystem="-1.38, 36.83", route=routes[2])
+    location9=Pickup_Dropoff_Location(name_location="Signature Mall", GPSystem="-1.41752, 36.9535", route=routes[2])
+    location10=Pickup_Dropoff_Location(name_location="Two Rivers Mall", GPSystem="1.2118, 36.7957", route=routes[3])
+    location11=Pickup_Dropoff_Location(name_location="Ridgeways Mall", GPSystem="-1.22547, 36.83993", route=routes[3])
 
-    ]
-    db.session.add_all(pickup_dropoffs)
+    
+    db.session.add_all([location1,location2,location3,location4,location5,location6.location7,location8,location9,location10,location11])
     db.session.commit()
 
     # ---------------- Bookings ----------------
