@@ -1,12 +1,13 @@
 # --------------------------------
 # Frontend - Next.js
 # --------------------------------
-/node_modules/
+client/node_modules/
 /.next/
 /out/
 /build/
 /.pnp
 .pnp.js
+server/node_modules/
 
 # Local environment files
 .env*.local

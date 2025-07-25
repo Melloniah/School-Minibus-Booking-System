@@ -45,17 +45,17 @@ with app.app_context():
     db.session.commit()
 
     # ---------------- Buses ----------------
-    buses = [
-        Bus(route=routes[0], numberplate="KCA 123A", capacity=33),
-        Bus(route=routes[0], numberplate="KCB 456B", capacity=25),
-        Bus(route=routes[1], numberplate="KCC 789C", capacity=40),
-        Bus(route=routes[1], numberplate="KCD 321D", capacity=28),
-        Bus(route=routes[2], numberplate="KCE 654E", capacity=30),
-        Bus(route=routes[2], numberplate="KCF 987F", capacity=35),
-        Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
-        Bus(route=routes[3], numberplate="KBE 527R", capacity=35),
-    ]
-    db.session.add_all(buses)
+    
+    bus1=Bus(route=routes[0], numberplate="KCA 123A", capacity=33),
+    bus2=Bus(route=routes[0], numberplate="KCB 456B", capacity=25),
+    bus3=Bus(route=routes[1], numberplate="KCC 789C", capacity=40),
+    bus4=Bus(route=routes[1], numberplate="KCD 321D", capacity=28),
+    bus5=Bus(route=routes[2], numberplate="KCE 654E", capacity=30),
+    bus6=Bus(route=routes[2], numberplate="KCF 987F", capacity=35),
+    bus7=Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
+    bus8=Bus(route=routes[3], numberplate="KBE 527R", capacity=35)
+    
+    db.session.add_all(bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8)
     db.session.commit()
 
     # ---------------- Pickup & Dropoff Locations with real coordinates ----------------
@@ -77,7 +77,7 @@ with app.app_context():
     db.session.commit()
 
     # ---------------- Bookings ----------------
-   booking1 = Booking(
+    booking1 = Booking(
         user_id=user1.id,
         bus_id=bus1.id,
         pickup_location=location1.name_location,
