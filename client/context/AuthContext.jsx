@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -7,25 +8,43 @@ export const AuthProvider = ({ children }) => { // this is what is exported in l
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/auth/current_user', {
-        credentials: 'include',
-      });
+  // const checkAuth = async () => {
+  //   try {
+  //     const res = await fetch('http://localhost:5000/auth/current_user', {
+  //       credentials: 'include',
+  //     });
 
-      if (res.ok) {
-        const userData = await res.json();
-        setUser(userData);
-      } else {
+  //     if (res.ok) {
+  //       const userData = await res.json();
+  //       setUser(userData);
+  //     } else {
+  //       setUser(null);
+  //     }
+  //   } catch (err) {
+  //     setUser(null);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const checkAuth = async () =>{
+    try{
+      const response = await axios.get('http://localhost:5000/auth/current_user',{
+        withCredentials: true, // Include cookies in the request
+      })
+      if(response.status === 200){
+        console.log('User data:', response.data);
+        setUser(response.data);
+      }else{
         setUser(null);
       }
-    } catch (err) {
+
+    }catch(error){
+      console.error('Error checking auth:', error);
       setUser(null);
     } finally {
       setLoading(false);
-    }
-  };
-
+      }}
   useEffect(() => {
     checkAuth();
   }, []);

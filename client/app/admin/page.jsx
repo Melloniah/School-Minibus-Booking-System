@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function ItineraryDashboard() {
   const [authorized, setAuthorized] = useState(true); // Simulated auth
@@ -11,72 +12,98 @@ export default function ItineraryDashboard() {
   const [bookings, setBookings] = useState([]);
 
 
-  const API_BASE = 'http://127.0.0.1:5000';
+  const API_BASE = 'http://localhost:5000';
 
   useEffect(() => {
     // Simulate auth check or fetching user role
     setTimeout(() => {
       setAuthorized(true);
     }, 500);
-
-    const fetchRoutes = fetch(`${API_BASE}/routes`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  }).then(res => res.json()).then(data => {
-    if (Array.isArray(data)) setRoutes(data);
-  }).catch(err => console.error('Failed to load routes:', err));
-
-  const fetchBookings = fetch(`${API_BASE}/bookings`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (Array.isArray(data)) setBookings(data);
-  })
-  .catch(err => console.error('Failed to load bookings:', err));
-
-  Promise.all([fetchRoutes, fetchBookings]);
+    getroutes()
+    getbookings()
 }, []);
+  //   
+  const getroutes = async () => {
+    //e.preventDefault()
+  const response = await axios.get(`${API_BASE}/routes`,{
+    withCredentials: true, // Include cookies in the request
+  })
+  if (response.status === 200) {
+    console.log('Routes data:', response.data); 
+    setRoutes(response.data);
+  } else {
+    console.error('Failed to fetch routes');
+  }
+}
+
+const getbookings = async () => {
+    //e.preventDefault()
+  const response = await axios.get(`${API_BASE}/bookings`,{
+    withCredentials: true, // Include cookies in the request
+  })
+  if (response.status === 200) {
+    console.log('Booking data:', response.data); 
+    setBookings(response.data);
+  } else {
+    console.error('Failed to fetch booking');
+  }
+}
+  // const fetchBookings = fetch(`${API_BASE}/bookings`, {
+  //   credentials: 'include'
+  // })
+  // .then(res => res.json())
+  // .then(data => {
+  //   if (Array.isArray(data)) setBookings(data);
+  // })
+  // .catch(err => console.error('Failed to load bookings:', err));
+
+  //Promise.all([getroutes, fetchBookings]);
 
 
-  const handleBusSubmit = async(e) => {
-    e.preventDefault();
-    console.log('New Bus:', busData);
-    try {
-      const res = await fetch(`${API_BASE}/buses`, {
-        method: 'POST',
+
+ 
+  const handleBusSubmit = async (e) => {
+  e.preventDefault();
+  console.log('New Bus:', busData);
+  try {
+    const res = await axios.post(
+      `${API_BASE}/buses/`, // note trailing slash
+      {
+        numberplate: busData.numberplate,
+        capacity: Number(busData.capacity),
+        routeid: Number(busData.routeid),
+      },
+      {
+        withCredentials: true, // include cookies
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(busData),
-      });
-      const result = await res.json()
-      if (res.ok) {
-        alert('Bus added!');
-        setBusData({numberplate: '', capacity:'', routeid: ''});
-      }else {
-        alert(result.error || 'Failed to add bus');
       }
-    }catch (error) {
-      console.error('Error adding bus:', error),
-      alert('Server error')
+    );
+    if (res.status === 201) {
+      alert('Bus added!');
+      setBusData({ numberplate: '', capacity: '', routeid: '' });
+    } else {
+      alert(res.data.error || 'Failed to add bus');
+      console.error('Bus add failed:', res.data);
     }
-  };
+  } catch (error) {
+    console.error('Error adding bus:', error.response || error);
+    alert('Server error');
+  }
+};
+
 
   const handleRouteSubmit = async(e) => {
     e.preventDefault();
     console.log('New Route:', routeData);
     try {
-      const res = await fetch(`${API_BASE}/routes`, {
+      const res = await fetch(`${API_BASE}/routes/`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        'content-Type': 'application/json',
+      },
+        credentials : 'include',
         body: JSON.stringify(routeData),
       });
 

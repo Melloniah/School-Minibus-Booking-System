@@ -37,6 +37,9 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+      //console.log('Login response:', data.user.token);
+      // save token to localhostorage
+      localStorage.setItem('token', data.user.token);
 
       if (!response.ok) {
         setError(data.error || 'Login failed');
