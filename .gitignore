@@ -1,8 +1,9 @@
 # --------------------------------
 # Frontend - Next.js
 # --------------------------------
-client/node_modules/
-/.next/
+cclient/node_modules/
+server/node_modules/
+client/.next/
 /out/
 /build/
 /.pnp
