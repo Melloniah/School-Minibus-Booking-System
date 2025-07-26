@@ -12,8 +12,9 @@ flask-restful = "*"
 bcrypt = "*"
 alembic = "*"
 sqlalchemy = "*"
-python-dotenv = "*"
 flask-jwt-extended = "*"
+requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

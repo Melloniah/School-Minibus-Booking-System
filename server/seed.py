@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv #for hiding google map api
 
 # Google Maps Geocoding API key 
-load_dotenv() 
+load_dotenv(dotenv_path=".env")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 if not GOOGLE_API_KEY:
@@ -21,13 +21,15 @@ def geocode_location(name):
         "key": GOOGLE_API_KEY
     }
     resp = requests.get(GEOCODE_URL, params=params)
-    if resp.status_code != 200:
-        raise Exception(f"Geocoding request failed with status {resp.status_code}")
     data = resp.json()
-    if data['status'] != "OK" or not data['results']:
-        raise Exception(f"Geocoding failed for '{name}': {data['status']}")
-    location = data['results'][0]['geometry']['location']
-    return location['lat'], location['lng']
+
+    if data['status'] == "OK" and data['results']:
+        location = data['results'][0]['geometry']['location']
+        return location['lat'], location['lng']
+    else:
+        print(f"[GEOCODE ERROR] Failed for '{name}' with status {data['status']}")
+        return None, None
+
 
 def haversine(lat1, lon1, lat2, lon2):
     # Convert decimal degrees to radians 
@@ -85,45 +87,72 @@ with app.app_context():
 
     # -------- Pickup & Dropoff Locations --------
     location_data = {
-        "Thika Road": ["Kasarani", "Muthaiga", "Globe/CBD Entrance"],
-        "Mombasa Road": ["Syokimau", "Cabanas", "South B"],
-        "Waiyaki Way": ["Kikuyu", "Uthiru", "Westlands"],
-        "Jogoo Road": ["Donholm", "Jericho", "City Stadium / Muthurwa"],
-        "Kilimani": ["Adams Arcade", "Yaya Centre", "Kileleshwa"],
-        "Parklands": ["Westlands", "Parklands"]
-    }
+    "Thika Road": [
+        "Kasarani, Nairobi",
+        "Muthaiga, Nairobi",
+        "Globe Roundabout, Nairobi"
+    ],
+    "Mombasa Road": [
+        "Syokimau, Nairobi",
+        "Cabanas Stage, Nairobi",
+        "South B, Nairobi"
+    ],
+    "Waiyaki Way": [
+        "Kikuyu Town, Nairobi",
+        "Uthiru, Nairobi",
+        "Westlands, Nairobi"
+    ],
+    "Jogoo Road": [
+        "Donholm, Nairobi",
+        "Jericho, Nairobi",
+        "Muthurwa Market, Nairobi"
+    ],
+    "Kilimani": [
+        "Adams Arcade, Nairobi",
+        "Yaya Centre, Nairobi",
+        "Kileleshwa, Nairobi"
+    ],
+    "Parklands": [
+        "Westlands, Nairobi",  
+        "Parklands, Nairobi"
+    ]
+}
+
 
     pickup_dropoffs = []
     for route in routes:
-        names = location_data.get(route.route_name, [])
-        for name in names:
+        location_names = location_data.get(route.route_name, [])
+        for name in location_names:
             lat, lng = geocode_location(name)
+            if lat is None or lng is None:
+                print(f"[ERROR] Skipping '{name}' due to missing lat/lng")
+                continue  # skip this location — do not insert into DB
             pickup_dropoffs.append(Pickup_Dropoff_Location(
-                name_location=name,
-                GPSystem=f"{lat},{lng}",
-                route=route
-            ))
+                    name_location=name,
+                    latitude=lat,
+                    longitude=lng,
+                    routeid=route.id
+                    ))
 
     db.session.add_all(pickup_dropoffs)
     db.session.commit()
+
 
     # Helper to find location by name
     def find_location(name):
         for loc in pickup_dropoffs:
             if loc.name_location == name:
-                lat, lng = map(float, loc.GPSystem.split(','))
-                return lat, lng
+                return loc.latitude, loc.longitude
         raise ValueError(f"Location '{name}' not found")
 
     # -------- Bookings --------
     #  some sample bookings for users
     bookings_data = [
-        # (user_index, bus_index, pickup_name, dropoff_name, seats, booking_date)
-        (0, 0, "Kasarani", "Muthaiga", 2, date(2025, 8, 1)),
-        (1, 1, "Globe/CBD Entrance", "Kasarani", 1, date(2025, 8, 3)),
-        (0, 1, "Muthaiga", "Globe/CBD Entrance", 3, date(2025, 8, 5)),
-        (1, 0, "Globe/CBD Entrance", "Muthaiga", 4, date(2025, 8, 7)),
-    ]
+    (0, 0, "Kasarani, Nairobi", "Muthaiga, Nairobi", 2, date(2025, 8, 1)),
+    (1, 1, "Globe Roundabout, Nairobi", "Kasarani, Nairobi", 1, date(2025, 8, 3)),
+    (0, 1, "Muthaiga, Nairobi", "Globe Roundabout, Nairobi", 3, date(2025, 8, 5)),
+    (1, 0, "Globe Roundabout, Nairobi", "Muthaiga, Nairobi", 4, date(2025, 8, 7)),
+]
 
     bookings = []
     for user_idx, bus_idx, pickup_name, dropoff_name, seats, b_date in bookings_data:
