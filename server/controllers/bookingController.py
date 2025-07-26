@@ -27,7 +27,7 @@ def seats_available(bus_id):
     return bus.capacity - booked
 
 # create a new booking
-@jwt_protected() 
+@jwt_protected()
 def create_booking(current_user_or_admin):
     data = request.get_json()
     try:
@@ -37,26 +37,32 @@ def create_booking(current_user_or_admin):
         dropoff_location = data['dropoff_location']
         seats_booked = int(data['seats_booked'])
         booking_date = datetime.strptime(data['booking_date'], "%Y-%m-%d").date()
-        price = float(data['price'])
+        # price = float(data['price']) to avoid users putting price
 
-        if seats_booked <= 0 or price <= 0:
-            return jsonify({'error': 'Seats and price must be positive'}), 400
+        if seats_booked <= 0:
+            return jsonify({'error': 'Seats must be a positive number'}), 400
 
         available = seats_available(bus_id)
         if seats_booked > available:
             return jsonify({'error': f'Only {available} seats available'}), 400
-        # Look GPS coordinates
-        pu = Pickup_Dropoff_Location.query.filter_by(name_location=pickup_name).first()
-        do = Pickup_Dropoff_Location.query.filter_by(name_location=dropoff_name).first()
-        if not pu or not do:
-            return jsonify({'error': 'Invalid pickup/dropoff location'}),400
-        lat1, lon1 = map(float, pu.GPSystem.split(",")) 
-        lat2, lon2 = map(float, do.GPSystem.split(","))
 
-        # caculate price
-        distance = haversine(lat1, lon1, lat2, lon2)
-        rate = 1.25 # KES per km
-        total_price = round(distance * rate * seats, 2)
+        # match on location names
+        pu = Pickup_Dropoff_Location.query.filter_by(name_location=pickup_location).first()
+        do = Pickup_Dropoff_Location.query.filter_by(name_location=dropoff_location).first()
+
+        if not pu or not do:
+            return jsonify({'error': 'Invalid pickup or dropoff location'}), 400
+
+        if pu.route_id != do.route_id:
+            return jsonify({'error': 'Pickup and dropoff locations must be on the same route'}), 400
+
+        # Calculate distance-based price
+        lat1, lon1 = pu.latitude, pu.longitude
+        lat2, lon2 = do.latitude, do.longitude
+
+        distance = haversine(lat1, lon1, lat2, lon2)  # in KM
+        rate = 5  # KES per km
+        total_price = round(distance * rate * seats_booked, 2)
 
         new_booking = Booking(
             user_id=user_id,
@@ -70,11 +76,11 @@ def create_booking(current_user_or_admin):
 
         db.session.add(new_booking)
         db.session.commit()
-        return jsonify(new_booking.serialize()),201
+        return jsonify(new_booking.serialize()), 201
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}),400
+        return jsonify({'error': str(e)}), 400
 
 # GET all bookings
 @jwt_protected()

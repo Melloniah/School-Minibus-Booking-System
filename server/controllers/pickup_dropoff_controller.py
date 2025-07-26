@@ -8,9 +8,11 @@ def create_location(current_admin):
     data = request.get_json()
     loc = Pickup_Dropoff_Location(
         name_location=data['name_location'],
-        GPSystem=data['GPSystem'],
-        routeid=data['routeid']
-    )
+        latitude=data['latitude'],
+        longitude=data['longitude'],
+        route_id=data['route_id']
+        )
+
     db.session.add(loc)
     db.session.commit()
     return jsonify(loc.serialize()),201
@@ -33,7 +35,7 @@ def update_location(current_admin,id):
     if not loc:
         return jsonify({'error': 'Not found'}), 404
     data = request.get_json()
-    for key in ['name_location', 'GPSystem', 'route_id']:
+    for key in ['name_location', 'latitude', 'longitude' 'route_id']:
         if key in data:
             setattr(loc, key, data[key])
             db.session.commit()

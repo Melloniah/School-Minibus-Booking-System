@@ -131,7 +131,7 @@ with app.app_context():
                     name_location=name,
                     latitude=lat,
                     longitude=lng,
-                    routeid=route.id
+                    route_id=route.id
                     ))
 
     db.session.add_all(pickup_dropoffs)
