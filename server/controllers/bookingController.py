@@ -29,41 +29,76 @@ def seats_available(bus_id):
 # create a new booking
 @jwt_protected()
 def create_booking(current_user_or_admin):
+    print("🔥 CREATE_BOOKING FUNCTION CALLED")
+    
+    # Debug: Check request data
+    print(f"🔍 Request method: {request.method}")
+    print(f"🔍 Content-Type: {request.content_type}")
+    print(f"🔍 Raw data: {request.data}")
+    
     data = request.get_json()
+    print(f"🔍 Parsed JSON data: {data}")
+    print(f"🔍 Data type: {type(data)}")
+    
+    if not data:
+        print("❌ No JSON data received")
+        return jsonify({'error': 'No JSON data provided'}), 400
+    
     try:
+        print("🔍 Step 1: Extracting user_id...")
         user_id = data['user_id']
+        print(f"✅ User ID: {user_id}")
+        
+        print("🔍 Step 2: Extracting bus_id...")
         bus_id = data['bus_id']
+        print(f"✅ Bus ID: {bus_id}")
+        
+        print("🔍 Step 3: Extracting locations...")
         pickup_location = data['pickup_location']
         dropoff_location = data['dropoff_location']
+        print(f"✅ Pickup: {pickup_location}, Dropoff: {dropoff_location}")
+        
+        print("🔍 Step 4: Extracting seats and date...")
         seats_booked = int(data['seats_booked'])
         booking_date = datetime.strptime(data['booking_date'], "%Y-%m-%d").date()
-        # price = float(data['price']) to avoid users putting price
+        print(f"✅ Seats: {seats_booked}, Date: {booking_date}")
 
         if seats_booked <= 0:
+            print("❌ Invalid seats number")
             return jsonify({'error': 'Seats must be a positive number'}), 400
 
+        print("🔍 Step 5: Checking seat availability...")
         available = seats_available(bus_id)
+        print(f"✅ Available seats: {available}")
+        
         if seats_booked > available:
+            print(f"❌ Not enough seats: requested {seats_booked}, available {available}")
             return jsonify({'error': f'Only {available} seats available'}), 400
 
-        # match on location names
+        print("🔍 Step 6: Looking up locations...")
         pu = Pickup_Dropoff_Location.query.filter_by(name_location=pickup_location).first()
         do = Pickup_Dropoff_Location.query.filter_by(name_location=dropoff_location).first()
+        
+        print(f"🔍 Pickup location found: {pu is not None}")
+        print(f"🔍 Dropoff location found: {do is not None}")
 
         if not pu or not do:
+            print("❌ Location lookup failed")
             return jsonify({'error': 'Invalid pickup or dropoff location'}), 400
 
         if pu.route_id != do.route_id:
+            print(f"❌ Route mismatch: pickup route {pu.route_id}, dropoff route {do.route_id}")
             return jsonify({'error': 'Pickup and dropoff locations must be on the same route'}), 400
 
-        # Calculate distance-based price
+        print("🔍 Step 7: Calculating price...")
         lat1, lon1 = pu.latitude, pu.longitude
         lat2, lon2 = do.latitude, do.longitude
-
-        distance = haversine(lat1, lon1, lat2, lon2)  # in KM
-        rate = 5  # KES per km
+        distance = haversine(lat1, lon1, lat2, lon2)
+        rate = 5
         total_price = round(distance * rate * seats_booked, 2)
+        print(f"✅ Distance: {distance}km, Price: {total_price} KES")
 
+        print("🔍 Step 8: Creating booking...")
         new_booking = Booking(
             user_id=user_id,
             bus_id=bus_id,
@@ -74,14 +109,26 @@ def create_booking(current_user_or_admin):
             price=total_price
         )
 
+        print("🔍 Step 9: Saving to database...")
         db.session.add(new_booking)
         db.session.commit()
+        print("✅ Booking saved successfully!")
+        
         return jsonify(new_booking.serialize()), 201
 
+    except KeyError as e:
+        print(f"❌ KeyError - Missing field: {e}")
+        db.session.rollback()
+        return jsonify({'error': f'Missing required field: {str(e)}'}), 400
+    except ValueError as e:
+        print(f"❌ ValueError - Invalid data format: {e}")
+        db.session.rollback()
+        return jsonify({'error': f'Invalid data format: {str(e)}'}), 400
     except Exception as e:
+        print(f"❌ Unexpected error: {type(e).__name__}: {str(e)}")
+        print(f"❌ Error details: {repr(e)}")
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
-
 # GET all bookings
 @jwt_protected()
 def get_all_bookings(current_user_or_admin):
