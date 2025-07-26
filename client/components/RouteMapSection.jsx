@@ -79,7 +79,7 @@ export default function RouteMapSection() {
       {/* Map Section */}
   <div className="flex-[3] h-[400px] lg:h-auto lg:min-h-full rounded-lg shadow-xl overflow-hidden">
     <InteractiveMap
-      apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      apiKey={process.env.GOOGLE_MAPS_API_KEY}
       selectedRoute={selectedRoute}
     />
   </div>
