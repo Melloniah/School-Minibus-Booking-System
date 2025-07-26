@@ -55,7 +55,7 @@ with app.app_context():
     bus7=Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
     bus8=Bus(route=routes[3], numberplate="KBE 527R", capacity=35)
     
-    db.session.add_all(bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8)
+    db.session.add_all([bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8])
     db.session.commit()
 
     # ---------------- Pickup & Dropoff Locations with real coordinates ----------------
