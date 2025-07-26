@@ -68,6 +68,7 @@ with app.app_context():
     db.session.add_all(routes)
     db.session.commit()
 
+
     # -------- Buses --------
     buses_data = [
         (0, "KCA 123A", 33),
@@ -135,6 +136,7 @@ with app.app_context():
                     ))
 
     db.session.add_all(pickup_dropoffs)
+
     db.session.commit()
 
 
