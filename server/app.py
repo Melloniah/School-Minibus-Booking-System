@@ -15,6 +15,7 @@ from routes.booking_route import booking_bp
 from routes.pickup_dropoff_route import pickup_dropoff_bp
 # import booking management logic(user bookings,canceling,etc)
 import os 
+from datetime import timedelta
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -28,13 +29,18 @@ app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
 app.config['JWT_COOKIE_SECURE'] = False  # Allow cookies over HTTP (not HTTPS)
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # Or 'None' if cross-site requests with credentials are needed
-
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1) # token expires afte 1 hr for dev purpose
 
 db.init_app(app) 
 migrate = Migrate(app, db)
-CORS(app, supports_credentials=True, origins=["*"],  expose_headers=["Content-Type"],
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+CORS(app, 
+     supports_credentials=True,
+     origins=["http://localhost:3000"],  # Specific origin, not "*"
+     expose_headers=["Content-Type", "Authorization"],
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
+
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -48,7 +54,7 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
 app.register_blueprint(pickup_bp, url_prefix="/location")
-app.register_blueprint(pickup_dropoff_bp, url_prefix="/pickup_dropoff")
+# app.register_blueprint(pickup_dropoff_bp, url_prefix="/pickup_dropoff")
 
 
 # This is where you tell Flask to include those route groups into the main app.

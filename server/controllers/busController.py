@@ -16,7 +16,7 @@ def create_bus(current_admin):
 
 @jwt_protected()  # Both users and admins can access
 def get_buses(current_user_or_admin):
-    routeid = request.args.get('routeid')
+    routeid = request.args.get('route_id')
     origin = request.args.get('origin')
     destination = request.args.get('destination')
     query = Bus.query

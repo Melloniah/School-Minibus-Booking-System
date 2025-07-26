@@ -11,7 +11,7 @@ client/.next/
 .pnp.js
 
 # Local environment files
-.env*.local
+.env.local
 .env  # Added this - important!
 .DS_Store
 *.pem
@@ -48,7 +48,7 @@ server/instance/*
 !server/instance/.gitignore
 
 # Environment and virtual environments
-.env
+server/.env
 .venv/
 env/
 venv/
