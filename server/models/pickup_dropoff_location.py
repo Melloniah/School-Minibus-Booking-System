@@ -6,7 +6,9 @@ class Pickup_Dropoff_Location(db.Model,SerializeMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     name_location = db.Column(db.String)
-    GPSystem = db.Column(db.String)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+
     routeid = db.Column(db.Integer, db.ForeignKey('routes.id'))
 
     route = db.relationship('Route', back_populates='pickup_dropoff_locations')

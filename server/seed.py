@@ -1,125 +1,147 @@
 import bcrypt
+import requests
+from math import radians, cos, sin, asin, sqrt
 from app import app
 from models import db, Admin, User, Route, Bus, Booking, Pickup_Dropoff_Location
 from datetime import date
+import os
+from dotenv import load_dotenv #for hiding google map api
+
+# Google Maps Geocoding API key 
+load_dotenv() 
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+if not GOOGLE_API_KEY:
+    raise Exception("Missing GOOGLE_MAPS_API_KEY environment variable")
+GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+
+def geocode_location(name):
+    params = {
+        "address": name,
+        "key": GOOGLE_API_KEY
+    }
+    resp = requests.get(GEOCODE_URL, params=params)
+    if resp.status_code != 200:
+        raise Exception(f"Geocoding request failed with status {resp.status_code}")
+    data = resp.json()
+    if data['status'] != "OK" or not data['results']:
+        raise Exception(f"Geocoding failed for '{name}': {data['status']}")
+    location = data['results'][0]['geometry']['location']
+    return location['lat'], location['lng']
+
+def haversine(lat1, lon1, lat2, lon2):
+    # Convert decimal degrees to radians 
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    # Haversine formula 
+    dlat = lat2 - lat1 
+    dlon = lon2 - lon1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371 # Radius of earth in kilometers
+    return c * r
 
 with app.app_context():
     db.drop_all()
     db.create_all()
 
-    # ---------------- Admin ----------------
+    # -------- Admin --------
     hashed_password = bcrypt.hashpw("admin123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-    admin = Admin(
-        name="Admin",
-        email="admin@gmail.com",
-        password=hashed_password,
-        role="Superadmin"
-    )
+    admin = Admin(name="Admin", email="admin@gmail.com", password=hashed_password, role="Superadmin")
     db.session.add(admin)
     db.session.commit()
 
-    # ---------------- Users ----------------
-    leala = bcrypt.hashpw("leala123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    Mary = bcrypt.hashpw("wambui456".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    David = bcrypt.hashpw("@david123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    Maxwell = bcrypt.hashpw("max#33".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-    user1 = User(name="Ella Leala", email="leala@gmail.com", password=leala)
-    user2 = User(name="Mary Wambui", email="wambui@gmail.com", password=Mary)
-    user3 = User(name="David Kori", email="kori@gmail.com", password=David)
-    user4 = User(name="Maxwell Ndiritu", email="ndiritu@gmail.com", password=Maxwell)
-
-
-    db.session.add_all([user1, user2, user3, user4])
+    # -------- Users --------
+    users = [
+        User(name="Ella Leala", email="leala@gmail.com", password=bcrypt.hashpw("leala123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')),
+        User(name="Mary Wambui", email="wambui@gmail.com", password=bcrypt.hashpw("wambui456".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')),
+        User(name="David Kori", email="kori@gmail.com", password=bcrypt.hashpw("@david123".encode('utf-8'), bcrypt.gensalt()).decode('utf-8')),
+        User(name="Maxwell Ndiritu", email="ndiritu@gmail.com", password=bcrypt.hashpw("max#33".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))
+    ]
+    db.session.add_all(users)
     db.session.commit()
 
-    # ---------------- Routes ----------------
-    routes = [
-        Route(route_name="Thika Road"),
-        Route(route_name="Ngong Road"),
-        Route(route_name="Mombasa Road"),
-        Route(route_name="Kiambu Road")
-    ]
+    # -------- Routes --------
+    route_names = ["Thika Road", "Mombasa Road", "Waiyaki Way", "Jogoo Road", "Kilimani", "Parklands"]
+    routes = [Route(route_name=name) for name in route_names]
     db.session.add_all(routes)
     db.session.commit()
 
-    # ---------------- Buses ----------------
-    
-    bus1=Bus(route=routes[0], numberplate="KCA 123A", capacity=33),
-    bus2=Bus(route=routes[0], numberplate="KCB 456B", capacity=25),
-    bus3=Bus(route=routes[1], numberplate="KCC 789C", capacity=40),
-    bus4=Bus(route=routes[1], numberplate="KCD 321D", capacity=28),
-    bus5=Bus(route=routes[2], numberplate="KCE 654E", capacity=30),
-    bus6=Bus(route=routes[2], numberplate="KCF 987F", capacity=35),
-    bus7=Bus(route=routes[3], numberplate="KCR 881F", capacity=40),
-    bus8=Bus(route=routes[3], numberplate="KBE 527R", capacity=35)
-    
-    db.session.add_all([bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8])
+    # -------- Buses --------
+    buses_data = [
+        (0, "KCA 123A", 33),
+        (0, "KCB 456B", 25),
+        (1, "KCC 789C", 40),
+        (1, "KCD 321D", 28),
+        (2, "KCE 654E", 30),
+        (2, "KCF 987F", 35),
+        (3, "KCR 881F", 40),
+        (3, "KBE 527R", 35),
+    ]
+    buses = []
+    for route_index, plate, capacity in buses_data:
+        buses.append(Bus(route=routes[route_index], numberplate=plate, capacity=capacity))
+    db.session.add_all(buses)
     db.session.commit()
 
-    # ---------------- Pickup & Dropoff Locations with real coordinates ----------------
-    pickup_dropoffs = [
-        Pickup_Dropoff_Location(name_location="Thika Main Stage", GPSystem="-1.0341, 37.0693", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Ruiru Spur Mall", GPSystem="-1.1450, 36.9566", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Survey Bus Stop", GPSystem="-1.2290, 36.8835", route=routes[0]),
-        Pickup_Dropoff_Location(name_location="Junction Mall", GPSystem="1.2985, 36.7625", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="Moringa School", GPSystem="1.2860, 36.7997", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="Lenana School", GPSystem="1.3000, 36.7284", route=routes[1]),
-        Pickup_Dropoff_Location(name_location="The Imaara Mall", GPSystem="1.3283, 36.8819", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Nairobi South Primary", GPSystem="-1.38, 36.83", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Signature Mall", GPSystem="-1.41752, 36.9535", route=routes[2]),
-        Pickup_Dropoff_Location(name_location="Two Rivers Mall", GPSystem="1.2118, 36.7957", route=routes[3]),
-        Pickup_Dropoff_Location(name_location="Ridgeways Mall", GPSystem="-1.22547, 36.83993", route=routes[3]),
+    # -------- Pickup & Dropoff Locations --------
+    location_data = {
+        "Thika Road": ["Kasarani", "Muthaiga", "Globe/CBD Entrance"],
+        "Mombasa Road": ["Syokimau", "Cabanas", "South B"],
+        "Waiyaki Way": ["Kikuyu", "Uthiru", "Westlands"],
+        "Jogoo Road": ["Donholm", "Jericho", "City Stadium / Muthurwa"],
+        "Kilimani": ["Adams Arcade", "Yaya Centre", "Kileleshwa"],
+        "Parklands": ["Westlands", "Parklands"]
+    }
 
-    ]
+    pickup_dropoffs = []
+    for route in routes:
+        names = location_data.get(route.route_name, [])
+        for name in names:
+            lat, lng = geocode_location(name)
+            pickup_dropoffs.append(Pickup_Dropoff_Location(
+                name_location=name,
+                GPSystem=f"{lat},{lng}",
+                route=route
+            ))
+
     db.session.add_all(pickup_dropoffs)
     db.session.commit()
 
-    # ---------------- Bookings ----------------
-    booking1 = Booking(
-        user_id=user1.id,
-        bus_id=bus1.id,
-        pickup_location=location1.name_location,
-        dropoff_location=location2.name_location,
-        seats_booked=2,
-        booking_date=date(2025, 8, 1),
-        price=100.0
-    )
+    # Helper to find location by name
+    def find_location(name):
+        for loc in pickup_dropoffs:
+            if loc.name_location == name:
+                lat, lng = map(float, loc.GPSystem.split(','))
+                return lat, lng
+        raise ValueError(f"Location '{name}' not found")
 
-    booking2 = Booking(
-        user_id=user2.id,
-        bus_id=bus2.id,
-        pickup_location=location3.name_location,
-        dropoff_location=location1.name_location,
-        seats_booked=1,
-        booking_date=date(2025, 8, 3),
-        price=60.0
-    )
-    
-    # New bookings
-    booking3 = Booking(
-        user_id=user1.id,
-        bus_id=bus2.id,
-        pickup_location=location2.name_location,
-        dropoff_location=location3.name_location,
-        seats_booked=3,
-        booking_date=date(2025, 8, 5),
-        price=90.0
-    )
-    
-    booking4 = Booking(
-        user_id=user2.id,
-        bus_id=bus1.id,
-        pickup_location=location3.name_location,
-        dropoff_location=location2.name_location,
-        seats_booked=4,
-        booking_date=date(2025, 8, 7),
-        price=180.0
-    )
+    # -------- Bookings --------
+    #  some sample bookings for users
+    bookings_data = [
+        # (user_index, bus_index, pickup_name, dropoff_name, seats, booking_date)
+        (0, 0, "Kasarani", "Muthaiga", 2, date(2025, 8, 1)),
+        (1, 1, "Globe/CBD Entrance", "Kasarani", 1, date(2025, 8, 3)),
+        (0, 1, "Muthaiga", "Globe/CBD Entrance", 3, date(2025, 8, 5)),
+        (1, 0, "Globe/CBD Entrance", "Muthaiga", 4, date(2025, 8, 7)),
+    ]
 
-    db.session.add_all([booking1, booking2, booking3, booking4])
+    bookings = []
+    for user_idx, bus_idx, pickup_name, dropoff_name, seats, b_date in bookings_data:
+        plat, plng = find_location(pickup_name) #plat is pickup lat
+        dlat, dlng = find_location(dropoff_name)
+        distance_km = haversine(plat, plng, dlat, dlng)
+        price = round(distance_km * 5, 2)  # 5 KES per km
+        bookings.append(Booking(
+            user_id=users[user_idx].id,
+            bus_id=buses[bus_idx].id,
+            pickup_location=pickup_name,
+            dropoff_location=dropoff_name,
+            seats_booked=seats,
+            booking_date=b_date,
+            price=price
+        ))
+
+    db.session.add_all(bookings)
     db.session.commit()
 
-
-    print("Seeding Complete !")
+    print("Seeding Complete!")
