@@ -25,36 +25,33 @@ export default function LoginPage() {
   }, [user, router]);
 
   // Handle form submit to login
-  async function handleLogin(e) {
-    e.preventDefault();
+ async function handleLogin(e) {
+  e.preventDefault();
 
-    try {
-      const response = await fetch('http://localhost:5000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await fetch('http://localhost:5000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await response.json();
-      //console.log('Login response:', data.user.token);
-      // save token to localhostorage
-      localStorage.setItem('token', data.user.token);
+    const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.error || 'Login failed');
-        return;
-      }
-
-      // Update auth context
-      login(data.user);
-
-      // Redirect will happen via useEffect when user state updates
-    } catch (err) {
-      setError('Server error');
-      console.error(err);
+    if (!response.ok) {
+      setError(data.error || 'Login failed');
+      return;
     }
+
+    login(data.user); // sets user in context
+
+
+  } catch (err) {
+    setError('Server error');
+    console.error(err);
   }
+}
+
 
   if (user) {
     return <p>You are already logged in as {user.name}</p>;

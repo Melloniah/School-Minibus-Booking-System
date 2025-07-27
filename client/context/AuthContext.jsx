@@ -4,60 +4,40 @@ import axios from 'axios';
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => { // this is what is exported in layout to wrap the whole project
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);     // Stores user object
+  const [loading, setLoading] = useState(true); // True until we check auth
 
-  // const checkAuth = async () => {
-  //   try {
-  //     const res = await fetch('http://localhost:5000/auth/current_user', {
-  //       credentials: 'include',
-  //     });
+const checkAuth = async () => {
+  try {
+   const res = await axios.get('http://localhost:5000/auth/current_user', {
+    withCredentials: true,
+  });
 
-  //     if (res.ok) {
-  //       const userData = await res.json();
-  //       setUser(userData);
-  //     } else {
-  //       setUser(null);
-  //     }
-  //   } catch (err) {
-  //     setUser(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    if (res.status === 200) {
+      setUser(res.data); 
+    }
+  } catch (err) {
+    console.error('Auth check failed:', err);
+    setUser(null);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const checkAuth = async () =>{
-    try{
-      const response = await axios.get('http://localhost:5000/auth/current_user',{
-        withCredentials: true, // Include cookies in the request
-      })
-      if(response.status === 200){
-        console.log('User data:', response.data);
-        setUser(response.data);
-      }else{
-        setUser(null);
-      }
 
-    }catch(error){
-      console.error('Error checking auth:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-      }}
   useEffect(() => {
-    checkAuth();
+    checkAuth(); // Check auth on mount (auto-login)
   }, []);
 
   const login = (userData) => {
-    setUser(userData);
+    setUser(userData); // Called after manual login
   };
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:5000/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await axios.post('http://localhost:5000/auth/logout', {}, {
+        withCredentials: true,
       });
     } catch (err) {
       console.error('Logout error:', err);
@@ -65,10 +45,11 @@ export const AuthProvider = ({ children }) => { // this is what is exported in l
       setUser(null);
     }
   };
-// this is what is exported to the navbar
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, checkAuth, loading }}> 
-      {children}
+    <AuthContext.Provider value={{ user, login, logout, checkAuth, loading }}>
+      {/* Show nothing until auth check completes */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
