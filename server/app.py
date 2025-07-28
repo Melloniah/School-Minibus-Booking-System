@@ -35,7 +35,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 CORS(app, 
      supports_credentials=True,
-     origins=["*"],  # Specific origin, not "*"
+     origins=["http://localhost:3000"],  # Specific origin, not "*"
      expose_headers=["Content-Type", "Authorization"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
