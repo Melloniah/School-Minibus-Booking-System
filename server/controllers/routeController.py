@@ -45,11 +45,16 @@ def create_route(current_admin):
 
 @jwt_protected()
 def get_routes(current_user_or_admin):
-    routes= Route.query.all()
+    routes = Route.query.all()
     return jsonify([
-         {'id': r.id, 'route_name': r.route_name}
+        {
+            'id': r.id,
+            'route_name': r.route_name,
+            'stops': [loc.name_location for loc in r.pickup_dropoff_locations]
+        }
         for r in routes
     ])
+
 
 @jwt_protected()
 def get_route(current_user_or_admin,id):
