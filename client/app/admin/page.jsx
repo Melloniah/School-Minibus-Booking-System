@@ -6,7 +6,7 @@ export default function ItineraryDashboard() {
   const [authorized, setAuthorized] = useState(true); // Simulated auth
   const [busData, setBusData] = useState({ numberplate: '', capacity: '', routeid: '' });
   const [routeData, setRouteData] = useState({ route_name: '',
-  locations: [{ name_location: '', GPSystem: '' }]
+  locations: [{ name_location: '', latitude: '', longitude: '' }]
 });
   const [routes, setRoutes] = useState([])
   const [bookings, setBookings] = useState([]);
@@ -130,9 +130,10 @@ const getbookings = async () => {
 const addLocationField = () => {
   setRouteData({
     ...routeData,
-    locations: [...routeData.locations, { name_location: '', GPSystem: '' }]
+    locations: [...routeData.locations, { name_location: '', latitude: '', longitude: '' }]
   });
 };
+
 
   if (!authorized) {
     return <p className="p-4">Checking access...</p>;
@@ -203,21 +204,30 @@ const addLocationField = () => {
 
   {routeData.locations.map((loc, index) => (
     <div key={index} className="mb-4">
-      <input
-        type="text"
-        placeholder="Location Name"
-        value={loc.name_location}
-        onChange={(e) => handleLocationChange(index, 'name_location', e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-        required
-      />
-      <input
-        type="text"
-        placeholder="GPS (optional)"
-        value={loc.GPSystem}
-        onChange={(e) => handleLocationChange(index, 'GPSystem', e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-      />
+    <input
+      type="text"
+      placeholder="Location Name"
+      value={loc.name_location}
+      onChange={(e) => handleLocationChange(index, 'name_location', e.target.value)}
+      className="w-full p-2 mb-2 border rounded"
+      required
+    />
+    <input
+      type="text"
+      placeholder="Latitude"
+      value={loc.latitude}
+      onChange={(e) => handleLocationChange(index, 'latitude', e.target.value)}
+      className="w-full p-2 mb-2 border rounded"
+      required
+    />
+    <input
+      type="text"
+      placeholder="Longitude"
+      value={loc.longitude}
+      onChange={(e) => handleLocationChange(index, 'longitude', e.target.value)}
+      className="w-full p-2 mb-2 border rounded"
+      required
+    />
     </div>
   ))}
 
