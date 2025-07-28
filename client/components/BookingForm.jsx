@@ -31,7 +31,7 @@ const estimatePriceAPI = (data) =>
     withCredentials: true,
   });
 
-export default function BookingForm() {
+export default function BookingForm({ onRouteSelect }) {
   const { user: currentUser, loading } = useAuth();
   const router = useRouter();
 
@@ -89,7 +89,6 @@ export default function BookingForm() {
           toast.error('Failed to load buses for this route');
         });
 
-
       // Reset selections when route changes
       setPickup('');
       setDropoff('');
@@ -105,11 +104,15 @@ export default function BookingForm() {
     }
   }, [selectedRoute]);
 
-
   const handleRouteChange = (e) => {
     const routeId = parseInt(e.target.value);
     const route = routes.find(r => r.id === routeId);
     setSelectedRoute(route || null);
+    
+    // Notify booking page component about route selection
+    if (onRouteSelect) {
+      onRouteSelect(route || null);
+    }
   };
 
   const handleReverseTrip = () => {
@@ -194,11 +197,10 @@ export default function BookingForm() {
       const res = await createBooking(bookingPayload);
 
       if (res.status === 201) {
-        console.log('✅ Booking created successfully!');
+        
         setBookingSuccess(true);
         toast.success('Booking created successfully!');
       } else {
-        console.error('❌ Booking failed with status:', res.status);
         toast.error(res.data?.error || 'Booking failed.');
       }
     } catch (err) {
@@ -226,6 +228,11 @@ export default function BookingForm() {
     setStops([]);
     setCalculatedPrice(null);
     setBookingSuccess(false);
+    
+    // Notify parent component about route reset
+    if (onRouteSelect) {
+      onRouteSelect(null);
+    }
   };
 
   return (
@@ -380,7 +387,7 @@ export default function BookingForm() {
 {!calculatedPrice && !calculatingPrice && pickup && dropoff && seats && (
   <div className="p-3 bg-red-50 border border-red-200 rounded">
     <p className="text-red-700 text-center">
-      ❌ Unable to calculate price. Please check your selections.
+      Unable to calculate price. Please check your selections.
     </p>
   </div>
 )}

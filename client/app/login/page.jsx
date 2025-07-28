@@ -8,7 +8,7 @@ export default function LoginPage() {
   const { user, login } = useAuth(); // Use context user
   const router = useRouter();
 
-  // Remove local user state - use context instead
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
