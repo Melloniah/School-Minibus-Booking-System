@@ -1,20 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar() {
   const [sticky, setSticky] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const { user, logout } = useAuth();
 
+  const menuRef = useRef();
+
   useEffect(() => {
-    const handleScroll = () => {
-      setSticky(window.scrollY > 50);
-    };
+    const handleScroll = () => setSticky(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -40,42 +53,38 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-6 text-white font-medium">
-          <li>
-            <Link href="/">🏠 Home</Link>
-          </li>
-          <li>
-            <Link href="/routes">Routes</Link>
-          </li>
-          <li>
-            <Link href="/book-seat">Book Now</Link>
-          </li>
-          <li> 
-          <Link href="/mybookings">
-        <span className="hover:text-blue-600">My Bookings</span>
-      </Link>
-
-          </li>
-          <li>
-            <Link href="/about">👥 About</Link>
-          </li>
-          <li>
-            <Link href="/contact">📞 Contact</Link>
-          </li>
-          
+          <li><Link href="/">🏠 Home</Link></li>
+          <li><Link href="/routes">Routes</Link></li>
+          <li><Link href="/book-seat">Book Now</Link></li>
+          <li><Link href="/about">👥 About</Link></li>
+          <li><Link href="/contact">📞 Contact</Link></li>
         </ul>
 
         {/* Buttons */}
         <div className="hidden md:flex gap-4 items-center">
           {user ? (
-            <>
-              <span className="text-white">Welcome, {user.name}!</span>
-              <button
-                onClick={logout}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Logout
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setMenuOpen(!menuOpen)} className="text-white">
+                <FaUserCircle size={28} />
               </button>
-            </>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-50">
+                  <ul className="py-2 text-sm text-gray-700">
+                    <li className="px-4 py-2 border-b">👋 {user.name}</li>
+                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      <Link href="/profile">Profile</Link>
+                    </li>
+                    <li
+                      onClick={logout}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500"
+                    >
+                      Logout
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link
@@ -91,71 +100,17 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/admin"
-                className="border border-white text-white px-4 py-1 rounded-full">
+                className="border border-white text-white px-4 py-1 rounded-full"
+              >
                 Admin Dashboard
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Menu Icon */}
-        <div className="md:hidden">
-          {/* Uncomment and implement mobile menu toggle icon */}
-          {/* <Image
-            src={menuIcon}
-            alt="menu"
-            width={30}
-            height={30}
-            onClick={toggleMenu}
-            className="cursor-pointer"
-          /> */}
-        </div>
+        {/* Mobile menu icon placeholder */}
+        <div className="md:hidden">{/* mobile icon logic here */}</div>
       </div>
-
-      {/* Mobile Menu Drawer */}
-      {/* <div
-        className={`md:hidden fixed top-0 right-0 h-full w-60 bg-[#0f2500] text-white p-6 z-40 transform transition-transform duration-300 ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <ul className="flex flex-col gap-6">
-          <li>
-            <Link href="/">🏠 Home</Link>
-          </li>
-          <li>
-            <Link href="/routes"> Routes</Link>
-          </li>
-          <li>
-            <Link href="/book-seat">Book Now</Link>
-          </li>
-          <li>
-            <Link href="/about"> About Us</Link>
-          </li>
-          <li>
-            <Link href="/contact">📞 Contact Us</Link>
-          </li>
-          {!user && (
-            <>
-              <li>
-                <Link href="/login">🔐 Sign In</Link>
-              </li>
-              <li>
-                <Link href="/register">🌠 Get Started</Link>
-              </li>
-            </>
-          )}
-          {user && (
-            <li>
-              <button
-                onClick={logout}
-                className="bg-red-500 w-full py-2 rounded"
-              >
-                Logout
-              </button>
-            </li>
-          )}
-        </ul>
-      </div> */}
     </nav>
   );
 }
