@@ -4,44 +4,66 @@ from models.route import Route
 from models.pickup_dropoff_location import Pickup_Dropoff_Location 
 from middleware.authMiddleware import jwt_protected
 from models import db
+import os
+import requests # Import the requests library
+
+GOOGLE_API_KEY = os.getenv('Maps_API_KEY')
+
+
+def geocode_location(name):
+    url = f'https://maps.googleapis.com/maps/api/geocode/json?address={name}&key={GOOGLE_API_KEY}'
+    response = requests.get(url)
+    data = response.json()
+
+    if data['status'] == 'OK':
+        location = data['results'][0]['geometry']['location']
+        return location['lat'], location['lng']
+    return None, None
+
 
 @jwt_protected(role='admin')
 # def create_route(current_admin):
 def create_route(current_admin):
     data = request.get_json()
-
-    # Validate required fields
+    # Validate required field
     if 'route_name' not in data:
         return jsonify({'error': 'Missing route_name'}), 400
 
-    # Step 1: Create the route
+    # Create new Route
     route = Route(route_name=data['route_name'])
     db.session.add(route)
-    db.session.flush()  # Get route.id before commit
+    db.session.flush()  # Get route.id before committing
 
-    # Step 2: Handle optional locations
+    # Handle locations
     locations = data.get('locations', [])
     for loc in locations:
-        # Validate location fields
-        if not all(k in loc for k in ['name_location', 'latitude', 'longitude']):
-            continue  # skip invalid location entries
+        name = loc.get('name_location')
+        if not name:
+            continue  # Skip if name is missing
+
+        # Use geocoding to get lat/lng from name
+        lat, lng = geocode_location(name)
+        if lat is None or lng is None:
+            continue  # Skip if geocoding fails
 
         new_location = Pickup_Dropoff_Location(
-            name_location=loc['name_location'],
-            latitude=loc['latitude'],
-            longitude=loc['longitude'],
+            name_location=name,
+            latitude=lat,
+            longitude=lng,
             route_id=route.id
         )
         db.session.add(new_location)
 
     db.session.commit()
 
-    # Step 3: Return response
+    # Serialize response
     return jsonify({
         'id': route.id,
         'route_name': route.route_name,
         'locations': [loc.serialize() for loc in route.pickup_dropoff_locations]
     }), 201
+
+    
 
 @jwt_protected()
 def get_routes(current_user_or_admin):
