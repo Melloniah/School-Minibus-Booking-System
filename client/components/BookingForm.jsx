@@ -7,7 +7,6 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
-
 // API utilities
 const API_BASE = 'http://localhost:5000';
 
@@ -27,18 +26,17 @@ const createBooking = (data) =>
   });
 
 const estimatePriceAPI = (data) =>
-  axios.post(`${API_BASE}/bookings/estimate-price`, data, {
+  axios.post(`${API_BASE}/bookings/estimate-price`, data, {  
     withCredentials: true,
   });
 
-export default function BookingForm({ onRouteSelect }) {
+export default function BookingForm({ selectedRoute, setSelectedRoute, stops, setStops }) {
   const { user: currentUser, loading } = useAuth();
   const router = useRouter();
 
   const [routes, setRoutes] = useState([]);
-  const [selectedRoute, setSelectedRoute] = useState(null);
   const [buses, setBuses] = useState([]);
-  const [stops, setStops] = useState([]);
+  
 
   const [pickup, setPickup] = useState('');
   const [dropoff, setDropoff] = useState('');
@@ -104,15 +102,11 @@ export default function BookingForm({ onRouteSelect }) {
     }
   }, [selectedRoute]);
 
+
   const handleRouteChange = (e) => {
     const routeId = parseInt(e.target.value);
     const route = routes.find(r => r.id === routeId);
     setSelectedRoute(route || null);
-    
-    // Notify booking page component about route selection
-    if (onRouteSelect) {
-      onRouteSelect(route || null);
-    }
   };
 
   const handleReverseTrip = () => {
@@ -136,31 +130,33 @@ export default function BookingForm({ onRouteSelect }) {
       seats_booked: seats,
     };
 
-    const priceResponse = await estimatePriceAPI(pricePayload); 
+    const priceRes = await estimatePriceAPI(pricePayload);  // Use new function name
 
-      if (priceResponse.status === 200) {
-        setCalculatedPrice(priceResponse.data.estimated_price);
-        toast.success(`Price: KES ${priceResponse.data.estimated_price} (${priceResponse.data.distance} km)`);
-      } else {
-        toast.error('Failed to calculate price');
-        setCalculatedPrice(null);
-      }
-    } catch (err) {
-      console.error('Price calculation error:', err);
-      toast.error('Failed to calculate price. Please try again.');
-    } finally {
-      setCalculatingPrice(false);
+    if (priceRes.status === 200) {
+      
+      setCalculatedPrice(priceRes.data.estimated_price);  
+      toast.success(`Price: KES ${priceRes.data.estimated_price} (${priceRes.data.distance} km)`);
+    } else {
+      toast.error('Failed to calculate price');
+      setCalculatedPrice(null);
     }
-  };
+  } catch (err) {
+    console.error('Price calculation error:', err);
+    toast.error('Failed to calculate price. Please try again.');
+    setCalculatedPrice(null);
+  } finally {
+    setCalculatingPrice(false);
+  }
+};
 
-   // Auto-calculate price when pickup, dropoff, or seats change
-   useEffect(() => {
-   if (pickup && dropoff && seats) {
+// 2. Auto-calculate price when pickup, dropoff, or seats change
+useEffect(() => {
+  if (pickup && dropoff && seats) {
     calculatePrice();
   } else {
     setCalculatedPrice(null);
   }
-  }, [pickup, dropoff, seats]);
+}, [pickup, dropoff, seats]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -197,10 +193,11 @@ export default function BookingForm({ onRouteSelect }) {
       const res = await createBooking(bookingPayload);
 
       if (res.status === 201) {
-        
+        console.log('✅ Booking created successfully!');
         setBookingSuccess(true);
         toast.success('Booking created successfully!');
       } else {
+        console.error('❌ Booking failed with status:', res.status);
         toast.error(res.data?.error || 'Booking failed.');
       }
     } catch (err) {
@@ -228,11 +225,6 @@ export default function BookingForm({ onRouteSelect }) {
     setStops([]);
     setCalculatedPrice(null);
     setBookingSuccess(false);
-    
-    // Notify parent component about route reset
-    if (onRouteSelect) {
-      onRouteSelect(null);
-    }
   };
 
   return (
@@ -366,7 +358,9 @@ export default function BookingForm({ onRouteSelect }) {
               />
             </div>
 
-            {/* Price Display - Show automatically */}
+
+            {/* Price Display */}
+           {/* Price Display - Show automatically */}
 {calculatingPrice && pickup && dropoff && seats && (
   <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
     <p className="text-yellow-700 text-center">
@@ -387,7 +381,7 @@ export default function BookingForm({ onRouteSelect }) {
 {!calculatedPrice && !calculatingPrice && pickup && dropoff && seats && (
   <div className="p-3 bg-red-50 border border-red-200 rounded">
     <p className="text-red-700 text-center">
-      Unable to calculate price. Please check your selections.
+       Unable to calculate price. Please check your selections.
     </p>
   </div>
 )}
@@ -398,7 +392,7 @@ export default function BookingForm({ onRouteSelect }) {
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
               disabled={loadingBooking}
             >
-              {loadingBooking ? 'Processing...' : 'Book Minibus Now'}
+              {loadingBooking ? 'Processing...' : 'Book Now'}
             </button>
           </form>
         )}
