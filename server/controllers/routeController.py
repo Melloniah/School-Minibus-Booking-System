@@ -6,6 +6,7 @@ from middleware.authMiddleware import jwt_protected
 from models import db
 
 @jwt_protected(role='admin')
+# def create_route(current_admin):
 def create_route(current_admin):
     data = request.get_json()
 
@@ -13,30 +14,33 @@ def create_route(current_admin):
     if 'route_name' not in data:
         return jsonify({'error': 'Missing route_name'}), 400
 
+    # Step 1: Create the route
     route = Route(route_name=data['route_name'])
     db.session.add(route)
     db.session.flush()  # Get route.id before commit
 
-    # Handle locations if provided
+    # Step 2: Handle optional locations
     locations = data.get('locations', [])
     for loc in locations:
-        if 'name_location' not in loc:
-            continue  # Skip invalid entries
-        pickup = Pickup_Dropoff_Location(
+        # Validate location fields
+        if not all(k in loc for k in ['name_location', 'latitude', 'longitude']):
+            continue  # skip invalid location entries
+
+        new_location = Pickup_Dropoff_Location(
             name_location=loc['name_location'],
-            GPSystem=loc.get('GPSystem', ''),
-            routeid=route.id
+            latitude=loc['latitude'],
+            longitude=loc['longitude'],
+            route_id=route.id
         )
-        db.session.add(pickup)
+        db.session.add(new_location)
 
     db.session.commit()
 
+    # Step 3: Return response
     return jsonify({
         'id': route.id,
         'route_name': route.route_name,
-        'locations': [
-            loc.serialize() for loc in route.pickup_dropoff_locations
-        ]
+        'locations': [loc.serialize() for loc in route.pickup_dropoff_locations]
     }), 201
 
 @jwt_protected()
