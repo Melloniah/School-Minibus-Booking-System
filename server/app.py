@@ -23,13 +23,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'in
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config
+# JWT Config
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'
-app.config['JWT_TOKEN_LOCATION'] = ['headers','cookies']
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = False  
-app.config['JWT_COOKIE_SECURE'] = False  # Allow cookies over HTTP (not HTTPS)
-app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # Or 'None' if cross-site requests with credentials are needed
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1) # token expires afte 1 hr for dev purpose
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+app.config['JWT_COOKIE_SECURE'] = False      
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'   # this is what helped set and send cookies in backend for current user.  
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'   # cookies to be available on all routes
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+
 
 db.init_app(app) 
 migrate = Migrate(app, db)
@@ -54,7 +57,6 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(route_bp, url_prefix="/routes")
 app.register_blueprint(bus_bp, url_prefix="/buses") 
 app.register_blueprint(pickup_bp, url_prefix="/location")
-# app.register_blueprint(pickup_dropoff_bp, url_prefix="/pickup_dropoff")
 
 
 # This is where you tell Flask to include those route groups into the main app.

@@ -11,6 +11,7 @@ from models import db
 from models.user import User
 from models.admin import Admin
 import bcrypt
+import traceback 
 
 # Register route
 @cross_origin()
@@ -52,14 +53,19 @@ def login():
 
         admin = Admin.query.filter_by(email=email).first()
         if admin and bcrypt.checkpw(password.encode('utf-8'), admin.password.encode('utf-8')):
-            token = create_access_token( identity= email,additional_claims={"role": "admin"})
+            # Store just the email as identity 
+            token = create_access_token(
+                identity=admin.email,  
+                additional_claims={"role": "admin"}
+            )
+            
             res = jsonify({
                 "message": f"Welcome Admin {admin.name}",
                 "user": {
                     "name": admin.name,
                     "email": admin.email,
                     "role": "admin",
-                    "token":token
+                    "token": token
                 }
             })
             set_access_cookies(res, token)
@@ -67,7 +73,12 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            token = create_access_token(identity= email,additional_claims={"role": "user"})
+            # Store just the email as identity
+            token = create_access_token(
+                identity=user.email,  
+                additional_claims={"role": "user"}
+            )
+
             res = jsonify({
                 "message": f"Welcome {user.name}",
                 "user": {
@@ -85,15 +96,16 @@ def login():
     except Exception as e:
         print(traceback.format_exc())
         return make_response(jsonify({"error": "Login failed"}), 500)
-# Current user route
 
+# Current user route
+@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
 @jwt_required()
-@cross_origin()
 def get_current_user():
     try:
-        current_user_identity = get_jwt_identity()
-        user_email = current_user_identity.get("email") if isinstance(current_user_identity, dict) else current_user_identity
-
+        # get_jwt_identity() returns the full identity object
+        identity = get_jwt_identity()
+        user_email = identity.get("email") if isinstance(identity, dict) else identity
+        
         admin = Admin.query.filter_by(email=user_email).first()
         if admin:
             return jsonify({
@@ -120,6 +132,9 @@ def get_current_user():
 @cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
 @jwt_required()
 def logout():
-    response = jsonify({"message": "Logout successful"})
-    unset_jwt_cookies(response)
-    return response, 200
+    try:
+        res = jsonify({"message": "Logged out successfully"})
+        unset_jwt_cookies(res)
+        return res, 200
+    except Exception as e:
+        return jsonify({"error": "Logout failed"}), 500
