@@ -7,6 +7,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
+
 // API utilities
 const API_BASE = 'http://localhost:5000';
 
@@ -25,8 +26,8 @@ const createBooking = (data) =>
     validateStatus: () => true,
   });
 
-const calculatePriceAPI = (data) =>
-  axios.post(`${API_BASE}/calculate-price/`, data, {
+const estimatePriceAPI = (data) =>
+  axios.post(`${API_BASE}/bookings/estimate-price`, data, {
     withCredentials: true,
   });
 
@@ -88,6 +89,7 @@ export default function BookingForm() {
           toast.error('Failed to load buses for this route');
         });
 
+
       // Reset selections when route changes
       setPickup('');
       setDropoff('');
@@ -103,10 +105,6 @@ export default function BookingForm() {
     }
   }, [selectedRoute]);
 
-  // Reset price when pickup, dropoff, or seats change
-  useEffect(() => {
-    setCalculatedPrice(null);
-  }, [pickup, dropoff, seats]);
 
   const handleRouteChange = (e) => {
     const routeId = parseInt(e.target.value);
@@ -122,26 +120,27 @@ export default function BookingForm() {
   };
 
   const calculatePrice = async () => {
-    if (!pickup || !dropoff || !seats) {
-      toast.error('Please select pickup, dropoff, and seats first.');
-      return;
-    }
+  if (!pickup || !dropoff || !seats) {
+    setCalculatedPrice(null);
+    return;
+  }
 
-    try {
-      setCalculatingPrice(true);
-      const pricePayload = {
-        pickup_location: pickup,
-        dropoff_location: dropoff,
-        seats_booked: seats,
-      };
+  try {
+    setCalculatingPrice(true);
+    const pricePayload = {
+      pickup_location: pickup,
+      dropoff_location: dropoff,
+      seats_booked: seats,
+    };
 
-      const priceRes = await calculatePriceAPI(pricePayload);
+    const priceResponse = await estimatePriceAPI(pricePayload); 
 
-      if (priceRes.status === 200) {
-        setCalculatedPrice(priceRes.data.price);
-        toast.success('Price calculated successfully!');
+      if (priceResponse.status === 200) {
+        setCalculatedPrice(priceResponse.data.estimated_price);
+        toast.success(`Price: KES ${priceResponse.data.estimated_price} (${priceResponse.data.distance} km)`);
       } else {
         toast.error('Failed to calculate price');
+        setCalculatedPrice(null);
       }
     } catch (err) {
       console.error('Price calculation error:', err);
@@ -150,6 +149,15 @@ export default function BookingForm() {
       setCalculatingPrice(false);
     }
   };
+
+   // Auto-calculate price when pickup, dropoff, or seats change
+   useEffect(() => {
+   if (pickup && dropoff && seats) {
+    calculatePrice();
+  } else {
+    setCalculatedPrice(null);
+  }
+  }, [pickup, dropoff, seats]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -351,24 +359,31 @@ export default function BookingForm() {
               />
             </div>
 
-            {/* Calculate Price Button */}
-            <button
-              type="button"
-              onClick={calculatePrice}
-              disabled={!pickup || !dropoff || !seats || calculatingPrice}
-              className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 disabled:opacity-50"
-            >
-              {calculatingPrice ? 'Calculating...' : 'Calculate Price'}
-            </button>
+            {/* Price Display - Show automatically */}
+{calculatingPrice && pickup && dropoff && seats && (
+  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
+    <p className="text-yellow-700 text-center">
+      Calculating price...
+    </p>
+  </div>
+)}
 
-            {/* Price Display */}
-            {calculatedPrice && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded">
-                <p className="text-green-700 font-bold text-center">
-                  Estimated Price: KES {calculatedPrice}
-                </p>
-              </div>
-            )}
+{calculatedPrice && !calculatingPrice && (
+  <div className="p-3 bg-green-50 border border-green-200 rounded">
+    <p className="text-green-700 font-bold text-center">
+      Estimated Price: KES {calculatedPrice}
+    </p>
+  </div>
+)}
+
+{/* Show error if price calculation failed */}
+{!calculatedPrice && !calculatingPrice && pickup && dropoff && seats && (
+  <div className="p-3 bg-red-50 border border-red-200 rounded">
+    <p className="text-red-700 text-center">
+      ❌ Unable to calculate price. Please check your selections.
+    </p>
+  </div>
+)}
 
             {/* Submit Button */}
             <button
@@ -376,7 +391,7 @@ export default function BookingForm() {
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
               disabled={loadingBooking}
             >
-              {loadingBooking ? 'Processing...' : 'Book Now'}
+              {loadingBooking ? 'Processing...' : 'Book Minibus Now'}
             </button>
           </form>
         )}
