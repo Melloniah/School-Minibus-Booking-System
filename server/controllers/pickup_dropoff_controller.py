@@ -58,34 +58,17 @@ from models import db
 
 @jwt_protected()
 def get_locations_by_route(current_user_or_admin):
-    print("🔥 FUNCTION CALLED: get_locations_by_route")
-    
     route_id = request.args.get('route_id')
-    print(f"🔍 Step 1: Raw route_id from request: '{route_id}' (type: {type(route_id)})")
-    
+
     if not route_id:
         return jsonify({'error': 'route_id parameter is required'}), 400
-    
+
     try:
         route_id_int = int(route_id)
-
     except ValueError:
         return jsonify({'error': 'Invalid route_id'}), 400
-    
-   
-    all_locations = Pickup_Dropoff_Location.query.all()
-   
-    filtered_locations = Pickup_Dropoff_Location.query.filter_by(route_id=route_id_int).all()
-   
-    route_ids_in_db = [loc.route_id for loc in all_locations]
-    
-    manual_filter = [loc for loc in all_locations if loc.route_id == route_id_int]
-   
-    
-   
-    for i, loc in enumerate(filtered_locations):
-        print(f"  Location {i+1}: ID={loc.id}, Name='{loc.name_location}', RouteID={loc.route_id}")
-   
-    result = [loc.serialize() for loc in filtered_locations]
-    
-    return jsonify(result), 200
+
+    # Fetch all stops for the given route
+    locations = Pickup_Dropoff_Location.query.filter_by(route_id=route_id_int).all()
+
+    return jsonify([loc.serialize() for loc in locations]), 200

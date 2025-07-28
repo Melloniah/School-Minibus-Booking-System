@@ -24,7 +24,8 @@ def create_route(current_admin):
             continue  # Skip invalid entries
         pickup = Pickup_Dropoff_Location(
             name_location=loc['name_location'],
-            GPSystem=loc.get('GPSystem', ''),
+            latitude=loc['latitude'],
+            longitude=loc['longitude'],
             routeid=route.id
         )
         db.session.add(pickup)
