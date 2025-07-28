@@ -66,7 +66,13 @@ export default function AddRoute({ onRouteAdded }) {
             className="w-full p-2 mb-2 border rounded"
             required
           /> */}
-          <LocationSearch />
+          <LocationSearch 
+          onSelect={({ name, latitude, longitude }) => {
+    handleLocationChange(index, 'name_location', name);
+    handleLocationChange(index, 'latitude', latitude);
+    handleLocationChange(index, 'longitude', longitude);
+  }}
+          />
           {/* <input
             type="text"
             placeholder="Latitude"

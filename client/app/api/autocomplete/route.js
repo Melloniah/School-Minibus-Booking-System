@@ -14,8 +14,8 @@ export async function POST(req) {
       languageCode: 'en',
       locationBias: {
         circle: {
-          center: { latitude: -11.7, longitude: 27.4 }, // Kanina region
-          radius: 50000.0
+          center: { latitude: -1.2921, longitude: 36.8219 }, // Nairobi, Kenya
+          radius: 50000.0 // 50 km radius
         }
       }
     })
