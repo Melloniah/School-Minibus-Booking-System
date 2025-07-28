@@ -3,24 +3,14 @@ export async function POST(req) {
   const input = body.input;
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const response = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Goog-Api-Key': apiKey
-    },
-    body: JSON.stringify({
-      input,
-      languageCode: 'en',
-      locationBias: {
-        circle: {
-          center: { latitude: -1.2921, longitude: 36.8219 }, // Nairobi, Kenya
-          radius: 50000.0 // 50 km radius
-        }
-      }
-    })
-  });
+  const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
+    input
+  )}&key=${apiKey}&components=country:ke`;
 
-  const data = await response.json();
-  return Response.json({ places: data.suggestions || [] });
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return Response.json({
+    places: data.predictions.map((p) => ({ text: p.description })),
+  });
 }

@@ -16,6 +16,9 @@ from routes.pickup_dropoff_route import pickup_dropoff_bp
 # import booking management logic(user bookings,canceling,etc)
 import os 
 from datetime import timedelta
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))

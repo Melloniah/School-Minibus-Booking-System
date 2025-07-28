@@ -22,7 +22,7 @@ export default function AddRoute({ onRouteAdded }) {
       const result = await res.json();
       if (res.ok) {
         alert('Route added!');
-        setRouteData({ route_name: '', locations: [{ name_location: '', latitude: '', longitude: '' }] });
+        setRouteData({ route_name: '', locations: [{ name_location: ''}] });
         onRouteAdded && onRouteAdded(result);
       } else {
         alert(result.error || 'Failed to add route');
@@ -32,16 +32,16 @@ export default function AddRoute({ onRouteAdded }) {
     }
   };
 
-  const handleLocationChange = (index, field, value) => {
+  const handleLocationChange = (index, value) => {
     const newLocations = [...routeData.locations];
-    newLocations[index][field] = value;
+    newLocations[index].name_location = value;
     setRouteData({ ...routeData, locations: newLocations });
   };
 
   const addLocationField = () => {
     setRouteData({
       ...routeData,
-      locations: [...routeData.locations, { name_location: '', latitude: '', longitude: '' }],
+      locations: [...routeData.locations, { name_location: '' }],
     });
   };
 
@@ -68,9 +68,7 @@ export default function AddRoute({ onRouteAdded }) {
           /> */}
           <LocationSearch 
           onSelect={({ name, latitude, longitude }) => {
-    handleLocationChange(index, 'name_location', name);
-    handleLocationChange(index, 'latitude', latitude);
-    handleLocationChange(index, 'longitude', longitude);
+    handleLocationChange(index, 'name_location', name)
   }}
           />
           {/* <input
