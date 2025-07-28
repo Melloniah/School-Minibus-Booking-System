@@ -153,9 +153,9 @@ export default function ItineraryDashboard() {
         )}
 
         {activeComponent === 'addRoute' && (
-          <GoogleMapsProvider>
+          
           <AddRouteForm API_BASE={API_BASE} onRouteAdded={getRoutes} />
-          </GoogleMapsProvider>
+          
         )}
 
         {activeComponent === 'viewBookings' && (
