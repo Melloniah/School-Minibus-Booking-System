@@ -120,57 +120,52 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
           fullscreenControl: true,
         }}
       >
-        
-        {/* Only render route stuff if a route is selected */}
-{selectedRoute && displayCoordinates.length > 1 && (
-  <>
-    {/* Route Polyline */}
-    <Polyline 
-      path={displayCoordinates} 
-      options={polylineOptions} 
-    />
+        {/* Show route polyline if coordinates available */}
+        {displayCoordinates.length > 1 && (
+          <Polyline 
+            path={displayCoordinates} 
+            options={polylineOptions} 
+          />
+        )}
 
-    {/* Stop Markers */}
-    {displayCoordinates.map((coord, idx) => (
-      <Marker
-        key={`stop-${idx}`}
-        position={coord}
-        onClick={() => setActiveStopIndex(idx)}
-        icon={{
-          url: '/school-busIcon-32.png',
-          scaledSize: new window.google.maps.Size(32, 32),
-        }}
-        title={
-          stops[idx]?.name_location || 
-          selectedRoute?.stops?.[idx] || 
-          `Stop ${idx + 1}`
-        }
-      />
-    ))}
+        {/* Show markers for each stop */}
+        {displayCoordinates.map((coord, idx) => (
+          <Marker
+            key={`stop-${idx}`}
+            position={coord}
+            onClick={() => setActiveStopIndex(idx)}
+            icon={{
+              url: '/school-busIcon-32.png', // Bus icon URL
+              scaledSize: new window.google.maps.Size(32, 32),
+            }}
+            title={
+              stops[idx]?.name_location || 
+              selectedRoute?.stops?.[idx] || 
+              `Stop ${idx + 1}`
+            }
+          />
+        ))}
 
-    {/* InfoWindow for active marker */}
-    {activeStopIndex !== null && displayCoordinates[activeStopIndex] && (
-      <InfoWindow
-        position={displayCoordinates[activeStopIndex]}
-        onCloseClick={() => setActiveStopIndex(null)}
-      >
-        <div className="p-2">
-          <h4 className="font-semibold text-sm">
-            {stops[activeStopIndex]?.name_location || 
-              selectedRoute?.stops?.[activeStopIndex] || 
-              `Stop ${activeStopIndex + 1}`}
-          </h4>
-          {stops[activeStopIndex]?.description && (
-            <p className="text-xs text-gray-600 mt-1">
-              {stops[activeStopIndex].description}
-            </p>
-          )}
-        </div>
-      </InfoWindow>
-    )}
-  </>
-)}
-
+        {/* Info window for active stop */}
+        {activeStopIndex !== null && displayCoordinates[activeStopIndex] && (
+          <InfoWindow
+            position={displayCoordinates[activeStopIndex]}
+            onCloseClick={() => setActiveStopIndex(null)}
+          >
+            <div className="p-2">
+              <h4 className="font-semibold text-sm">
+                {stops[activeStopIndex]?.name_location || 
+                 selectedRoute?.stops?.[activeStopIndex] || 
+                 `Stop ${activeStopIndex + 1}`}
+              </h4>
+              {stops[activeStopIndex]?.description && (
+                <p className="text-xs text-gray-600 mt-1">
+                  {stops[activeStopIndex].description}
+                </p>
+              )}
+            </div>
+          </InfoWindow>
+        )}
       </GoogleMap>
 
       {/* Loading overlay */}
@@ -183,12 +178,6 @@ export default function InteractiveMap({ apiKey, selectedRoute }) {
         </div>
       )}
 
-      {/* No route selected state */}
-      {!selectedRoute && (
-      <div className="absolute top-4 left-4 bg-white bg-opacity-90 p-3 rounded shadow text-sm text-gray-600 z-10">
-        📍 Select a route to view it on the map
-      </div>
-      )}
 
       {/* No coordinates available state */}
       {selectedRoute && displayCoordinates.length === 0 && !loadingStops && (
