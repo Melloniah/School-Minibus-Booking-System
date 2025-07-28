@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import ConfirmationModal from '../../components/ConfirmationModal';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import BookingForm from '../../components/BookingForm'
+import axios from 'axios'
+
+// API utilities
+const API_BASE = 'http://localhost:5000';
+
+const getMyBookings = () =>
+  axios.get(`${API_BASE}/bookings/`, { withCredentials: true });
 
 export default function MyBookingsPage() {
   const { user } = useAuth();
@@ -11,11 +19,9 @@ export default function MyBookingsPage() {
   const [searchDate, setSearchDate] = useState('');
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  
 
-  useEffect(() => {
-    if (user) fetchBookings();
-  }, [user]);
+ 
 
   useEffect(() => {
     filterBookings();
@@ -23,14 +29,17 @@ export default function MyBookingsPage() {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch('/api/bookings');
-      if (!res.ok) throw new Error('Failed to fetch bookings');
+      const res = await fetch('/bookings/${user.id}');
+      if (!res.ok) throw new Error('Failed to fetch bookings for this user');
       const data = await res.json();
       setBookings(data);
     } catch (err) {
       console.error('Fetch error:', err.message);
     }
   };
+   useEffect(() => {
+    if (user) fetchBookings();
+  }, [user]);
 
   const filterBookings = () => {
     const lowerSearchTerm = searchTerm.toLowerCase();
@@ -51,7 +60,7 @@ export default function MyBookingsPage() {
 
   const confirmCancel = async () => {
     try {
-      const res = await fetch(`/api/bookings/${selectedBooking.id}`, {
+      const res = await fetch(`/bookings/${selectedBooking.id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to cancel booking');
@@ -65,6 +74,7 @@ export default function MyBookingsPage() {
   };
 
   return (
+   <ProtectedRoute>
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
 
@@ -76,6 +86,7 @@ export default function MyBookingsPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="p-2 border rounded w-full md:w-1/2"
+          autoComplete="on"
         />
         <input
           type="date"
@@ -113,16 +124,7 @@ export default function MyBookingsPage() {
           ))
         )}
       </div>
-
-      {/* Cancel Modal */}
-      {showModal && (
-        <ConfirmationModal
-          title="Cancel Booking"
-          message={`Are you sure you want to cancel the booking for route "${selectedBooking?.route_name}" on ${selectedBooking?.date}?`}
-          onCancel={() => setShowModal(false)}
-          onConfirm={confirmCancel}
-        />
-      )}
-    </div>
+       </div>
+   </ProtectedRoute>
   );
 }
