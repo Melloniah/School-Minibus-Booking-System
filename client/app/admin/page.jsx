@@ -8,6 +8,7 @@ import axios from 'axios';
 import AddBusForm from '../../components/AddBus';
 import AddRouteForm from '../../components/AddRoute';
 import BookingsTable from '../../components/VeiwBooking';
+import { GoogleMapsProvider } from '../../components/GoogleMapsProvider';
 // StatCards component is no longer imported here as its logic is moved directly into this file
 
 // StatCard sub-component for displaying individual statistics - MOVED HERE
@@ -152,7 +153,9 @@ export default function ItineraryDashboard() {
         )}
 
         {activeComponent === 'addRoute' && (
+          <GoogleMapsProvider>
           <AddRouteForm API_BASE={API_BASE} onRouteAdded={getRoutes} />
+          </GoogleMapsProvider>
         )}
 
         {activeComponent === 'viewBookings' && (
