@@ -22,7 +22,7 @@ export default function ItineraryDashboard() {
     getroutes()
     getbookings()
 }, []);
-  //   
+  
   const getroutes = async () => {
     //e.preventDefault()
   const response = await axios.get(`${API_BASE}/routes`,{
