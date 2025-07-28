@@ -9,7 +9,8 @@ import 'leaflet/dist/leaflet.css';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {AuthProvider} from "../context/AuthContext";
-import GoogleMapsProvider from '../components/GoogleMapsProvider';
+import { GoogleMapsProvider } from '../components/GoogleMapsProvider';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
