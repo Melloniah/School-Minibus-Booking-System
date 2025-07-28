@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Navbar() {
   const [sticky, setSticky] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, logout, loading } = useAuth();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +48,12 @@ export default function Navbar() {
           </li>
           <li>
             <Link href="/book-seat">Book Now</Link>
+          </li>
+          <li> 
+          <Link href="/mybookings">
+        <span className="hover:text-blue-600">My Bookings</span>
+      </Link>
+
           </li>
           <li>
             <Link href="/about">👥 About</Link>
