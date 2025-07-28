@@ -17,8 +17,7 @@ const checkAuth = async () => {
     if (res.status === 200) {
       setUser(res.data); 
     }
-  } catch (err) {
-    console.error('Auth check failed:', err);
+  } catch (err) {;
     setUser(null);
   } finally {
     setLoading(false);

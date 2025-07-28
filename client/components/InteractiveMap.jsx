@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { GoogleMap, Marker, Polyline, InfoWindow } from '@react-google-maps/api';
 import axios from 'axios';
-import { useGoogleMaps } from './GoogleMapsProvider'; // Import the custom hook
 
 // API utilities
 const API_BASE = 'http://localhost:5000';
@@ -21,8 +20,7 @@ const defaultCenter = {
   lng: 36.8257,
 };
 
-export default function InteractiveMap({ selectedRoute }) {
-  const { isLoaded, loadError } = useGoogleMaps(); // Use the Google Maps context
+export default function InteractiveMap({ apiKey, selectedRoute }) {
   const [activeStopIndex, setActiveStopIndex] = useState(null);
   const [stops, setStops] = useState([]);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
@@ -110,89 +108,69 @@ export default function InteractiveMap({ selectedRoute }) {
 
   return (
     <div className="relative w-full h-full">
-      {loadError && (
-        <div className="absolute inset-0 bg-red-100 text-red-700 p-4 rounded-lg flex items-center justify-center z-20">
-          {loadError}
-        </div>
-      )}
-      {!isLoaded && !loadError && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-20">
-          <div className="text-center text-gray-500">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-2 text-sm">Loading Google Maps...</p>
-          </div>
-        </div>
-      )}
-      {isLoaded && !loadError && (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={displayCoordinates.length > 0 ? displayCoordinates[0] : defaultCenter}
-          zoom={13}
-          onLoad={onLoad}
-          options={{
-            zoomControl: true,
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: true,
-          }}
-        >
-          
-          {/* Only render route stuff if a route is selected */}
-          {selectedRoute && displayCoordinates.length > 1 && (
-            <>
-              {/* Route Polyline */}
-              <Polyline 
-                path={displayCoordinates} 
-                options={polylineOptions} 
-              />
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={displayCoordinates.length > 0 ? displayCoordinates[0] : defaultCenter}
+        zoom={13}
+        onLoad={onLoad}
+        options={{
+          zoomControl: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: true,
+        }}
+      >
+        {/* Show route polyline if coordinates available */}
+        {displayCoordinates.length > 1 && (
+          <Polyline 
+            path={displayCoordinates} 
+            options={polylineOptions} 
+          />
+        )}
 
-              {/* Stop Markers */}
-              {displayCoordinates.map((coord, idx) => (
-                <Marker
-                  key={`stop-${idx}`}
-                  position={coord}
-                  onClick={() => setActiveStopIndex(idx)}
-                  icon={{
-                    url: '/school-busIcon-32.png',
-                    scaledSize: new window.google.maps.Size(32, 32),
-                  }}
-                  title={
-                    stops[idx]?.name_location || 
-                    selectedRoute?.stops?.[idx] || 
-                    `Stop ${idx + 1}`
-                  }
-                />
-              ))}
+        {/* Show markers for each stop */}
+        {displayCoordinates.map((coord, idx) => (
+          <Marker
+            key={`stop-${idx}`}
+            position={coord}
+            onClick={() => setActiveStopIndex(idx)}
+            icon={{
+              url: '/school-busIcon-32.png', // Bus icon URL
+              scaledSize: new window.google.maps.Size(32, 32),
+            }}
+            title={
+              stops[idx]?.name_location || 
+              selectedRoute?.stops?.[idx] || 
+              `Stop ${idx + 1}`
+            }
+          />
+        ))}
 
-              {/* InfoWindow for active marker */}
-              {activeStopIndex !== null && displayCoordinates[activeStopIndex] && (
-                <InfoWindow
-                  position={displayCoordinates[activeStopIndex]}
-                  onCloseClick={() => setActiveStopIndex(null)}
-                >
-                  <div className="p-2">
-                    <h4 className="font-semibold text-sm">
-                      {stops[activeStopIndex]?.name_location || 
-                        selectedRoute?.stops?.[activeStopIndex] || 
-                        `Stop ${activeStopIndex + 1}`}
-                    </h4>
-                    {stops[activeStopIndex]?.description && (
-                      <p className="text-xs text-gray-600 mt-1">
-                        {stops[activeStopIndex].description}
-                      </p>
-                    )}
-                  </div>
-                </InfoWindow>
+        {/* Info window for active stop */}
+        {activeStopIndex !== null && displayCoordinates[activeStopIndex] && (
+          <InfoWindow
+            position={displayCoordinates[activeStopIndex]}
+            onCloseClick={() => setActiveStopIndex(null)}
+          >
+            <div className="p-2">
+              <h4 className="font-semibold text-sm">
+                {stops[activeStopIndex]?.name_location || 
+                 selectedRoute?.stops?.[activeStopIndex] || 
+                 `Stop ${activeStopIndex + 1}`}
+              </h4>
+              {stops[activeStopIndex]?.description && (
+                <p className="text-xs text-gray-600 mt-1">
+                  {stops[activeStopIndex].description}
+                </p>
               )}
-            </>
-          )}
-
-        </GoogleMap>
-      )}
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
 
       {/* Loading overlay */}
       {loadingStops && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
             <p className="mt-2 text-sm text-gray-600">Loading route...</p>
@@ -200,16 +178,10 @@ export default function InteractiveMap({ selectedRoute }) {
         </div>
       )}
 
-      {/* No route selected state */}
-      {!selectedRoute && (
-      <div className="absolute top-4 left-4 bg-white bg-opacity-90 p-3 rounded shadow text-sm text-gray-600 z-10">
-        📍 Select a route to view it on the map
-      </div>
-      )}
 
       {/* No coordinates available state */}
       {selectedRoute && displayCoordinates.length === 0 && !loadingStops && (
-        <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center">
           <div className="text-center text-gray-500">
             <p className="text-lg mb-2">🗺️</p>
             <p>Route coordinates not available</p>

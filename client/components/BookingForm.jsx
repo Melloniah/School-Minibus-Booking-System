@@ -229,7 +229,7 @@ useEffect(() => {
 
   return (
     <ProtectedRoute>
-      <div className="p-4 max-w-md mx-auto">
+      <div className="p-4">
         {/* Success Message */}
         {bookingSuccess && (
           <div className="p-4 bg-green-50 border border-green-200 rounded mb-4">
@@ -359,7 +359,6 @@ useEffect(() => {
             </div>
 
 
-            {/* Price Display */}
            {/* Price Display - Show automatically */}
 {calculatingPrice && pickup && dropoff && seats && (
   <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
@@ -392,7 +391,7 @@ useEffect(() => {
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
               disabled={loadingBooking}
             >
-              {loadingBooking ? 'Processing...' : 'Book Now'}
+              {loadingBooking ? 'Processing...' : 'Book Minibus Now'}
             </button>
           </form>
         )}
