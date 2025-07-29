@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
     jwt_required,
     get_jwt_identity,
+    get_jwt
 )
 from models import db 
 from models.user import User
@@ -138,3 +139,25 @@ def logout():
         return res, 200
     except Exception as e:
         return jsonify({"error": "Logout failed"}), 500
+
+@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@jwt_required()
+def get_all_users():
+    """
+    Fetches all registered users.
+    Requires admin role for access.
+    """
+    try:
+        claims = get_jwt() 
+        user_role = claims.get("role") 
+        # Ensure only admins can access this endpoint
+        if user_role != "admin":
+            return make_response(jsonify({"error": "Unauthorized: Admin access required"}), 403)
+
+        users = User.query.all()
+        # Assuming User model has a to_dict() method from SerializeMixin
+        users_data = [user.to_dict() for user in users]
+        return jsonify(users_data), 200
+    except Exception as e:
+        print(f"Error fetching all users: {traceback.format_exc()}")
+        return make_response(jsonify({"error": "Failed to fetch users"}), 500)
