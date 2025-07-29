@@ -1,6 +1,6 @@
 export default function AboutSafeRide() {
   return (
-    <section className="bg-white px-4 py-12 text-center">
+    <section  id="about" className="bg-white px-4 py-12 text-center">
       <div className="max-w-4xl mx-auto px-4 text-center shadow-md rounded-xl">
         <h2 className="text-3xl font-bold mb-4">About SafeRide</h2>
         <p className="text-gray-600 text-lg">

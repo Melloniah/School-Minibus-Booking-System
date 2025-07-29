@@ -1,23 +1,25 @@
-
-// handles search input  and suggestions
+// handles search input and suggestions
 
 'use client';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react' 
 
 export default function RouteSearchBar({ searchTerm, setSearchTerm, routes, onSelectSuggestion }){
-    const [suggestions, setSuggestions]=useState([]);
+    const [suggestions, setSuggestions] = useState([]);
 
-    useEffect(()=>{
-        if(!searchTerm){
-            setSuggestions([]);
-            return;
-        }
+   const filteredSuggestion = useMemo(() => { 
+     if (!searchTerm.trim()) return [];
+     
+     return routes.filter(route => 
+       route.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       route.route_name?.toLowerCase().includes(searchTerm.toLowerCase()) // Fallback
+     ).slice(0, 5); // Limit suggestions
+   }, [routes, searchTerm]);
 
-        const matches= routes.filter(route => route.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSuggestions(matches.slice(0, 5)); // maximum of five suggestions
-    }, [searchTerm, routes]);
+   // Update suggestions when filteredSuggestions changes
+   useEffect(() => {
+     setSuggestions(filteredSuggestion);
+   }, [filteredSuggestion]);
 
     return(
         <div className="relative mb-6">
@@ -30,22 +32,20 @@ export default function RouteSearchBar({ searchTerm, setSearchTerm, routes, onSe
       />
       {suggestions.length > 0 && (
         <ul className="absolute z-10 bg-white border w-full rounded shadow mt-1 max-h-48 overflow-y-auto">
-          {suggestions.map((route) => (
-            <li
-              key={route.id}
-              className="p-2 hover:bg-purple-100 cursor-pointer text-sm"
-              onClick={() => {
-                onSelectSuggestion(route);
-                setSuggestions([]);
-              }}
-            >
-              {route.name}
-            </li>
-          ))}
+        {suggestions.map((route) => (
+  <li
+    key={route.id}
+    className="p-2 hover:bg-purple-100 cursor-pointer text-sm"
+    onClick={() => {
+      onSelectSuggestion(route);
+      setSuggestions([]); // Clear suggestions after selection
+    }}
+  >
+    {route.name || route.route_name || 'Unnamed Route'}
+  </li>
+))}
         </ul>
       )}
     </div>
   );
-    
-
 }
