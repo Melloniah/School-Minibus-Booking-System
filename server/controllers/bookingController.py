@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from flask_cors import cross_origin
 from middleware.authMiddleware import jwt_protected
-from models.Booking import Booking
+from models.booking import Booking
 from models import db
 from datetime import datetime 
 from models.bus import Bus 
