@@ -1,7 +1,10 @@
 from flask import request, jsonify
+from sqlalchemy import func
 from models.route import Route
-# from models.bus import Bus
+from models.bus import Bus
+from models.Booking import Booking
 from models.pickup_dropoff_location import Pickup_Dropoff_Location 
+from datetime import datetime, timedelta
 from middleware.authMiddleware import jwt_protected
 from models import db
 import os
@@ -22,7 +25,6 @@ def geocode_location(name):
 
 
 @jwt_protected(role='admin')
-# def create_route(current_admin):
 def create_route(current_admin):
     data = request.get_json()
     # Validate required field
@@ -71,8 +73,14 @@ def get_routes(current_user_or_admin):
     return jsonify([
         {
             'id': r.id,
+            'name': r.route_name,
             'route_name': r.route_name,
-            'stops': [loc.name_location for loc in r.pickup_dropoff_locations]
+            'stops': [loc.name_location for loc in r.pickup_dropoff_locations],
+            'emoji': get_route_emoji(r),
+            'status': get_route_status_with_bookings(r),
+            'available_seats': get_available_seats_today(r),
+            'total_buses': len(r.buses),
+            'next_available': get_next_available_slot(r)
         }
         for r in routes
     ])
@@ -106,3 +114,130 @@ def delete_route(current_admin,id):
     db.session.delete(route)
     db.session.commit()
     return jsonify({'message': 'Route deleted'})
+
+    # Booking AVAILABILITY BASED ON BUSES ON THE ROUTES AND SEATS AVAILABLE
+def get_route_status_with_bookings(route):
+    """Get route status based on current bookings and bus availability"""
+    
+    # Check if route has any buses
+    if not route.buses or len(route.buses) == 0:
+        return 'No Service'
+    
+    # Get today's date
+    today = datetime.now().date()
+    
+    # Count total seats booked for today on this route
+    total_booked_today = db.session.query(func.sum(Booking.seats_booked)).filter(
+        Booking.bus_id.in_([bus.id for bus in route.buses]),
+        Booking.booking_date == today
+    ).scalar() or 0
+    
+    # Calculate total capacity for all buses on this route
+    total_capacity = sum(bus.capacity for bus in route.buses)
+    
+    if total_capacity == 0:
+        return 'No Service'
+    
+    # Calculate occupancy rate for today
+    occupancy_rate = (total_booked_today / total_capacity) * 100
+    
+    # Determine status based on occupancy
+    if occupancy_rate >= 95:
+        return 'Full'
+    elif occupancy_rate >= 80:
+        return 'Limited'
+    elif occupancy_rate >= 60:
+        return 'Filling Up'
+    else:
+        return 'Available'
+
+
+def get_available_seats_today(route):
+    """Get available seats for the route today"""
+    if not route.buses:
+        return 0
+    
+    today = datetime.now().date()
+    
+    # Count total seats booked today
+    total_booked_today = db.session.query(func.sum(Booking.seats_booked)).filter(
+        Booking.bus_id.in_([bus.id for bus in route.buses]),
+        Booking.booking_date == today
+    ).scalar() or 0
+    
+    # Calculate total capacity
+    total_capacity = sum(bus.capacity for bus in route.buses)
+    
+    return max(0, total_capacity - total_booked_today)
+
+def get_next_available_slot(route):
+    """Get next available time slot based on current bookings"""
+    if not route.buses:
+        return 'No Service'
+    
+    available_seats_today = get_available_seats_today(route)
+    
+    if available_seats_today > 0:
+        return 'Today'
+    else:
+        # Check tomorrow
+        tomorrow = datetime.now().date() + timedelta(days=1)
+        
+        tomorrow_booked = db.session.query(func.sum(Booking.seats_booked)).filter(
+            Booking.bus_id.in_([bus.id for bus in route.buses]),
+            Booking.booking_date == tomorrow
+        ).scalar() or 0
+        
+        total_capacity = sum(bus.capacity for bus in route.buses)
+        
+        if tomorrow_booked < total_capacity:
+            return 'Tomorrow'
+        else:
+            return 'Check Later'
+
+def get_route_emoji(route):
+    """Dynamic emoji based on route status"""
+    status = get_route_status_with_bookings(route)
+    
+    emoji_map = {
+        'Available': '🚌',
+        'Filling Up': '🚐',
+        'Limited': '🟡',
+        'Full': '🔴',
+        'No Service': '⚠️'
+    }
+    
+    return emoji_map.get(status, '🚌')
+
+@jwt_protected()
+def get_route_detailed_status(current_user_or_admin, route_id):
+    """Get detailed status for a specific route"""
+    route = Route.query.get_or_404(route_id)
+    today = datetime.now().date()
+    
+    week_ago = today - timedelta(days=7)
+    
+    weekly_bookings = db.session.query(
+        Booking.booking_date,
+        func.sum(Booking.seats_booked).label('total_seats')
+    ).filter(
+        Booking.bus_id.in_([bus.id for bus in route.buses]),
+        Booking.booking_date >= week_ago,
+        Booking.booking_date <= today
+    ).group_by(Booking.booking_date).all()
+    
+    return jsonify({
+        'id': route.id,
+        'name': route.route_name,
+        'status': get_route_status_with_bookings(route),
+        'available_seats_today': get_available_seats_today(route),
+        'total_capacity': sum(bus.capacity for bus in route.buses),
+        'total_buses': len(route.buses),
+        'weekly_stats': [
+            {
+                'date': booking.booking_date.isoformat(),
+                'seats_booked': booking.total_seats
+            }
+            for booking in weekly_bookings
+        ]
+    })        

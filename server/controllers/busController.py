@@ -60,3 +60,33 @@ def delete_bus(current_admin, id):
     db.session.delete(bus)
     db.session.commit()
     return jsonify({'message': 'Bus deleted'})
+
+
+@jwt_protected()
+def get_buses_by_route(current_user_or_admin):
+    route_id = request.args.get('route_id')
+    if not route_id:
+        return jsonify({'error': 'Route ID is required'}), 400
+    
+    buses = Bus.query.filter_by(routeid=route_id).all()
+    today = datetime.now().date()
+    
+    result = []
+    for bus in buses:
+        todays_bookings = db.session.query(func.sum(Booking.seats_booked)).filter(
+            Booking.bus_id == bus.id,
+            Booking.booking_date == today
+        ).scalar() or 0
+        
+        available_seats = max(0, bus.capacity - todays_bookings)
+        
+        result.append({
+            'id': bus.id,
+            'numberplate': bus.numberplate,
+            'capacity': bus.capacity,
+            'current_bookings': todays_bookings,
+            'available_seats': available_seats,
+            'status': 'Full' if available_seats == 0 else 'Available'
+        })
+    
+    return jsonify(result)
