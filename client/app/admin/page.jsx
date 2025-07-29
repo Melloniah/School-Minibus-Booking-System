@@ -7,7 +7,7 @@ import AddRouteForm from '../../components/AddRoute';
 import BookingsTable from '../../components/VeiwBooking';
 
 // ─────────────────────────────────────────────
-// 🔐 Admin Login Form Component (Modified for real login)
+// 🔐 Admin Login Form Component
 function AdminLoginForm({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,7 +61,7 @@ function AdminLoginForm({ onLogin }) {
       <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">Admin Login</h2>
       {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
       <input
-        type="email" // Changed to email type
+        type="email"
         placeholder="Email"
         className="w-full mb-4 p-2 border border-gray-300 rounded"
         value={email}
@@ -88,7 +88,7 @@ function AdminLoginForm({ onLogin }) {
 }
 
 // ─────────────────────────────────────────────
-// 📊 Stat Card Component (Modified to accept onClick)
+// 📊 Stat Card Component
 function StatCard({ title, value, color, onClick }) {
   return (
     <div
@@ -102,7 +102,7 @@ function StatCard({ title, value, color, onClick }) {
 }
 
 // ─────────────────────────────────────────────
-// 👥 Users Modal Component (New Component)
+// 👥 Users Modal Component
 function UsersModal({ users, onClose }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -146,14 +146,60 @@ function UsersModal({ users, onClose }) {
   );
 }
 
+// 🚌 Buses Modal Component (NEW COMPONENT)
+function BusesModal({ buses, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+        <h2 className="text-2xl font-bold text-indigo-700 mb-6 border-b pb-3">Available Buses</h2>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+        {buses.length === 0 ? (
+          <p className="text-gray-600">No buses found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">ID</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Number Plate</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Capacity</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Route ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                {buses.map((bus) => (
+                  <tr key={bus.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.id}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.numberplate}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.capacity}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.routeid}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────
 // 🧠 Main Component
 export default function ItineraryDashboard() {
   const [authorized, setAuthorized] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [users, setUsers] = useState([]); // New state for users
-  const [showUsersModal, setShowUsersModal] = useState(false); // New state for modal visibility
+  const [users, setUsers] = useState([]);
+  const [buses, setBuses] = useState([]); // New state for buses
+  const [showUsersModal, setShowUsersModal] = useState(false);
+  const [showBusesModal, setShowBusesModal] = useState(false); // New state for bus modal visibility
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
   const API_BASE = 'http://localhost:5000';
@@ -190,23 +236,36 @@ export default function ItineraryDashboard() {
     }
   }, [API_BASE]);
 
-  // New function to fetch users
   const getUsers = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE}/auth/users`, {
-        withCredentials: true, // Important for sending cookies/JWT
+        withCredentials: true,
       });
       if (response.status === 200) {
         console.log('Users data:', response.data);
         setUsers(response.data);
       } else {
         console.error('Failed to fetch users', response.status, response.data);
-        // You might want to show a user-friendly error message here
       }
     } catch (error) {
       console.error('Error fetching users:', error);
-      // Handle network errors or other exceptions
-      // You might want to show a user-friendly error message here
+    }
+  }, [API_BASE]);
+
+  // New function to fetch buses
+  const getBuses = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/buses`, { // Assuming /buses endpoint returns all buses
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log('Buses data:', response.data);
+        setBuses(response.data);
+      } else {
+        console.error('Failed to fetch buses', response.status, response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching buses:', error);
     }
   }, [API_BASE]);
 
@@ -214,10 +273,10 @@ export default function ItineraryDashboard() {
     if (authorized) {
       getRoutes();
       getBookings();
-      // Fetch users on initial load if you want the count to be accurate immediately
-      getUsers(); // Now safe to call here after proper login is implemented
+      getUsers(); // Fetch users on initial load
+      getBuses(); // Fetch buses on initial load
     }
-  }, [authorized, getRoutes, getBookings, getUsers]); // Added getUsers to dependency array
+  }, [authorized, getRoutes, getBookings, getUsers, getBuses]);
 
   // 🔒 Show login form if not authorized
   if (!authorized) {
@@ -227,8 +286,8 @@ export default function ItineraryDashboard() {
   // 📈 Dashboard Stats
   const totalBookings = bookings.length;
   const activeRoutes = routes.length;
-  const registeredParents = users.length; // Use actual users.length for Registered Parents count
-  const availableSeats = 65; // Placeholder
+  const registeredParents = users.length;
+  const availableBuses = buses.length; // Now reflects the count of fetched buses
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
@@ -283,11 +342,19 @@ export default function ItineraryDashboard() {
                 value={registeredParents}
                 color="bg-yellow-500"
                 onClick={async () => {
-                  await getUsers(); // Fetch users when clicked
-                  setShowUsersModal(true); // Show the modal
+                  await getUsers();
+                  setShowUsersModal(true);
                 }}
               />
-              <StatCard title="Available Seats" value={availableSeats} color="bg-purple-500" />
+              <StatCard
+                title="Available Buses" // Changed title
+                value={availableBuses} // Uses the count of fetched buses
+                color="bg-purple-500"
+                onClick={async () => {
+                  await getBuses(); // Fetch buses when clicked
+                  setShowBusesModal(true); // Show the bus modal
+                }}
+              />
             </div>
             <div className="bg-white shadow-md rounded-lg p-6 mt-6">
               <h2 className="text-2xl font-semibold text-indigo-700 mb-4">Dashboard Summary</h2>
@@ -311,9 +378,12 @@ export default function ItineraryDashboard() {
         )}
       </div>
 
-      {/* Render UsersModal conditionally */}
+      {/* Render Modals conditionally */}
       {showUsersModal && (
         <UsersModal users={users} onClose={() => setShowUsersModal(false)} />
+      )}
+      {showBusesModal && ( // New conditional rendering for BusesModal
+        <BusesModal buses={buses} onClose={() => setShowBusesModal(false)} />
       )}
     </div>
   );
