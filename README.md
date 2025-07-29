@@ -124,14 +124,8 @@ npm run dev
 # Navigate to server folder
 cd server
 
-# Create virtual environment (optional if using pipenv)
+# Create virtual environment 
 pipenv install && pipenv shell
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy environment variables
-cp .env.example .env
 
 # Run migrations
 flask db init
@@ -148,7 +142,7 @@ Node.js v18+
 
 Python 3.10+
 
-PostgreSQL (or Supabase)
+PostgreSQL 
 
 Google Maps API key (for frontend map + backend geocoding)
 
