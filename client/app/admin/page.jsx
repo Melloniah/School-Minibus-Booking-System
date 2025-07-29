@@ -1,17 +1,34 @@
-// app/admin/page.jsx
-'use client'; // This directive is necessary for Next.js 13+ to make this a Client Component
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-
-// Import the new components
 import AddBusForm from '../../components/AddBus';
 import AddRouteForm from '../../components/AddRoute';
 import BookingsTable from '../../components/VeiwBooking';
-import { GoogleMapsProvider } from '../../components/GoogleMapsProvider';
-// StatCards component is no longer imported here as its logic is moved directly into this file
 
-// StatCard sub-component for displaying individual statistics - MOVED HERE
+// ─────────────────────────────────────────────
+// 🔐 Admin Login Form Component
+function AdminLoginForm({ onLogin }) {
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Dummy login, replace with real auth later
+    onLogin();
+  };
+
+  return (
+    <form onSubmit={handleLogin} className="max-w-sm mx-auto mt-24 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">Admin Login</h2>
+      <input type="text" placeholder="Username" className="w-full mb-4 p-2 border border-gray-300 rounded" required />
+      <input type="password" placeholder="Password" className="w-full mb-4 p-2 border border-gray-300 rounded" required />
+      <button type="submit" className="w-full bg-indigo-700 text-white py-2 rounded hover:bg-indigo-800 transition">
+        Login
+      </button>
+    </form>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 📊 Stat Card Component
 function StatCard({ title, value, color }) {
   return (
     <div className={`p-4 rounded-lg text-white shadow-lg flex flex-col justify-between items-start ${color}`}>
@@ -21,25 +38,20 @@ function StatCard({ title, value, color }) {
   );
 }
 
-
+// ─────────────────────────────────────────────
+// 🧠 Main Component
 export default function ItineraryDashboard() {
-  // State for authorization status (simulated)
   const [authorized, setAuthorized] = useState(false);
-  // State to hold route data fetched from the API
   const [routes, setRoutes] = useState([]);
-  // State to hold booking data fetched from the API
   const [bookings, setBookings] = useState([]);
-  // State to control which component is currently displayed
-  const [activeComponent, setActiveComponent] = useState('dashboard'); // 'dashboard', 'addBus', 'addRoute', 'viewBookings'
+  const [activeComponent, setActiveComponent] = useState('dashboard');
 
-  // Base URL for the API
   const API_BASE = 'http://localhost:5000';
 
-  // Function to fetch routes from the backend
   const getRoutes = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE}/routes`, {
-        withCredentials: true, // Include cookies for session management
+        withCredentials: true,
       });
       if (response.status === 200) {
         console.log('Routes data:', response.data);
@@ -50,13 +62,12 @@ export default function ItineraryDashboard() {
     } catch (error) {
       console.error('Error fetching routes:', error);
     }
-  }, [API_BASE]); // Dependency array for useCallback
+  }, [API_BASE]);
 
-  // Function to fetch bookings from the backend
   const getBookings = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE}/bookings`, {
-        withCredentials: true, // Include cookies for session management
+        withCredentials: true,
       });
       if (response.status === 200) {
         console.log('Booking data:', response.data);
@@ -67,26 +78,21 @@ export default function ItineraryDashboard() {
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
-  }, [API_BASE]); // Dependency array for useCallback
+  }, [API_BASE]);
 
-  // useEffect hook to run on component mount
   useEffect(() => {
-    // Simulate authentication check
-    setTimeout(() => {
-      setAuthorized(true); // Set authorized to true after a delay
-    }, 500);
+    if (authorized) {
+      getRoutes();
+      getBookings();
+    }
+  }, [authorized, getRoutes, getBookings]);
 
-    // Fetch initial data
-    getRoutes();
-    getBookings();
-  }, [getRoutes, getBookings]); // Dependencies ensure these functions are stable
-
-  // If not authorized, display a loading message
+  // 🔒 Show login form if not authorized
   if (!authorized) {
-    return <p className="p-4 text-gray-700">Checking access...</p>;
+    return <AdminLoginForm onLogin={() => setAuthorized(true)} />;
   }
 
-  // Calculate stats for StatCards (mock data for now, replace with real calculations if available)
+  // 📈 Dashboard Stats
   const totalBookings = bookings.length;
   const activeRoutes = routes.length;
   const registeredParents = 34; // Placeholder
@@ -94,45 +100,44 @@ export default function ItineraryDashboard() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
+      {/* 🔁 Toggle Button to Parent Dashboard */}
+      <div className="flex justify-end mb-4">
+        <a
+          href="/"
+          className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded shadow text-sm transition"
+        >
+          Switch to Parent Dashboard
+        </a>
+      </div>
+
       <h1 className="text-4xl font-extrabold mb-8 text-indigo-800 text-center">Itinerary Operator Dashboard</h1>
 
-      {/* Navigation Buttons */}
+      {/* 🚀 Navigation Buttons */}
       <nav className="mb-8 flex flex-wrap justify-center gap-4">
-        <button
-          onClick={() => setActiveComponent('dashboard')}
-          className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-200 ease-in-out
-            ${activeComponent === 'dashboard' ? 'bg-indigo-700 text-white shadow-lg' : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400'}`}
-        >
-          Dashboard Overview
-        </button>
-        <button
-          onClick={() => setActiveComponent('addBus')}
-          className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-200 ease-in-out
-            ${activeComponent === 'addBus' ? 'bg-indigo-700 text-white shadow-lg' : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400'}`}
-        >
-          Add New Bus
-        </button>
-        <button
-          onClick={() => setActiveComponent('addRoute')}
-          className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-200 ease-in-out
-            ${activeComponent === 'addRoute' ? 'bg-indigo-700 text-white shadow-lg' : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400'}`}
-        >
-          Add New Route
-        </button>
-        <button
-          onClick={() => setActiveComponent('viewBookings')}
-          className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-200 ease-in-out
-            ${activeComponent === 'viewBookings' ? 'bg-indigo-700 text-white shadow-lg' : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400'}`}
-        >
-          View All Bookings
-        </button>
+        {[
+          ['dashboard', 'Dashboard Overview'],
+          ['addBus', 'Add New Bus'],
+          ['addRoute', 'Add New Route'],
+          ['viewBookings', 'View All Bookings'],
+        ].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setActiveComponent(key)}
+            className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-200 ease-in-out
+              ${activeComponent === key
+                ? 'bg-indigo-700 text-white shadow-lg'
+                : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50 hover:border-indigo-400'
+              }`}
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
-      {/* Conditional Rendering of Components */}
+      {/* 🎯 Conditional Rendering */}
       <div className="max-w-6xl mx-auto">
         {activeComponent === 'dashboard' && (
           <>
-            {/* Stat Cards - MOVED HERE */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <StatCard title="Total Bookings" value={totalBookings} color="bg-green-500" />
               <StatCard title="Active Routes" value={activeRoutes} color="bg-blue-500" />
@@ -153,9 +158,7 @@ export default function ItineraryDashboard() {
         )}
 
         {activeComponent === 'addRoute' && (
-          
           <AddRouteForm API_BASE={API_BASE} onRouteAdded={getRoutes} />
-          
         )}
 
         {activeComponent === 'viewBookings' && (
