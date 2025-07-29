@@ -7,21 +7,81 @@ import AddRouteForm from '../../components/AddRoute';
 import BookingsTable from '../../components/VeiwBooking';
 
 // ─────────────────────────────────────────────
-// 🔐 Admin Login Form Component
+// 🔐 Admin Login Form Component (Modified for real login)
 function AdminLoginForm({ onLogin }) {
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const API_BASE = 'http://localhost:5000'; // Define API_BASE here for the login form
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Dummy login, replace with real auth later
-    onLogin();
+    setError(''); // Clear previous errors
+    setLoading(true); // Set loading state
+
+    try {
+      const response = await axios.post(`${API_BASE}/auth/login`, {
+        email,
+        password,
+      }, {
+        withCredentials: true, // Important: send cookies (JWT) with the request
+      });
+
+      if (response.status === 200) {
+        // Assuming your backend returns a user object with a role
+        if (response.data.user && response.data.user.role === 'admin') {
+          onLogin(); // Call the parent's onLogin to set authorized state
+        } else {
+          setError('Login successful, but only admin access is allowed here.');
+        }
+      } else {
+        setError(response.data.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      if (err.response) {
+        // Server responded with a status other than 2xx
+        setError(err.response.data.error || 'Login failed. Invalid credentials.');
+      } else if (err.request) {
+        // Request was made but no response received
+        setError('No response from server. Please try again later.');
+      } else {
+        // Something else happened
+        setError('An unexpected error occurred during login.');
+      }
+    } finally {
+      setLoading(false); // Clear loading state
+    }
   };
 
   return (
     <form onSubmit={handleLogin} className="max-w-sm mx-auto mt-24 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">Admin Login</h2>
-      <input type="text" placeholder="Username" className="w-full mb-4 p-2 border border-gray-300 rounded" required />
-      <input type="password" placeholder="Password" className="w-full mb-4 p-2 border border-gray-300 rounded" required />
-      <button type="submit" className="w-full bg-indigo-700 text-white py-2 rounded hover:bg-indigo-800 transition">
-        Login
+      {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+      <input
+        type="email" // Changed to email type
+        placeholder="Email"
+        className="w-full mb-4 p-2 border border-gray-300 rounded"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        className="w-full mb-4 p-2 border border-gray-300 rounded"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <button
+        type="submit"
+        className="w-full bg-indigo-700 text-white py-2 rounded hover:bg-indigo-800 transition disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? 'Logging in...' : 'Login'}
       </button>
     </form>
   );
@@ -42,11 +102,58 @@ function StatCard({ title, value, color, onClick }) {
 }
 
 // ─────────────────────────────────────────────
+// 👥 Users Modal Component (New Component)
+function UsersModal({ users, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+        <h2 className="text-2xl font-bold text-indigo-700 mb-6 border-b pb-3">Registered Users</h2>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+        {users.length === 0 ? (
+          <p className="text-gray-600">No registered users found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">ID</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Name</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Email</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{user.id}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{user.name}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{user.email}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{user.role}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // 🧠 Main Component
 export default function ItineraryDashboard() {
   const [authorized, setAuthorized] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState([]); // New state for users
+  const [showUsersModal, setShowUsersModal] = useState(false); // New state for modal visibility
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
   const API_BASE = 'http://localhost:5000';
@@ -83,12 +190,34 @@ export default function ItineraryDashboard() {
     }
   }, [API_BASE]);
 
+  // New function to fetch users
+  const getUsers = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/auth/users`, {
+        withCredentials: true, // Important for sending cookies/JWT
+      });
+      if (response.status === 200) {
+        console.log('Users data:', response.data);
+        setUsers(response.data);
+      } else {
+        console.error('Failed to fetch users', response.status, response.data);
+        // You might want to show a user-friendly error message here
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      // Handle network errors or other exceptions
+      // You might want to show a user-friendly error message here
+    }
+  }, [API_BASE]);
+
   useEffect(() => {
     if (authorized) {
       getRoutes();
       getBookings();
+      // Fetch users on initial load if you want the count to be accurate immediately
+      getUsers(); // Now safe to call here after proper login is implemented
     }
-  }, [authorized, getRoutes, getBookings]);
+  }, [authorized, getRoutes, getBookings, getUsers]); // Added getUsers to dependency array
 
   // 🔒 Show login form if not authorized
   if (!authorized) {
@@ -98,7 +227,7 @@ export default function ItineraryDashboard() {
   // 📈 Dashboard Stats
   const totalBookings = bookings.length;
   const activeRoutes = routes.length;
-  const registeredParents = 34; // Placeholder
+  const registeredParents = users.length; // Use actual users.length for Registered Parents count
   const availableSeats = 65; // Placeholder
 
   return (
@@ -146,10 +275,18 @@ export default function ItineraryDashboard() {
                 title="Total Bookings"
                 value={totalBookings}
                 color="bg-green-500"
-                onClick={() => setActiveComponent('viewBookings')} // Add this onClick handler
+                onClick={() => setActiveComponent('viewBookings')}
               />
               <StatCard title="Active Routes" value={activeRoutes} color="bg-blue-500" />
-              <StatCard title="Registered Parents" value={registeredParents} color="bg-yellow-500" />
+              <StatCard
+                title="Registered Parents"
+                value={registeredParents}
+                color="bg-yellow-500"
+                onClick={async () => {
+                  await getUsers(); // Fetch users when clicked
+                  setShowUsersModal(true); // Show the modal
+                }}
+              />
               <StatCard title="Available Seats" value={availableSeats} color="bg-purple-500" />
             </div>
             <div className="bg-white shadow-md rounded-lg p-6 mt-6">
@@ -173,6 +310,11 @@ export default function ItineraryDashboard() {
           <BookingsTable bookings={bookings} />
         )}
       </div>
+
+      {/* Render UsersModal conditionally */}
+      {showUsersModal && (
+        <UsersModal users={users} onClose={() => setShowUsersModal(false)} />
+      )}
     </div>
   );
 }
