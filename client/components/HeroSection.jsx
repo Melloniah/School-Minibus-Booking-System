@@ -19,6 +19,14 @@ export default function HeroSection() {
     router.push('/book-seat') //takes you to booking page then opens the booking form
   }
 
+  const handleViewBookings = () =>{
+    router.push('/mybookings')
+  }
+
+  const handleViewRoutes = () =>{ // to make cta take to routes page instead of navbar
+    router.push('/routes')
+  }
+
   return (
    <section
   id="home"
@@ -60,20 +68,28 @@ export default function HeroSection() {
                         </div>
                         {/* Call to action buttons */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button
-                      className="text-lg px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-600 shadow-lg transform hover:scale-105 transition-all"
-                      onClick={handleBookNow}
-                      >
-                🚌 Book a School Minibus
-              </button>
+  <button
+    className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+    onClick={handleBookNow}
+  >
+    🚌 Book a School Minibus
+  </button>
 
-              <button
-                onClick={() => scrollToSection("routes")}
-                className="text-lg px-8 py-3 border-2 border-purple-400 text-purple-700 rounded-lg hover:bg-purple-50 shadow-lg transform hover:scale-105 transition-all"
-              >
-                View Routes & Pricing
-              </button>
-              </div>
+  <button
+    onClick={handleViewBookings}
+    className="text-sm px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-md hover:from-blue-600 hover:to-purple-600 shadow-md transform hover:scale-[1.03] transition-all"
+  >
+    🚌 View Your Bookings Here
+  </button>
+
+  <button
+    onClick={handleViewRoutes}
+    className="text-sm px-4 py-2 bg-gradient-to-r from-blue-400 to-purple-400 text-white font-medium rounded-md hover:from-blue-500 hover:to-purple-500 shadow-md transform hover:scale-[1.03] transition-all"
+  >
+    View Routes & Pricing
+  </button>
+</div>
+
               {/* statistics */}
               <div className="flex items-center space-x-8 pt-8">
                 <Stat label="😊 Happy Families" value="500+" color="text-blue-600"/>

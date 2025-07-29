@@ -52,9 +52,8 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex gap-6 text-white font-medium">
+        <ul className="hidden md:flex gap-6 text-white font-medium ml-16">
           <li><Link href="/" className="text-white hover:text-black transition-colors duration-200 cursor-pointer">🏠 Home</Link></li>
-          <li><Link href="/routes">Routes</Link></li>
           <li><Link href="/book-seat" className="text-white hover:text-black transition-colors duration-200 cursor-pointer">Book Now</Link></li>
           <li><Link href="#about" className="text-white hover:text-black transition-colors duration-200 cursor-pointer">👥 About</Link></li>
           <li><Link href="/contact" className="text-white hover:text-black transition-colors duration-200 cursor-pointer">📞 Contact</Link></li>
