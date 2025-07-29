@@ -2,7 +2,7 @@ from flask import request, jsonify
 from sqlalchemy import func
 from models.route import Route
 from models.bus import Bus
-from models.Booking import Booking
+from models.booking import Booking
 from models.pickup_dropoff_location import Pickup_Dropoff_Location 
 from datetime import datetime, timedelta
 from middleware.authMiddleware import jwt_protected
