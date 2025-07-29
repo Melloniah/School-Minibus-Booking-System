@@ -28,10 +28,13 @@ function AdminLoginForm({ onLogin }) {
 }
 
 // ─────────────────────────────────────────────
-// 📊 Stat Card Component
-function StatCard({ title, value, color }) {
+// 📊 Stat Card Component (Modified to accept onClick)
+function StatCard({ title, value, color, onClick }) {
   return (
-    <div className={`p-4 rounded-lg text-white shadow-lg flex flex-col justify-between items-start ${color}`}>
+    <div
+      className={`p-4 rounded-lg text-white shadow-lg flex flex-col justify-between items-start cursor-pointer ${color}`}
+      onClick={onClick}
+    >
       <h3 className="text-sm font-medium opacity-90">{title}</h3>
       <p className="text-3xl font-bold mt-2">{value}</p>
     </div>
@@ -139,7 +142,12 @@ export default function ItineraryDashboard() {
         {activeComponent === 'dashboard' && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard title="Total Bookings" value={totalBookings} color="bg-green-500" />
+              <StatCard
+                title="Total Bookings"
+                value={totalBookings}
+                color="bg-green-500"
+                onClick={() => setActiveComponent('viewBookings')} // Add this onClick handler
+              />
               <StatCard title="Active Routes" value={activeRoutes} color="bg-blue-500" />
               <StatCard title="Registered Parents" value={registeredParents} color="bg-yellow-500" />
               <StatCard title="Available Seats" value={availableSeats} color="bg-purple-500" />
