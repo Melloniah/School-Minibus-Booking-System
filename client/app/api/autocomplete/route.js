@@ -11,6 +11,10 @@ export async function POST(req) {
   const data = await res.json();
 
   return Response.json({
-    places: data.predictions.map((p) => ({ text: p.description })),
+    places: data.predictions.map((p) => ({
+      text: p.description,
+      place_id: p.place_id, // Important for fetching coordinates
+    })),
   });
 }
+
