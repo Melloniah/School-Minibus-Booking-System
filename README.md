@@ -156,12 +156,18 @@ python seed.py
 
 # Start the Flask server
 python server.py
+
+🔌 Ports
+Service	Port	URL
+Frontend	3000	http://localhost:3000
+Backend	5000	http://localhost:5000/api
+
 🧪 Prerequisites
 Node.js v18+
 
 Python 3.10+
 
-PostgreSQL or Supabase
+PostgreSQL 
 
 Google Maps API Key
 
@@ -171,7 +177,6 @@ Create a .env file in /server with:
 
 FLASK_APP=app
 FLASK_ENV=development
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 SECRET_KEY=your_secret_key
 JWT_SECRET_KEY=your_jwt_key
 GOOGLE_MAPS_API_KEY=your_api_key
