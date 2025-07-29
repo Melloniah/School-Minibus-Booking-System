@@ -233,7 +233,7 @@ useEffect(() => {
         {/* Success Message */}
         {bookingSuccess && (
           <div className="p-4 bg-green-50 border border-green-200 rounded mb-4">
-            <h3 className="text-green-800 font-bold mb-2">Booking Successful! ✅</h3>
+            <h3 className="text-green-800 font-bold mb-2">Booking Successful! </h3>
             <p className="text-green-700 mb-3">Your booking has been confirmed and saved.</p>
             <div className="flex flex-col gap-2">
               <button
