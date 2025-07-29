@@ -27,6 +27,8 @@ def geocode_location(name):
 @jwt_protected(role='admin')
 def create_route(current_admin):
     data = request.get_json()
+    print("Received route data:", data)
+    
     # Validate required field
     if 'route_name' not in data:
         return jsonify({'error': 'Missing route_name'}), 400
@@ -44,9 +46,15 @@ def create_route(current_admin):
             continue  # Skip if name is missing
 
         # Use geocoding to get lat/lng from name
-        lat, lng = geocode_location(name)
+        lat = loc.get('latitude')
+        lng = loc.get('longitude')
+
         if lat is None or lng is None:
-            continue  # Skip if geocoding fails
+            lat, lng = geocode_location(name)
+
+        if lat is None or lng is None:
+            continue  # Still skip if nothing found
+
 
         new_location = Pickup_Dropoff_Location(
             name_location=name,

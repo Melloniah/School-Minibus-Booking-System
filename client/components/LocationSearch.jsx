@@ -11,20 +11,42 @@ export default function LocationSearch({ onSelect }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: query }),
+        credentials: 'include' 
       })
         .then((res) => res.json())
         .then((data) => setSuggestions(data.places || []))
+        console.log('Places returned:', data.places)
         .catch((err) => console.error('Error fetching places:', err));
     }, 300);
 
     return () => clearTimeout(timer);
   }, [query]);
+  
+// changed auto search to use autocomplete for place and geocode for lat
+  const handleSelect = async (place) => {
+  setQuery(place.text);
+  setSuggestions([]);
 
-  const handleSelect = (place) => {
-    setQuery(place.text);
-    setSuggestions([]);
-    onSelect(place.text);
-  };
+  try {
+    const res = await fetch('/api/geocode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ place_id: place.place_id }),
+    });
+
+    const data = await res.json();
+
+    onSelect({
+      name: data.name_location,
+      latitude: data.latitude,
+      longitude: data.longitude,
+    });
+  } catch (error) {
+    console.error('Error fetching geocode data:', error);
+  }
+};
+
 
   return (
     <div className="relative">

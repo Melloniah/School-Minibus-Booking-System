@@ -11,7 +11,9 @@ export default function AddRoute({ onRouteAdded }) {
 
   const handleRouteSubmit = async (e) => {
     e.preventDefault();
+    console.log("Sending route data:", routeData); 
     try {
+      console.log("Payload being sent:", JSON.stringify(routeData, null, 2));
       const res = await fetch('http://localhost:5000/routes/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,18 +34,21 @@ export default function AddRoute({ onRouteAdded }) {
     }
   };
 
-  const handleLocationChange = (index, value) => {
-    const newLocations = [...routeData.locations];
-    newLocations[index].name_location = value;
-    setRouteData({ ...routeData, locations: newLocations });
-  };
+  
+  const handleLocationChange = (index, field, value) => {
+  const updatedLocations = [...routeData.locations];
+  updatedLocations[index][field] = value;
+  setRouteData({ ...routeData, locations: updatedLocations });
+};
+
 
   const addLocationField = () => {
-    setRouteData({
-      ...routeData,
-      locations: [...routeData.locations, { name_location: '' }],
-    });
-  };
+  setRouteData((prevData) => ({
+    ...prevData,
+    locations: [...prevData.locations, { name_location: '', latitude: '', longitude: '' }],
+  }));
+};
+
 
   return (
     <form onSubmit={handleRouteSubmit} className="bg-white p-6 rounded-lg shadow-md">
@@ -66,11 +71,15 @@ export default function AddRoute({ onRouteAdded }) {
             className="w-full p-2 mb-2 border rounded"
             required
           /> */}
-          <LocationSearch 
-          onSelect={({ name, latitude, longitude }) => {
-    handleLocationChange(index, 'name_location', name)
+          
+        <LocationSearch 
+  onSelect={({ name, latitude, longitude }) => {
+    handleLocationChange(index, 'name_location', name);
+    handleLocationChange(index, 'latitude', latitude);
+    handleLocationChange(index, 'longitude', longitude);
   }}
-          />
+/>
+
           {/* <input
             type="text"
             placeholder="Latitude"
