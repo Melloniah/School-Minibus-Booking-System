@@ -50,9 +50,9 @@ export const useRoutes = (options = {}) => {
           setSelectedRoute(routeData[0]);
         }
         
-        if (showSuccessToast) {
-          toast.success('Routes loaded successfully');
-        }
+        // if (showSuccessToast) {
+        //   toast.success(' successfully');
+        // }
       } else {
         toast.error('Failed to fetch routes');
         setRoutes([]);

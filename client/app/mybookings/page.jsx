@@ -45,7 +45,7 @@ export default function MyBookingsPage() {
       
       if (response.status === 200) {
         setBookings(response.data);
-        toast.success('Bookings loaded successfully');
+        // toast.success('Bookings loaded successfully');
       } else {
         toast.error('Failed to fetch bookings');
       }
