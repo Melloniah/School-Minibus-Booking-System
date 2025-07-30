@@ -70,12 +70,11 @@ Our platform enables:
 
 ## 🔧 How It Works
 
-## Demo Links
-- **Parent**
-<iframe src="https://drive.google.com/file/d/1GUGlzDJHePp-sbGBCAuuoIcWVPYvw_lg/preview" width="640" height="360" allow="autoplay"></iframe>
+## 🎬 Demo Videos
 
-- **Admin**
-<iframe src="https://drive.google.com/file/d/1OAAzme0MlfeULuM5eCd84tWixqUWXf8f/preview" width="640" height="360" allow="autoplay"></iframe>
+- 👪 [Watch Parent Demo](https://drive.google.com/file/d/1GUGlzDJHePp-sbGBCAuuoIcWVPYvw_lg/preview)
+- 🛠️ [Watch Admin Demo](https://drive.google.com/file/d/1OAAzme0MlfeULuM5eCd84tWixqUWXf8f/preview)
+
   
 
 ### 🧭 User Flow
