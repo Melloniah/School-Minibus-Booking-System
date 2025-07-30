@@ -9,7 +9,7 @@ export default function AddBus({ routes }) {
     e.preventDefault();
     try {
       const res = await axios.post(
-        'http://localhost:5000/buses/',
+        'https://school-minibus-booking-system.onrender.com/buses/',
         {
           numberplate: busData.numberplate,
           capacity: Number(busData.capacity),

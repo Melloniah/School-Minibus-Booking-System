@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
 // API utilities
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://school-minibus-booking-system.onrender.com';
 
 const getBusesByRoute = (routeId) =>
   axios.get(`${API_BASE}/buses?route_id=${routeId}`, { withCredentials: true });
