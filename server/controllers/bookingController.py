@@ -10,6 +10,18 @@ from models.user import User
 from models.pickup_dropoff_location import Pickup_Dropoff_Location
 import math
 from sqlalchemy import func 
+import os
+
+# Define allowed origins
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://school-minibus-booking-system.vercel.app"
+]
+
+# Add environment origin if set
+env_origin = os.getenv("FRONTEND_ORIGIN")
+if env_origin and env_origin not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(env_origin)
 
 # Utility function for distance calculation
 def haversine(lat1, lon1, lat2, lon2):
@@ -38,7 +50,7 @@ def seats_available(bus_id):
     return bus.capacity - booked
 
 # Price estimation endpoint
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def estimate_price():
     """Get price estimate for a journey"""
     try:
@@ -86,7 +98,7 @@ def estimate_price():
         return jsonify({'error': str(e)}), 500
 
 # Create a new booking
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def create_booking(current_user_or_admin):
     data = request.get_json()
@@ -168,7 +180,7 @@ def create_booking(current_user_or_admin):
         return jsonify({'error': str(e)}), 400
 
 # GET all bookings
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_all_bookings(current_user_or_admin):
     try:
@@ -177,8 +189,9 @@ def get_all_bookings(current_user_or_admin):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 # GET booking by ID
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_booking_by_id(current_user_or_admin, id):
     try:
@@ -189,8 +202,9 @@ def get_booking_by_id(current_user_or_admin, id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 # DELETE a booking
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def delete_booking(current_user_or_admin, id):  # Added id parameter.
     try:
@@ -206,8 +220,9 @@ def delete_booking(current_user_or_admin, id):  # Added id parameter.
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+
 # GETTING booking by a specific user
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_bookings_for_user(current_user_or_admin):
     try:
