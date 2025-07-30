@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
 // API utilities
-const API_BASE = 'http://localhost:5000';
+import { API_BASE } from '../lib/api';
 
 const getBusesByRoute = (routeId) =>
   axios.get(`${API_BASE}/buses?route_id=${routeId}`, { withCredentials: true });

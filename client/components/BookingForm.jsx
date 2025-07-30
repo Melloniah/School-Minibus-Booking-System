@@ -8,7 +8,8 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 // API utilities
-const API_BASE = 'http://localhost:5000';
+import { API_BASE } from '../lib/api';
+
 
 const getRoutes = () =>
   axios.get(`${API_BASE}/routes/`, { withCredentials: true });

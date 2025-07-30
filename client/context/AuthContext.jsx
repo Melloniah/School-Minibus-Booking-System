@@ -2,6 +2,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+import { API_BASE } from '../lib/api';
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -10,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
 const checkAuth = async () => {
   try {
-   const res = await axios.get('http://localhost:5000/auth/current_user', {
+   const res = await axios.get(`${API_BASE}/auth/current_user`, {
     withCredentials: true,
   });
 
@@ -35,7 +37,7 @@ const checkAuth = async () => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/auth/logout', {}, {
+      awaitaxios.post(`${API_BASE}/auth/logout`, {}, {
         withCredentials: true,
       });
     } catch (err) {

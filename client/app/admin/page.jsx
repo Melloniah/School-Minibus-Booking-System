@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import AddBusForm from '../../components/AddBus';
 import AddRouteForm from '../../components/AddRoute';
-import BookingsTable from '../../components/VeiwBooking'; // Ensure this path is correct for your setup
+import BookingsTable from '../../components/VeiwBooking';
+
+import { API_BASE } from '../../lib/api';
 
 // ─────────────────────────────────────────────
 // 🔐 Admin Login Form Component
@@ -14,7 +16,6 @@ function AdminLoginForm({ onLogin }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = 'http://localhost:5000'; // Define API_BASE here for the login form
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -102,7 +103,7 @@ function StatCard({ title, value, color, onClick }) {
 }
 
 // ─────────────────────────────────────────────
-// ❗ Custom Confirmation Modal Component (Defined here for reuse)
+//  Custom Confirmation Modal Component (Defined here for reuse)
 function ConfirmationModal({ message, onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -356,7 +357,6 @@ export default function ItineraryDashboard() {
   const [showRoutesModal, setShowRoutesModal] = useState(false);
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
-  const API_BASE = 'http://localhost:5000';
 
   const getRoutes = useCallback(async () => {
     try {

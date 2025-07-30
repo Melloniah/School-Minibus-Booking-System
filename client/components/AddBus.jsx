@@ -2,14 +2,15 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+import { API_BASE } from '../lib/api';
+
 export default function AddBus({ routes }) {
   const [busData, setBusData] = useState({ numberplate: '', capacity: '', routeid: '' });
 
   const handleBusSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        'http://localhost:5000/buses/',
+      const res = await axios.post(`${API_BASE}/buses/`,
         {
           numberplate: busData.numberplate,
           capacity: Number(busData.capacity),

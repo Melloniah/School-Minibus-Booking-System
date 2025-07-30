@@ -5,7 +5,7 @@ import { GoogleMap, Marker, Polyline, InfoWindow } from '@react-google-maps/api'
 import axios from 'axios';
 
 // API utilities
-const API_BASE = 'http://localhost:5000';
+import { API_BASE } from '../lib/api';
 
 const getStopsByRoute = (routeId) =>
   axios.get(`${API_BASE}/location/by-route?route_id=${routeId}`, { withCredentials: true });
