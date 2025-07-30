@@ -126,3 +126,29 @@ def health_check():
         }
     except Exception as e:
         return f"Database connection error: {str(e)}", 500
+
+
+        # TESTING FOR GEOLOCATION IN GOOGLE API
+@app.route('/test-geocoding')
+def test_geocoding():
+    import os
+    api_key = os.getenv("GOOGLE_MAPS_API_KEY")
+    if not api_key:
+        return "❌ GOOGLE_MAPS_API_KEY not found in environment"
+    
+    # Test a simple API call
+    import requests
+    url = "https://maps.googleapis.com/maps/api/geocode/json"
+    params = {"address": "Nairobi, Kenya", "key": api_key}
+    
+    try:
+        response = requests.get(url, params=params)
+        data = response.json()
+        return {
+            "status": data.get("status"),
+            "api_key_exists": True,
+            "api_key_preview": api_key[:10] + "..." if len(api_key) > 10 else api_key,
+            "response": data
+        }
+    except Exception as e:
+        return f"❌ API Error: {str(e)}"        
