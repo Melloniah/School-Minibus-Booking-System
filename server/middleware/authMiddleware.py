@@ -3,32 +3,12 @@ from models.user import User
 from models.admin import Admin
 from functools import wraps
 from flask import jsonify
-import os
-
-# Import cross_origin differently
-try:
-    from flask_cors import cross_origin
-except ImportError:
-    print("Flask-CORS not available")
-    cross_origin = None
-
-# Define allowed origins
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://school-minibus-booking-system.vercel.app"
-]
-
-# Add environment origin if set
-env_origin = os.getenv("FRONTEND_ORIGIN")
-if env_origin and env_origin not in ALLOWED_ORIGINS:
-    ALLOWED_ORIGINS.append(env_origin)
 
 def jwt_protected(role=None):
     def wrapper(fn):
         @wraps(fn)
+        @jwt_required()
         def decorator(*args, **kwargs):
-            # Apply CORS manually if cross_origin is available
-            
             identity = get_jwt_identity()  
             claims = get_jwt()
             user_role = claims.get("role")
@@ -53,10 +33,5 @@ def jwt_protected(role=None):
             else:
                 return jsonify({'error': 'Unauthorized'}), 401
 
-        # Apply decorators conditionally
-        if cross_origin:
-            decorator = cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)(decorator)
-        decorator = jwt_required()(decorator)
-        
         return decorator
     return wrapper

@@ -9,6 +9,8 @@ from middleware.authMiddleware import jwt_protected
 from models import db
 import os
 import requests # Import the requests library
+from flask_cors import cross_origin
+
 
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -21,7 +23,6 @@ if env_origin and env_origin not in ALLOWED_ORIGINS:
     ALLOWED_ORIGINS.append(env_origin)
 
 GOOGLE_API_KEY = os.getenv('Maps_API_KEY')
-
 
 def geocode_location(name):
     url = f'https://maps.googleapis.com/maps/api/geocode/json?address={name}&key={GOOGLE_API_KEY}'
@@ -83,7 +84,8 @@ def create_route(current_admin):
         'locations': [loc.serialize() for loc in route.pickup_dropoff_locations]
     }), 201
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)    
+    
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_routes(current_user_or_admin):
     routes = Route.query.all()
