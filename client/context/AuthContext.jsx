@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
 const checkAuth = async () => {
   try {
-   const res = await axios.get('http://localhost:5000/auth/current_user', {
+   const res = await axios.get('https://school-minibus-booking-system.onrender.com/auth/current_user', {
     withCredentials: true,
   });
 
@@ -35,7 +35,7 @@ const checkAuth = async () => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/auth/logout', {}, {
+      await axios.post('https://school-minibus-booking-system.onrender.com/auth/logout', {}, {
         withCredentials: true,
       });
     } catch (err) {
