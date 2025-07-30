@@ -85,30 +85,39 @@ app.register_blueprint(pickup_bp, url_prefix="/location")
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
 # so flask knows when I see a request starting with /auth , go use the auth_bp
 
-# Add these routes after your blueprint registrations
+# these routes after your blueprint registrations help debug seeding in postresql
 
-@app.route('/seed-db')
+
+@app.route('/seed-db') #/seed-db - Only adds data if database is empty (safe to run anytim
 def seed_database():
     """Safe seeding - only adds data if database is empty"""
     try:
         print("🌱 Starting safe database seeding...")
-        exec(open('seed.py').read())
+        from seed import run_seed
+        run_seed()
         return "Database seeding completed safely!"
     except Exception as e:
         return f"Seeding error: {str(e)}", 500
 
-@app.route('/reset-db')
+
+@app.route('/reset-db') #Complete reset (only use when you want to start fresh)
 def reset_database():
     """DANGER: Completely resets database - use with caution!"""
     try:
-        print("RESETTING DATABASE - This will delete ALL data!")
+        print("⚠️ RESETTING DATABASE - This will delete ALL data!")
         from models import db
+        
         db.drop_all()
         db.create_all()
-        exec(open('seed.py').read())
+        
+        # Import and run the seed function
+        from seed import run_seed
+        run_seed()
+        
         return "Database completely reset with seed data!"
     except Exception as e:
         return f"Reset error: {str(e)}", 500
+
 
 @app.route('/health')
 def health_check():
@@ -128,27 +137,4 @@ def health_check():
         return f"Database connection error: {str(e)}", 500
 
 
-        # TESTING FOR GEOLOCATION IN GOOGLE API
-@app.route('/test-geocoding')
-def test_geocoding():
-    import os
-    api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-    if not api_key:
-        return "❌ GOOGLE_MAPS_API_KEY not found in environment"
-    
-    # Test a simple API call
-    import requests
-    url = "https://maps.googleapis.com/maps/api/geocode/json"
-    params = {"address": "Nairobi, Kenya", "key": api_key}
-    
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        return {
-            "status": data.get("status"),
-            "api_key_exists": True,
-            "api_key_preview": api_key[:10] + "..." if len(api_key) > 10 else api_key,
-            "response": data
-        }
-    except Exception as e:
-        return f"❌ API Error: {str(e)}"        
+        
