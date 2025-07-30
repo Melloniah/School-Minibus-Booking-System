@@ -9,18 +9,8 @@ from middleware.authMiddleware import jwt_protected
 from models import db
 import os
 import requests # Import the requests library
-from flask_cors import cross_origin
 
 
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://school-minibus-booking-system.vercel.app"
-]
-
-# Add environment origin if set
-env_origin = os.getenv("FRONTEND_ORIGIN")
-if env_origin and env_origin not in ALLOWED_ORIGINS:
-    ALLOWED_ORIGINS.append(env_origin)
 
 GOOGLE_API_KEY = os.getenv('Maps_API_KEY')
 
@@ -34,7 +24,6 @@ def geocode_location(name):
         return location['lat'], location['lng']
     return None, None
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected(role='admin')
 def create_route(current_admin):
     data = request.get_json()
@@ -85,7 +74,7 @@ def create_route(current_admin):
     }), 201
 
     
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
+
 @jwt_protected()
 def get_routes(current_user_or_admin):
     routes = Route.query.all()
@@ -104,7 +93,6 @@ def get_routes(current_user_or_admin):
         for r in routes
     ])
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_route(current_user_or_admin,id):
     route = Route.query.get_or_404(id)
@@ -118,7 +106,7 @@ def get_route(current_user_or_admin,id):
         'buses': buses
     })
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
+
 @jwt_protected(role='admin')
 def update_route(current_admin,id):
     route = Route.query.get_or_404(id)
@@ -128,7 +116,7 @@ def update_route(current_admin,id):
     db.session.commit()
     return jsonify({'id': route.id, 'route_name': route.route_name})
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
+
 @jwt_protected(role='admin')
 def delete_route(current_admin,id):
     route = Route.query.get_or_404(id)
@@ -231,7 +219,6 @@ def get_route_emoji(route):
     
     return emoji_map.get(status, '🚌')
 
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_protected()
 def get_route_detailed_status(current_user_or_admin, route_id):
     """Get detailed status for a specific route"""
