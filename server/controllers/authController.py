@@ -14,8 +14,19 @@ from models.admin import Admin
 import bcrypt
 import traceback 
 
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://school-minibus-booking-system.vercel.app"
+]
+
+# Add environment origin if set
+env_origin = os.getenv("FRONTEND_ORIGIN")
+if env_origin and env_origin not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(env_origin)
+
+
 # Register route
-@cross_origin()
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def register_user():
     try:
         data = request.get_json() or {}
@@ -42,7 +53,7 @@ def register_user():
         return make_response(jsonify({"error": "Registration failed"}), 500)
 
 # Login route
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def login():
     try:
         data = request.get_json() or {}
@@ -99,7 +110,7 @@ def login():
         return make_response(jsonify({"error": "Login failed"}), 500)
 
 # Current user route
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 def get_current_user():
     try:
@@ -130,7 +141,7 @@ def get_current_user():
         return jsonify({"error": "Failed to get user info"}), 500
 
 # Logout route
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 def logout():
     try:
@@ -140,7 +151,8 @@ def logout():
     except Exception as e:
         return jsonify({"error": "Logout failed"}), 500
 
-@cross_origin(origins=["http://localhost:3000"], supports_credentials=True)
+# getting all users for admin use
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 def get_all_users():
     """
