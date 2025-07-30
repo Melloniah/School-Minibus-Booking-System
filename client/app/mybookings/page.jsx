@@ -51,7 +51,7 @@ export default function MyBookingsPage() {
       }
     } catch (err) {
       console.error('Fetch error:', err);
-      toast.error('Error loading bookings');
+      // toast.error('Error loading bookings');
       setBookings([]);
     } finally {
       setLoading(false);
