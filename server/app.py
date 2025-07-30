@@ -40,9 +40,12 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=int(os.environ.get('JWT
 
 db.init_app(app) 
 migrate = Migrate(app, db)
+
+frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")  # fallback to localhost
+
 CORS(app, 
      supports_credentials=True,
-     origins=["http://localhost:3000"],  # Specific origin, not "*"
+     origins=[frontend_origin],
      expose_headers=["Content-Type", "Authorization"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
