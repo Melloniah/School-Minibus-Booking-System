@@ -22,18 +22,20 @@ load_dotenv()
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
+
+# Database
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///minibus.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  #  From environment
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  # Required
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-app.config['JWT_COOKIE_SECURE'] = True
-app.config['JWT_COOKIE_SAMESITE'] = 'Lax' # what helped send cookies to front end
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config['JWT_COOKIE_SECURE'] = os.environ.get('JWT_COOKIE_SECURE', 'True').lower() == 'true'
+app.config['JWT_COOKIE_SAMESITE'] = os.environ.get('JWT_COOKIE_SAMESITE', 'Lax')
+app.config['JWT_COOKIE_CSRF_PROTECT'] = os.environ.get('JWT_COOKIE_CSRF_PROTECT', 'True').lower() == 'true'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=int(os.environ.get('JWT_EXPIRATION_HOURS', 1)))
 
 
 db.init_app(app) 
