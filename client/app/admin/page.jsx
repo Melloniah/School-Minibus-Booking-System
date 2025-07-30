@@ -146,7 +146,7 @@ function UsersModal({ users, onClose }) {
   );
 }
 
-// 🚌 Buses Modal Component (NEW COMPONENT)
+// 🚌 Buses Modal Component
 function BusesModal({ buses, onClose }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -190,16 +190,69 @@ function BusesModal({ buses, onClose }) {
   );
 }
 
-// ─────────────────────────────────────────────
+// 🗺️ Routes Modal Component (NEW COMPONENT)
+function RoutesModal({ routes, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+        <h2 className="text-2xl font-bold text-indigo-700 mb-6 border-b pb-3">Active Routes</h2>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-light"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+        {routes.length === 0 ? (
+          <p className="text-gray-600">No active routes found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">ID</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Route Name</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Stops</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Emoji</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Status</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Available Seats (Today)</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Total Buses</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Next Available</th>
+                </tr>
+              </thead>
+              <tbody>
+                {routes.map((route) => (
+                  <tr key={route.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.id}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.route_name}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.stops.join(', ')}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.emoji}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.status}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.available_seats}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.total_buses}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.next_available}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 // 🧠 Main Component
 export default function ItineraryDashboard() {
   const [authorized, setAuthorized] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [users, setUsers] = useState([]);
-  const [buses, setBuses] = useState([]); // New state for buses
+  const [buses, setBuses] = useState([]);
   const [showUsersModal, setShowUsersModal] = useState(false);
-  const [showBusesModal, setShowBusesModal] = useState(false); // New state for bus modal visibility
+  const [showBusesModal, setShowBusesModal] = useState(false);
+  const [showRoutesModal, setShowRoutesModal] = useState(false); // New state for route modal visibility
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
   const API_BASE = 'http://localhost:5000';
@@ -252,10 +305,9 @@ export default function ItineraryDashboard() {
     }
   }, [API_BASE]);
 
-  // New function to fetch buses
   const getBuses = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE}/buses`, { // Assuming /buses endpoint returns all buses
+      const response = await axios.get(`${API_BASE}/buses`, {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -273,8 +325,8 @@ export default function ItineraryDashboard() {
     if (authorized) {
       getRoutes();
       getBookings();
-      getUsers(); // Fetch users on initial load
-      getBuses(); // Fetch buses on initial load
+      getUsers();
+      getBuses();
     }
   }, [authorized, getRoutes, getBookings, getUsers, getBuses]);
 
@@ -287,7 +339,7 @@ export default function ItineraryDashboard() {
   const totalBookings = bookings.length;
   const activeRoutes = routes.length;
   const registeredParents = users.length;
-  const availableBuses = buses.length; // Now reflects the count of fetched buses
+  const availableBuses = buses.length;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
@@ -336,7 +388,15 @@ export default function ItineraryDashboard() {
                 color="bg-green-500"
                 onClick={() => setActiveComponent('viewBookings')}
               />
-              <StatCard title="Active Routes" value={activeRoutes} color="bg-blue-500" />
+              <StatCard
+                title="Active Routes"
+                value={activeRoutes}
+                color="bg-blue-500"
+                onClick={async () => {
+                  await getRoutes(); // Fetch routes when clicked
+                  setShowRoutesModal(true); // Show the route modal
+                }}
+              />
               <StatCard
                 title="Registered Parents"
                 value={registeredParents}
@@ -347,12 +407,12 @@ export default function ItineraryDashboard() {
                 }}
               />
               <StatCard
-                title="Available Buses" // Changed title
-                value={availableBuses} // Uses the count of fetched buses
+                title="Available Buses"
+                value={availableBuses}
                 color="bg-purple-500"
                 onClick={async () => {
-                  await getBuses(); // Fetch buses when clicked
-                  setShowBusesModal(true); // Show the bus modal
+                  await getBuses();
+                  setShowBusesModal(true);
                 }}
               />
             </div>
@@ -382,8 +442,11 @@ export default function ItineraryDashboard() {
       {showUsersModal && (
         <UsersModal users={users} onClose={() => setShowUsersModal(false)} />
       )}
-      {showBusesModal && ( // New conditional rendering for BusesModal
+      {showBusesModal && (
         <BusesModal buses={buses} onClose={() => setShowBusesModal(false)} />
+      )}
+      {showRoutesModal && ( // New conditional rendering for RoutesModal
+        <RoutesModal routes={routes} onClose={() => setShowRoutesModal(false)} />
       )}
     </div>
   );
