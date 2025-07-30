@@ -18,10 +18,22 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 load_dotenv()
-
+import subprocess
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+# to run migrations always in render
+def run_migrations():
+    try:
+        print("📦 Running Alembic migrations...")
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        print("✅ Alembic migrations applied.")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Alembic migration failed: {e}")
+
+run_migrations()
+
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///minibus.db')
