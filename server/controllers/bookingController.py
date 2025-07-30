@@ -95,19 +95,15 @@ def create_booking(current_user_or_admin):
         return jsonify({'error': 'No JSON data provided'}), 400
     
     try:
-        # Validate required fields
+        # Validate required fields (REMOVED user_email)
         required_fields = ['bus_id', 'pickup_location', 'dropoff_location', 'seats_booked', 'booking_date']
         for field in required_fields:
             if field not in data:
                 return jsonify({'error': f'Missing required field: {field}'}), 400
 
-        user_email = data['user_email']
-        user = User.query.filter_by(email=user_email).first()
-
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-
+        # Get user from JWT token (REMOVED user_email lookup)
         user_id = current_user_or_admin.id 
+        
         bus_id = data['bus_id']
         pickup_location = data['pickup_location']
         dropoff_location = data['dropoff_location']
