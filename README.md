@@ -70,6 +70,13 @@ Our platform enables:
 
 ## 🔧 How It Works
 
+## 🎬 Demo Videos
+
+- 👪 [Watch Parent Demo](https://drive.google.com/file/d/1GUGlzDJHePp-sbGBCAuuoIcWVPYvw_lg/preview)
+- 🛠️ [Watch Admin Demo](https://drive.google.com/file/d/1OAAzme0MlfeULuM5eCd84tWixqUWXf8f/preview)
+
+  
+
 ### 🧭 User Flow
 
 ```text
