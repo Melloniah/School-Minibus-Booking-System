@@ -56,15 +56,28 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=int(os.environ.get('JWT
 db.init_app(app) 
 migrate = Migrate(app, db)
 
-frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")  # fallback to localhost
+# this makes the vercel and render be connected and dynamic for localhost in development
+def configure_cors(app):
+    allowed_origins = [
+        "http://localhost:3000",
+        "https://school-minibus-booking-system.vercel.app"
+    ]
+    
+    # Add environment-specific origin
+    env_origin = os.getenv("FRONTEND_ORIGIN")
+    if env_origin:
+        allowed_origins.append(env_origin)
+    
+    CORS(app,
+        supports_credentials=True,
+        origins=allowed_origins,
+        expose_headers=["Content-Type", "Authorization"],
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    )
 
-CORS(app, 
-     supports_credentials=True,
-     origins=[frontend_origin],
-     expose_headers=["Content-Type", "Authorization"],
-     allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-)
+# Apply CORS configuration
+configure_cors(app)
 
 
 api = Api(app)
