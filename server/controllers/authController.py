@@ -26,6 +26,17 @@ if env_origin and env_origin not in ALLOWED_ORIGINS:
     ALLOWED_ORIGINS.append(env_origin)
 
 
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://school-minibus-booking-system.vercel.app"
+]
+
+# Add environment origin if set
+env_origin = os.getenv("FRONTEND_ORIGIN")
+if env_origin and env_origin not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(env_origin)
+
+
 # Register route
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def register_user():
