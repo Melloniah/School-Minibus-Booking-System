@@ -26,7 +26,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  # 🔐 From environment
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  #  From environment
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
