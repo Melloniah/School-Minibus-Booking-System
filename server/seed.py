@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv #for hiding google map api
 
 # Google Maps Geocoding API key 
-load_dotenv(dotenv_path=".env")
+load_dotenv()
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 if not GOOGLE_API_KEY:
