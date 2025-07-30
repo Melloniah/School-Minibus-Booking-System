@@ -26,14 +26,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///minibus.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT Config
-# JWT Config
-app.config['JWT_SECRET_KEY'] = 'your-secret-key'
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')  # 🔐 From environment
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-app.config['JWT_COOKIE_SECURE'] = False      
-app.config['JWT_COOKIE_SAMESITE'] = 'Lax'   # this is what helped set and send cookies in backend for current user.  
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/'   # cookies to be available on all routes
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
+app.config['JWT_COOKIE_SECURE'] = True
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax' # what helped send cookies to front end
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 
