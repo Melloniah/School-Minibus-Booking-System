@@ -19,20 +19,23 @@ from datetime import timedelta
 from dotenv import load_dotenv
 load_dotenv()
 import subprocess
+import logging
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # to run migrations always in render
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def run_migrations():
     try:
-        print("📦 Running Alembic migrations...")
+        logger.info("📦 Running Alembic migrations...")
         subprocess.run(["alembic", "upgrade", "head"], check=True)
-        print("✅ Alembic migrations applied.")
+        logger.info("Alembic migrations applied.")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Alembic migration failed: {e}")
+        logger.error(f"Alembic migration failed: {e}")
 
-run_migrations()
 
 
 # Database
@@ -82,3 +85,44 @@ app.register_blueprint(pickup_bp, url_prefix="/location")
 # blueprint is booking_bp the example final route are (/bookings, bookings/1)
 # so flask knows when I see a request starting with /auth , go use the auth_bp
 
+# Add these routes after your blueprint registrations
+
+@app.route('/seed-db')
+def seed_database():
+    """Safe seeding - only adds data if database is empty"""
+    try:
+        print("🌱 Starting safe database seeding...")
+        exec(open('seed.py').read())
+        return "Database seeding completed safely!"
+    except Exception as e:
+        return f"Seeding error: {str(e)}", 500
+
+@app.route('/reset-db')
+def reset_database():
+    """DANGER: Completely resets database - use with caution!"""
+    try:
+        print("RESETTING DATABASE - This will delete ALL data!")
+        from models import db
+        db.drop_all()
+        db.create_all()
+        exec(open('seed.py').read())
+        return "Database completely reset with seed data!"
+    except Exception as e:
+        return f"Reset error: {str(e)}", 500
+
+@app.route('/health')
+def health_check():
+    try:
+        from models import User, Admin, Route
+        user_count = User.query.count()
+        admin_count = Admin.query.count()
+        route_count = Route.query.count()
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "users": user_count,
+            "admins": admin_count,
+            "routes": route_count
+        }
+    except Exception as e:
+        return f"Database connection error: {str(e)}", 500
