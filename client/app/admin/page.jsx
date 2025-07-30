@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import AddBusForm from '../../components/AddBus';
 import AddRouteForm from '../../components/AddRoute';
-import BookingsTable from '../../components/VeiwBooking';
+import BookingsTable from '../../components/VeiwBooking'; // Ensure this path is correct for your setup
 
 // ─────────────────────────────────────────────
 // 🔐 Admin Login Form Component
@@ -102,7 +102,34 @@ function StatCard({ title, value, color, onClick }) {
 }
 
 // ─────────────────────────────────────────────
-// 👥 Users Modal Component
+// ❗ Custom Confirmation Modal Component (Defined here for reuse)
+function ConfirmationModal({ message, onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 relative">
+        <h3 className="text-xl font-bold mb-4 text-center text-gray-800">Confirm Action</h3>
+        <p className="text-gray-700 mb-6 text-center">{message}</p>
+        <div className="flex justify-around gap-4">
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
+          >
+            Confirm
+          </button>
+          <button
+            onClick={onCancel}
+            className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 👥 Users Modal Component (No delete functionality for users)
 function UsersModal({ users, onClose }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -147,7 +174,28 @@ function UsersModal({ users, onClose }) {
 }
 
 // 🚌 Buses Modal Component
-function BusesModal({ buses, onClose }) {
+function BusesModal({ buses, onClose, onDeleteBus }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [busToDelete, setBusToDelete] = useState(null);
+
+  const handleDeleteClick = (bus) => {
+    setBusToDelete(bus);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (busToDelete) {
+      onDeleteBus(busToDelete.id);
+    }
+    setShowConfirm(false);
+    setBusToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setBusToDelete(null);
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
@@ -170,6 +218,7 @@ function BusesModal({ buses, onClose }) {
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Number Plate</th>
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Capacity</th>
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Route ID</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,6 +228,14 @@ function BusesModal({ buses, onClose }) {
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.numberplate}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.capacity}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{bus.routeid}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">
+                      <button
+                        onClick={() => handleDeleteClick(bus)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -186,12 +243,40 @@ function BusesModal({ buses, onClose }) {
           </div>
         )}
       </div>
+      {showConfirm && (
+        <ConfirmationModal
+          message={`Are you sure you want to delete bus "${busToDelete?.numberplate}"? This action cannot be undone.`}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </div>
   );
 }
 
-// 🗺️ Routes Modal Component (NEW COMPONENT)
-function RoutesModal({ routes, onClose }) {
+// 🗺️ Routes Modal Component
+function RoutesModal({ routes, onClose, onDeleteRoute }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [routeToDelete, setRouteToDelete] = useState(null);
+
+  const handleDeleteClick = (route) => {
+    setRouteToDelete(route);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (routeToDelete) {
+      onDeleteRoute(routeToDelete.id);
+    }
+    setShowConfirm(false);
+    setRouteToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setRouteToDelete(null);
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
@@ -218,6 +303,7 @@ function RoutesModal({ routes, onClose }) {
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Available Seats (Today)</th>
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Total Buses</th>
                   <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Next Available</th>
+                  <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider border-b">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -231,6 +317,14 @@ function RoutesModal({ routes, onClose }) {
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.available_seats}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.total_buses}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.next_available}</td>
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">
+                      <button
+                        onClick={() => handleDeleteClick(route)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -238,6 +332,13 @@ function RoutesModal({ routes, onClose }) {
           </div>
         )}
       </div>
+      {showConfirm && (
+        <ConfirmationModal
+          message={`Are you sure you want to delete route "${routeToDelete?.route_name}"? This action cannot be undone.`}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </div>
   );
 }
@@ -252,7 +353,7 @@ export default function ItineraryDashboard() {
   const [buses, setBuses] = useState([]);
   const [showUsersModal, setShowUsersModal] = useState(false);
   const [showBusesModal, setShowBusesModal] = useState(false);
-  const [showRoutesModal, setShowRoutesModal] = useState(false); // New state for route modal visibility
+  const [showRoutesModal, setShowRoutesModal] = useState(false);
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
   const API_BASE = 'http://localhost:5000';
@@ -320,6 +421,56 @@ export default function ItineraryDashboard() {
       console.error('Error fetching buses:', error);
     }
   }, [API_BASE]);
+
+  // Delete functions
+  const handleDeleteRoute = useCallback(async (id) => {
+    try {
+      const response = await axios.delete(`${API_BASE}/routes/${id}`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log('Route deleted successfully:', id);
+        getRoutes(); // Refresh routes
+      } else {
+        console.error('Failed to delete route', response.status, response.data);
+      }
+    } catch (error) {
+      console.error('Error deleting route:', error);
+    }
+  }, [API_BASE, getRoutes]);
+
+  const handleDeleteBus = useCallback(async (id) => {
+    try {
+      const response = await axios.delete(`${API_BASE}/buses/${id}`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log('Bus deleted successfully:', id);
+        getBuses(); // Refresh buses
+      } else {
+        console.error('Failed to delete bus', response.status, response.data);
+      }
+    } catch (error) {
+      console.error('Error deleting bus:', error);
+    }
+  }, [API_BASE, getBuses]);
+
+  const handleDeleteBooking = useCallback(async (id) => {
+    try {
+      const response = await axios.delete(`${API_BASE}/bookings/${id}`, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log('Booking deleted successfully:', id);
+        getBookings(); // Refresh bookings
+      } else {
+        console.error('Failed to delete booking', response.status, response.data);
+      }
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+    }
+  }, [API_BASE, getBookings]);
+
 
   useEffect(() => {
     if (authorized) {
@@ -393,8 +544,8 @@ export default function ItineraryDashboard() {
                 value={activeRoutes}
                 color="bg-blue-500"
                 onClick={async () => {
-                  await getRoutes(); // Fetch routes when clicked
-                  setShowRoutesModal(true); // Show the route modal
+                  await getRoutes();
+                  setShowRoutesModal(true);
                 }}
               />
               <StatCard
@@ -434,7 +585,7 @@ export default function ItineraryDashboard() {
         )}
 
         {activeComponent === 'viewBookings' && (
-          <BookingsTable bookings={bookings} />
+          <BookingsTable bookings={bookings} onDeleteBooking={handleDeleteBooking} API_BASE={API_BASE} />
         )}
       </div>
 
@@ -443,10 +594,10 @@ export default function ItineraryDashboard() {
         <UsersModal users={users} onClose={() => setShowUsersModal(false)} />
       )}
       {showBusesModal && (
-        <BusesModal buses={buses} onClose={() => setShowBusesModal(false)} />
+        <BusesModal buses={buses} onClose={() => setShowBusesModal(false)} onDeleteBus={handleDeleteBus} />
       )}
-      {showRoutesModal && ( // New conditional rendering for RoutesModal
-        <RoutesModal routes={routes} onClose={() => setShowRoutesModal(false)} />
+      {showRoutesModal && (
+        <RoutesModal routes={routes} onClose={() => setShowRoutesModal(false)} onDeleteRoute={handleDeleteRoute} />
       )}
     </div>
   );
