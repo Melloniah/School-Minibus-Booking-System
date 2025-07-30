@@ -96,7 +96,7 @@ def create_booking(current_user_or_admin):
     
     try:
         # Validate required fields
-        required_fields = ['user_email', 'bus_id', 'pickup_location', 'dropoff_location', 'seats_booked', 'booking_date']
+        required_fields = ['bus_id', 'pickup_location', 'dropoff_location', 'seats_booked', 'booking_date']
         for field in required_fields:
             if field not in data:
                 return jsonify({'error': f'Missing required field: {field}'}), 400
@@ -107,7 +107,7 @@ def create_booking(current_user_or_admin):
         if not user:
             return jsonify({'error': 'User not found'}), 404
 
-        user_id = user.id
+        user_id = current_user_or_admin.id 
         bus_id = data['bus_id']
         pickup_location = data['pickup_location']
         dropoff_location = data['dropoff_location']
