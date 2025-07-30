@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 
+import { API_BASE } from '../../lib/api';
+
 export default function LoginPage() {
   const { user, login } = useAuth(); // Use context user
   const router = useRouter();
@@ -29,7 +31,7 @@ export default function LoginPage() {
   e.preventDefault();
 
   try {
-    const response = await fetch('https://school-minibus-booking-system.onrender.com/auth/login', {
+    const response = await fetch(`${API_BASE}/auth/login`,{
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import LocationSearch from '../components/LocationSearch';
 
+import { API_BASE } from '../lib/api';
+
 
 export default function AddRoute({ onRouteAdded }) {
   const [routeData, setRouteData] = useState({
@@ -14,7 +16,7 @@ export default function AddRoute({ onRouteAdded }) {
     console.log("Sending route data:", routeData); 
     try {
       console.log("Payload being sent:", JSON.stringify(routeData, null, 2));
-      const res = await fetch('https://school-minibus-booking-system.onrender.com/routes/', {
+      const res = await fetch(`${API_BASE}/routes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

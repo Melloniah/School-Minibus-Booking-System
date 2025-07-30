@@ -7,7 +7,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 // API utilities
-const API_BASE = 'https://school-minibus-booking-system.onrender.com';
+import { API_BASE } from '../lib/api';
+
 
 const getMyBookings = () =>
   axios.get(`${API_BASE}/bookings/`, { withCredentials: true });
@@ -51,7 +52,7 @@ export default function MyBookingsPage() {
       }
     } catch (err) {
       console.error('Fetch error:', err);
-      // toast.error('Error loading bookings');
+      toast.error('Error loading bookings');
       setBookings([]);
     } finally {
       setLoading(false);

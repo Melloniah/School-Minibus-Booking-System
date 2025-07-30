@@ -8,7 +8,8 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 // API utilities
-const API_BASE = 'https://school-minibus-booking-system.onrender.com';
+import { API_BASE } from '../lib/api';
+
 
 const getRoutes = () =>
   axios.get(`${API_BASE}/routes/`, { withCredentials: true });
