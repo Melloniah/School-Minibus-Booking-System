@@ -103,7 +103,7 @@ function StatCard({ title, value, color, onClick }) {
 }
 
 // ─────────────────────────────────────────────
-//  Custom Confirmation Modal Component (Defined here for reuse)
+// Custom Confirmation Modal Component (Defined here for reuse)
 function ConfirmationModal({ message, onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -129,7 +129,6 @@ function ConfirmationModal({ message, onConfirm, onCancel }) {
   );
 }
 
-// ─────────────────────────────────────────────
 // 👥 Users Modal Component (No delete functionality for users)
 function UsersModal({ users, onClose }) {
   return (
@@ -256,7 +255,7 @@ function BusesModal({ buses, onClose, onDeleteBus }) {
 }
 
 // 🗺️ Routes Modal Component
-function RoutesModal({ routes, onClose, onDeleteRoute }) {
+function RoutesModal({ routes, onClose, onDeleteRoute, onEditRoute }) { // Add onEditRoute prop
   const [showConfirm, setShowConfirm] = useState(false);
   const [routeToDelete, setRouteToDelete] = useState(null);
 
@@ -318,12 +317,18 @@ function RoutesModal({ routes, onClose, onDeleteRoute }) {
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.available_seats}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.total_buses}</td>
                     <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">{route.next_available}</td>
-                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800">
+                    <td className="py-3 px-4 border-b border-gray-200 text-sm text-gray-800 flex items-center gap-2">
                       <button
-                        onClick={() => handleDeleteClick(route)}
+                        onClick={() => onDeleteRoute(route.id)} // Directly call onDeleteRoute for simplicity
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
                       >
                         Delete
+                      </button>
+                      <button
+                        onClick={() => onEditRoute(route)} // Call the new onEditRoute prop
+                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-xs"
+                      >
+                        Edit
                       </button>
                     </td>
                   </tr>
@@ -356,7 +361,8 @@ export default function ItineraryDashboard() {
   const [showBusesModal, setShowBusesModal] = useState(false);
   const [showRoutesModal, setShowRoutesModal] = useState(false);
   const [activeComponent, setActiveComponent] = useState('dashboard');
-
+  const [routeToEdit, setRouteToEdit] = useState(null); // State for the route being edited
+  const [editedRouteName, setEditedRouteName] = useState(''); // State for the edited route name
 
   const getRoutes = useCallback(async () => {
     try {
@@ -471,6 +477,47 @@ export default function ItineraryDashboard() {
     }
   }, [API_BASE, getBookings]);
 
+  // Handle edit route from modal
+  const handleEditRouteClick = useCallback((route) => {
+    setRouteToEdit(route);
+    setEditedRouteName(route.route_name);
+    setShowRoutesModal(false); // Close the modal once we are editing a route
+    setActiveComponent('editRoute'); // Set active component to 'editRoute'
+  }, []);
+
+  // Handle saving the edited route
+  const handleSaveEditedRoute = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/routes/${routeToEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ route_name: editedRouteName }),
+      });
+      if (res.ok) {
+        alert('Route updated successfully');
+        setRouteToEdit(null);
+        setEditedRouteName('');
+        setActiveComponent('dashboard'); // Go back to dashboard after saving
+        getRoutes(); // Refresh updated list
+      } else {
+        const result = await res.json();
+        alert(result.error || 'Failed to update');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      alert('Server error');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setRouteToEdit(null);
+    setEditedRouteName('');
+    setActiveComponent('dashboard'); // Go back to dashboard on cancel
+  };
+
 
   useEffect(() => {
     if (authorized) {
@@ -513,7 +560,8 @@ export default function ItineraryDashboard() {
           ['addBus', 'Add New Bus'],
           ['addRoute', 'Add New Route'],
           ['viewBookings', 'View All Bookings'],
-        ].map(([key, label]) => (
+          routeToEdit && ['editRoute', 'Edit Route'] // Only show 'Edit Route' button if a route is selected for editing
+        ].filter(Boolean).map(([key, label]) => ( // Filter out null values from the array
           <button
             key={key}
             onClick={() => setActiveComponent(key)}
@@ -587,6 +635,38 @@ export default function ItineraryDashboard() {
         {activeComponent === 'viewBookings' && (
           <BookingsTable bookings={bookings} onDeleteBooking={handleDeleteBooking} API_BASE={API_BASE} />
         )}
+
+        {activeComponent === 'editRoute' && routeToEdit && (
+          <div className="bg-white shadow-md rounded-lg p-6 mt-6 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-indigo-700 mb-6 border-b pb-3">Edit Route: {routeToEdit.route_name}</h2>
+            <div className="mb-4">
+              <label htmlFor="editedRouteName" className="block text-gray-700 text-sm font-bold mb-2">
+                Route Name:
+              </label>
+              <input
+                type="text"
+                id="editedRouteName"
+                value={editedRouteName}
+                onChange={(e) => setEditedRouteName(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleSaveEditedRoute}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Save Changes
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Render Modals conditionally */}
@@ -597,7 +677,12 @@ export default function ItineraryDashboard() {
         <BusesModal buses={buses} onClose={() => setShowBusesModal(false)} onDeleteBus={handleDeleteBus} />
       )}
       {showRoutesModal && (
-        <RoutesModal routes={routes} onClose={() => setShowRoutesModal(false)} onDeleteRoute={handleDeleteRoute} />
+        <RoutesModal
+          routes={routes}
+          onClose={() => setShowRoutesModal(false)}
+          onDeleteRoute={handleDeleteRoute}
+          onEditRoute={handleEditRouteClick} // Pass the new handler
+        />
       )}
     </div>
   );
