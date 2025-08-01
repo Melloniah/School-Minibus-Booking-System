@@ -10,7 +10,7 @@ export default function RouteList({ routes, selectedRoute, onSelectRoute, title 
       <h3 className="text-lg font-bold text-left text-purple-700 mb-2">{title}</h3>
       {routes.length === 0 ? (
         <p className="text-center text-gray-500 text-sm">
-          We currently do not offer services to that area.
+          Kindly Sign-Up to view our routes list
         </p>
       ) : (
         routes.map(route => (
