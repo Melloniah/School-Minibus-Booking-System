@@ -249,7 +249,8 @@ export default function Navbar() {
                     onClick={closeMobileMenu}
                     className="block w-full text-center bg-yellow-400 text-black py-3 px-4 rounded-full font-semibold hover:bg-yellow-300 transition-colors duration-200"
                   >
-                    🌠 Sign-Up 
+        
+                    🌠 Sign-Up to Get Started
                   </Link>
                   <Link
                     href="/admin"
