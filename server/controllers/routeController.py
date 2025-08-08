@@ -75,7 +75,7 @@ def create_route(current_admin):
 
     
 
-@jwt_protected()
+# @jwt_protected()
 def get_routes(current_user_or_admin):
     routes = Route.query.all()
     return jsonify([
