@@ -56,7 +56,7 @@ from middleware.authMiddleware import jwt_protected
 from models.pickup_dropoff_location import Pickup_Dropoff_Location
 from models import db
 
-@jwt_protected()
+# @jwt_protected()
 def get_locations_by_route(current_user_or_admin):
     route_id = request.args.get('route_id')
 
