@@ -12,13 +12,13 @@ import { API_BASE } from '../lib/api';
 
 
 const getRoutes = () =>
-  axios.get(`${API_BASE}/routes/`, { withCredentials: true });
+  axios.get(`${API_BASE}/routes/`);
 
 const getBusesByRoute = (routeId) =>
-  axios.get(`${API_BASE}/buses?route_id=${routeId}`, { withCredentials: true });
+  axios.get(`${API_BASE}/buses?route_id=${routeId}`);
 
 const getStopsByRoute = (routeId) =>
-  axios.get(`${API_BASE}/location/by-route?route_id=${routeId}`, { withCredentials: true});
+  axios.get(`${API_BASE}/location/by-route?route_id=${routeId}`);
 
 const createBooking = (data) =>
   axios.post(`${API_BASE}/bookings/`, data, {
@@ -181,7 +181,6 @@ useEffect(() => {
       setLoadingBooking(true);
 
       const bookingPayload = {
-        user_email: currentUser.email,
         bus_id: parseInt(bus),
         pickup_location: pickup,
         dropoff_location: dropoff,
