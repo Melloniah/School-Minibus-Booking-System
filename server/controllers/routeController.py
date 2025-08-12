@@ -75,20 +75,23 @@ def create_route(current_admin):
 
     
 
-# @jwt_protected()
-def get_routes(current_user_or_admin):
+def get_routes():
     routes = Route.query.all()
     return jsonify([
         {
-            'id': r.id,
-            'name': r.route_name,
+            'id': r.id, 
             'route_name': r.route_name,
-            'stops': [loc.name_location for loc in r.pickup_dropoff_locations],
-            'emoji': get_route_emoji(r),
-            'status': get_route_status_with_bookings(r),
-            'available_seats': get_available_seats_today(r),
+            'pickup_dropoff_locations': [
+                {
+                    'id': loc.id,
+                    'name_location': loc.name_location,
+                    'latitude': loc.latitude,
+                    'longitude': loc.longitude
+                }
+                for loc in r.pickup_dropoff_locations
+            ],
             'total_buses': len(r.buses),
-            'next_available': get_next_available_slot(r)
+            'bus_capacity': sum(bus.capacity for bus in r.buses) if r.buses else 0
         }
         for r in routes
     ])

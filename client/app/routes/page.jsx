@@ -42,7 +42,7 @@ export default function RoutePage() {
             Choose Your Route & Book Your Trip!
           </h2>
           <p className="mt-1 text-gray-700 max-w-md mx-auto text-sm sm:text-base">
-            Select a route, view it on the map, and book your journey. ✨
+            Select a route, view it on the map, and book your journey. 
           </p>
         </div>
 
