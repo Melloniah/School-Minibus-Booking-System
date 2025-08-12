@@ -8,6 +8,9 @@ from controllers.routeController import (
     delete_route
 )
 
+# NEW public route so that users can access the routes before signup. 
+route_bp.route('/public', methods=['GET'])(get_routes)
+
 route_bp = Blueprint('routes', __name__)
 
 route_bp.route('/', methods=['POST'])(create_route)

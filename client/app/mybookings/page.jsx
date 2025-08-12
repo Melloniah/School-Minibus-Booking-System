@@ -7,7 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 // API utilities
-const API_BASE = 'http://localhost:5000';
+import { API_BASE } from '../../lib/api';
 
 const getMyBookings = () =>
   axios.get(`${API_BASE}/bookings/`, { withCredentials: true });
@@ -45,7 +45,7 @@ export default function MyBookingsPage() {
       
       if (response.status === 200) {
         setBookings(response.data);
-        toast.success('Bookings loaded successfully');
+        // toast.success('Bookings loaded successfully');
       } else {
         toast.error('Failed to fetch bookings');
       }
@@ -69,7 +69,9 @@ export default function MyBookingsPage() {
     const filtered = bookings.filter((booking) => {
       const routeMatch = booking.route_name?.toLowerCase().includes(lowerSearchTerm) ||
                          booking.pickup_location?.toLowerCase().includes(lowerSearchTerm) ||
-                         booking.dropoff_location?.toLowerCase().includes(lowerSearchTerm);
+                         booking.dropoff_location?.toLowerCase().includes(lowerSearchTerm) ||
+                         booking.user_name?.toLowerCase().includes(lowerSearchTerm) ||
+                         booking.user_email?.toLowerCase().includes(lowerSearchTerm);
       
       const dateMatch = searchDate ? booking.booking_date === searchDate : true;
       
@@ -113,6 +115,9 @@ export default function MyBookingsPage() {
     setSelectedBooking(null);
   };
 
+  // Check if user is admin
+  const isAdmin = user?.is_admin || user?.role === 'admin';
+
   if (loading) {
     return (
       <ProtectedRoute>
@@ -128,13 +133,19 @@ export default function MyBookingsPage() {
   return (
     <ProtectedRoute>
       <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
+        <h1 className="text-2xl font-bold mb-6">
+          {isAdmin ? 'All Bookings (Admin View)' : 'My Bookings'}
+        </h1>
 
         {/* Search Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <input
             type="text"
-            placeholder="Search by route, pickup, or drop-off location"
+            placeholder={
+              isAdmin 
+                ? "Search by route, location, user name, or email" 
+                : "Search by route, pickup, or drop-off location"
+            }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 border rounded w-full md:w-1/2 text-black bg-white dark:text-white dark:bg-gray-800"
@@ -167,13 +178,17 @@ export default function MyBookingsPage() {
         <div className="space-y-4">
           {bookings.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">You haven't made any bookings yet.</p>
-              <button
-                onClick={() => window.location.href = '/book-seat'}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-              >
-                Make Your First Booking
-              </button>
+              <p className="text-gray-500 mb-4">
+                {isAdmin ? 'No bookings found in the system.' : "You haven't made any bookings yet."}
+              </p>
+              {!isAdmin && (
+                <button
+                  onClick={() => window.location.href = '/book-seat'}
+                  className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+                >
+                  Make Your First Booking
+                </button>
+              )}
             </div>
           ) : filteredBookings.length === 0 ? (
             <div className="text-center py-8">
@@ -190,6 +205,15 @@ export default function MyBookingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                       <p><strong>Booking ID:</strong> #{booking.id}</p>
                       <p><strong>Date:</strong> {booking.booking_date || 'N/A'}</p>
+                      
+                      {/* Show user information for admins */}
+                      {isAdmin && (
+                        <>
+                          <p><strong>User:</strong> {booking.user_name || 'N/A'}</p>
+                          <p><strong>Email:</strong> {booking.user_email || 'N/A'}</p>
+                        </>
+                      )}
+                      
                       <p><strong>Pickup:</strong> {booking.pickup_location || 'N/A'}</p>
                       <p><strong>Drop-off:</strong> {booking.dropoff_location || 'N/A'}</p>
                       <p><strong>Seats:</strong> {booking.seats_booked || 'N/A'}</p>
@@ -219,13 +243,16 @@ export default function MyBookingsPage() {
                   </div>
                   
                   <div className="mt-4 md:mt-0 md:ml-4">
-                    <button
-                      onClick={() => handleCancel(booking)}
-                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
-                      disabled={booking.status === 'cancelled'}
-                    >
-                      {booking.status === 'cancelled' ? 'Cancelled' : 'Cancel Booking'}
-                    </button>
+                    {/* Only show cancel button if user can cancel (their own booking or admin) */}
+                    {(isAdmin || (!isAdmin && !booking.user_id)) && (
+                      <button
+                        onClick={() => handleCancel(booking)}
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                        disabled={booking.status === 'cancelled'}
+                      >
+                        {booking.status === 'cancelled' ? 'Cancelled' : 'Cancel Booking'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -254,6 +281,9 @@ export default function MyBookingsPage() {
               {selectedBooking && (
                 <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded mb-4 text-sm">
                   <p><strong>Booking ID:</strong> #{selectedBooking.id}</p>
+                  {isAdmin && selectedBooking.user_name && (
+                    <p><strong>User:</strong> {selectedBooking.user_name}</p>
+                  )}
                   <p><strong>Route:</strong> {selectedBooking.pickup_location} → {selectedBooking.dropoff_location}</p>
                   <p><strong>Date:</strong> {selectedBooking.booking_date}</p>
                   <p><strong>Price:</strong> KES {selectedBooking.price}</p>
