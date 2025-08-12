@@ -63,7 +63,7 @@ def delete_bus(current_admin, id):
 
 
 # @jwt_protected()
-def get_buses_by_route(current_user_or_admin):
+def get_buses_by_route():
     route_id = request.args.get('route_id')
     if not route_id:
         return jsonify({'error': 'Route ID is required'}), 400
