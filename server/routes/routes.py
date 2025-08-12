@@ -9,7 +9,9 @@ from controllers.routeController import (
     get_route_detailed_status
 )
 
-route_bp = Blueprint('route_bp', __name__)
+
+
+route_bp = Blueprint('routes_bp', __name__)
 
 # NEW public route so that users can access the routes before signup. 
 route_bp.route('/public', methods=['GET'])(get_routes)
