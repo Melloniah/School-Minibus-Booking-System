@@ -264,7 +264,7 @@ def get_bookings_for_user(current_user_or_admin):
     try:
         if current_user_or_admin.is_admin:
             # Admin sees all bookings with user information
-            bookings_with_users = db.session.query(Booking, User.username, User.email)\
+            bookings_with_users = db.session.query(Booking, User.name, User.email)\
                 .join(User, Booking.user_id == User.id)\
                 .all()
             
