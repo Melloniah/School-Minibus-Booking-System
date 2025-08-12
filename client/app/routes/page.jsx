@@ -11,7 +11,7 @@ import RouteBookingForm from '../../components/RouteBookingForm';
 import {useAuth} from '../../context/AuthContext'
 
 export default function RouteMapPage() {
-  const {user}= useAuth(); //confirming the user logged in
+  // const {user}= useAuth(); //confirming the user logged in
   const userId= user?.id;
 
 
