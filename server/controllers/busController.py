@@ -14,7 +14,7 @@ def create_bus(current_admin):
     db.session.commit()
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity}), 201
 
-@jwt_protected()  # Both users and admins can access
+# @jwt_protected()  # Both users and admins can access
 def get_buses(current_user_or_admin):
     routeid = request.args.get('route_id')
     origin = request.args.get('origin')
@@ -34,7 +34,7 @@ def get_buses(current_user_or_admin):
         for b in buses
     ])
 
-@jwt_protected()  # Both users and admins can access
+# @jwt_protected()  # Both users and admins can access
 def get_bus(current_user_or_admin, id):
     bus = Bus.query.get_or_404(id)
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
@@ -62,7 +62,7 @@ def delete_bus(current_admin, id):
     return jsonify({'message': 'Bus deleted'})
 
 
-@jwt_protected()
+# @jwt_protected()
 def get_buses_by_route(current_user_or_admin):
     route_id = request.args.get('route_id')
     if not route_id:
