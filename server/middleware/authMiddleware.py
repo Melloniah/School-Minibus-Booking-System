@@ -1,12 +1,26 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_cors import cross_origin
 from models.user import User
 from models.admin import Admin
 from functools import wraps
 from flask import jsonify
+import os
+
+# Define allowed origins
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://school-minibus-booking-system.vercel.app"
+]
+
+# Add environment origin if set
+env_origin = os.getenv("FRONTEND_ORIGIN")
+if env_origin and env_origin not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(env_origin)
 
 def jwt_protected(role=None):
     def wrapper(fn):
         @wraps(fn)
+        @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)  # Add this line
         @jwt_required()
         def decorator(*args, **kwargs):
             identity = get_jwt_identity()  

@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 3aef92c10b8a
+Revision ID: 22560c534bfc
 Revises: 
-Create Date: 2025-07-24 11:31:31.806564
+Create Date: 2025-07-30 13:25:41.583853
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3aef92c10b8a'
+revision = '22560c534bfc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -52,9 +52,10 @@ def upgrade():
     op.create_table('pickup_dropoff_locations',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name_location', sa.String(), nullable=True),
-    sa.Column('GPSystem', sa.String(), nullable=True),
-    sa.Column('routeid', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['routeid'], ['routes.id'], ),
+    sa.Column('latitude', sa.Float(), nullable=False),
+    sa.Column('longitude', sa.Float(), nullable=False),
+    sa.Column('route_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['route_id'], ['routes.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('bookings',
