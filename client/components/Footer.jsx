@@ -1,6 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-purple-600 to-green-500 text-white py-10">
+    <footer className="bg-gradient-to-r from-purple-600 to-green-500 text-white py-4 md:py-6 text-sm">
+
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div>
@@ -47,7 +48,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/30 mt-8 pt-4 text-center text-xs">
-        © 2025 School Ride. The solution to your child's school pick-up and drop off| Privacy Policy | Terms of Service
+        © {new Date().getFullYear()} School Ride. The solution to your child's school pick-up and drop off| Privacy Policy | Terms of Service
       </div>
     </footer>
   );

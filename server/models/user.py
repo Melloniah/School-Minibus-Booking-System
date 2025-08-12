@@ -13,6 +13,15 @@ class User (db.Model, SerializeMixin):
     
     bookings = db.relationship('Booking', back_populates='user')
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'role': self.role,
+            # Do NOT include password hash here for security
+        }
+
     # # password setter and verification
     # @property
     # def password(self):

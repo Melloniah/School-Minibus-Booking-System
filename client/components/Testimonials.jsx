@@ -47,7 +47,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-gray-100 py-12 px-4">
+    <section id="about" className="bg-gray-100 py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-10">What Other Parents Are Saying</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
