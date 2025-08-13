@@ -1,8 +1,13 @@
+
+
 from flask import request, jsonify
+from datetime import datetime
+from sqlalchemy import func
 from models.route import Route
-from middleware.authMiddleware import jwt_protected
-from models.bus import Bus  
+from models.bus import Bus
+from models.booking import Booking  # Add this import
 from models import db
+from middleware.authMiddleware import jwt_protected
 
 @jwt_protected(role='admin')
 def create_bus(current_admin):
@@ -14,28 +19,54 @@ def create_bus(current_admin):
     db.session.commit()
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity}), 201
 
-# @jwt_protected()  # Both users and admins can access
-def get_buses(current_user_or_admin):
+#  get_buses function with a unified version
+def get_buses():
     routeid = request.args.get('route_id')
     origin = request.args.get('origin')
     destination = request.args.get('destination')
-    query = Bus.query
+    
+    # If route_id is provided, return detailed bus info with bookings
     if routeid:
-        query = query.filter_by(routeid=routeid)
+        buses = Bus.query.filter_by(routeid=routeid).all()
+        today = datetime.now().date()
+        
+        result = []
+        for bus in buses:
+            todays_bookings = db.session.query(func.sum(Booking.seats_booked)).filter(
+                Booking.bus_id == bus.id,
+                Booking.booking_date == today
+            ).scalar() or 0
+            
+            available_seats = max(0, bus.capacity - todays_bookings)
+            
+            result.append({
+                'id': bus.id,
+                'routeid': bus.routeid,
+                'numberplate': bus.numberplate,
+                'capacity': bus.capacity,
+                'current_bookings': todays_bookings,
+                'available_seats': available_seats,
+                'status': 'Full' if available_seats == 0 else 'Available'
+            })
+        
+        return jsonify(result)
+    
+    # Otherwise, return basic bus info
+    query = Bus.query
     if origin or destination:
         query = query.join(Route)
         if origin:
             query = query.filter(Route.origin == origin)
         if destination:
             query = query.filter(Route.destination == destination)
+    
     buses = query.all()
     return jsonify([
         {'id': b.id, 'routeid': b.routeid, 'numberplate': b.numberplate, 'capacity': b.capacity}
         for b in buses
     ])
 
-# @jwt_protected()  # Both users and admins can access
-def get_bus(current_user_or_admin, id):
+def get_bus(id):
     bus = Bus.query.get_or_404(id)
     return jsonify({'id': bus.id, 'routeid': bus.routeid, 'numberplate': bus.numberplate, 'capacity': bus.capacity})
 
@@ -61,32 +92,3 @@ def delete_bus(current_admin, id):
     db.session.commit()
     return jsonify({'message': 'Bus deleted'})
 
-
-# @jwt_protected()
-def get_buses_by_route():
-    route_id = request.args.get('route_id')
-    if not route_id:
-        return jsonify({'error': 'Route ID is required'}), 400
-    
-    buses = Bus.query.filter_by(routeid=route_id).all()
-    today = datetime.now().date()
-    
-    result = []
-    for bus in buses:
-        todays_bookings = db.session.query(func.sum(Booking.seats_booked)).filter(
-            Booking.bus_id == bus.id,
-            Booking.booking_date == today
-        ).scalar() or 0
-        
-        available_seats = max(0, bus.capacity - todays_bookings)
-        
-        result.append({
-            'id': bus.id,
-            'numberplate': bus.numberplate,
-            'capacity': bus.capacity,
-            'current_bookings': todays_bookings,
-            'available_seats': available_seats,
-            'status': 'Full' if available_seats == 0 else 'Available'
-        })
-    
-    return jsonify(result)
