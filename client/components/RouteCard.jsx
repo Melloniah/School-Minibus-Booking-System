@@ -2,10 +2,10 @@ export default function RouteCard({ route, isSelected, onSelect }) {
   const routeName = route.name || route.route_name || 'Unnamed Route';
   const routeEmoji = route.emoji || '🚌';
   const routeStatus = route.status || 'Available';
-  const routeStops = route.stops || [];
-  const availableSeats = route.available_seats || 0;
+  const routeStops = route.pickup_dropoff_locations? route.pickup_dropoff_locations.map(loc=>loc.name_location) :[];
+  const availableSeats = route.available_seats_today || 0;
   const totalBuses = route.total_buses || 0;
-  const nextAvailable = route.next_available || 'Unknown';
+  const nextAvailable = route.next_available_slot || 'Unknown';
 
   const isBookable = !['Full', 'No Service'].includes(routeStatus);
 

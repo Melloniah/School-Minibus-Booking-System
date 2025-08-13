@@ -9,11 +9,15 @@ from controllers.pickup_dropoff_controller import (
 )
 
 pickup_bp = Blueprint('location', __name__)
-pickup_dropoff_bp = Blueprint('pickup_dropoff', __name__)
+
 
 pickup_bp.route('/', methods=['POST'])(create_location)
-pickup_bp.route('/all', methods=['GET'])(get_all_location)           #/all for all locations
-pickup_bp.route('/by-route', methods=['GET'])(get_locations_by_route) # /by-route for filtered locations
+
+pickup_bp.route('/all', methods=['GET'])(get_all_location)
+
+pickup_bp.route('/by-route', methods=['GET'])(get_locations_by_route)
+
 pickup_bp.route('/<int:id>', methods=['GET'])(get_location)
+
 pickup_bp.route('/<int:id>', methods=['PUT'])(update_location)
 pickup_bp.route('/<int:id>', methods=['DELETE'])(delete_location)

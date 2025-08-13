@@ -203,7 +203,7 @@ export default function MyBookingsPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                   <div className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-                      <p><strong>Booking ID:</strong> #{booking.id}</p>
+                      {booking.id && <p><strong>Booking ID:</strong> #{booking.id}</p>}  {/* booking id only shows when booking object actually contains an id field.*/}
                       <p><strong>Date:</strong> {booking.booking_date || 'N/A'}</p>
                       
                       {/* Show user information for admins */}

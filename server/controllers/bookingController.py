@@ -127,10 +127,9 @@ def create_booking(current_user_or_admin):
 
         print("🔍 Step 5: Checking seat availability...")
         available = seats_available(bus_id)
-        print(f"✅ Available seats: {available}")
+        print(f" Available seats: {available}")
         
         if seats_booked > available:
-            print(f"❌ Not enough seats: requested {seats_booked}, available {available}")
             return jsonify({'error': f'Only {available} seats available'}), 400
 
         print("🔍 Step 6: Looking up locations...")
@@ -165,9 +164,9 @@ def create_booking(current_user_or_admin):
         db.session.add(new_booking)
         db.session.commit()
         
-        # Return booking without user_id for regular users
+        # Return booking without user_id for regular users after checking if its admin
         booking_data = new_booking.serialize()
-        if not current_user_or_admin.is_admin:
+        if not getattr(current_user_or_admin, 'is_admin', False): 
             booking_data.pop('user_id', None)
         
         return jsonify(booking_data), 201
@@ -182,30 +181,31 @@ def create_booking(current_user_or_admin):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-# GET all bookings (Admin only - with user names)
-@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
-@jwt_protected()
-def get_all_bookings(current_user_or_admin):
-    try:
-        # Only admins can access all bookings
-        if not current_user_or_admin.is_admin:
-            return jsonify({'error': 'Access denied. Admin privileges required.'}), 403
-            
-        # Join bookings with users to get user names
-        bookings_with_users = db.session.query(Booking, User.username, User.email)\
-            .join(User, Booking.user_id == User.id)\
-            .all()
-        
-        result = []
-        for booking, username, email in bookings_with_users:
-            booking_data = booking.serialize()
-            booking_data['user_name'] = username
-            booking_data['user_email'] = email
-            result.append(booking_data)
-            
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+# # GET all bookings (Admin only - with user names)
+# @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
+# @jwt_protected()
+# def get_all_bookings(current_user_or_admin):
+#     try:
+#         # Only admins can access all bookings
+#         if current_user_or_admin.role != 'admin':
+#             return jsonify({'error': 'Access denied. Admin privileges required.'}), 403
+
+#         # Join bookings with users to get user names
+#         bookings_with_users = db.session.query(Booking, User.name, User.email)\
+#             .join(User, Booking.user_id == User.id)\
+#             .all()
+
+#         result = []
+#         for booking, name, email in bookings_with_users:
+#             booking_data = booking.serialize()
+#             booking_data['user_name'] = name
+#             booking_data['user_email'] = email
+#             result.append(booking_data)
+
+#         return jsonify(result), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+
 
 # GET booking by ID
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
@@ -215,23 +215,23 @@ def get_booking_by_id(current_user_or_admin, id):
         booking = Booking.query.get(id)
         if not booking:
             return jsonify({'error': 'Booking not found'}), 404
-            
+
         # Check if user has permission to view this booking
-        if not current_user_or_admin.is_admin and booking.user_id != current_user_or_admin.id:
+        if current_user_or_admin.role != 'admin' and booking.user_id != current_user_or_admin.id:
             return jsonify({'error': 'Access denied'}), 403
-            
+
         booking_data = booking.serialize()
-        
+
         # Add user information for admins
-        if current_user_or_admin.is_admin:
+        if current_user_or_admin.role == 'admin':
             user = User.query.get(booking.user_id)
             if user:
-                booking_data['user_name'] = user.username
+                booking_data['user_name'] = user.name
                 booking_data['user_email'] = user.email
         else:
             # Remove user_id for regular users
             booking_data.pop('user_id', None)
-            
+
         return jsonify(booking_data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -246,7 +246,7 @@ def delete_booking(current_user_or_admin, id):
             return jsonify({'error': 'Booking not found'}), 404
 
         # Check if user has permission to delete this booking
-        if not current_user_or_admin.is_admin and booking.user_id != current_user_or_admin.id:
+        if current_user_or_admin.role != 'admin' and booking.user_id != current_user_or_admin.id:
             return jsonify({'error': 'Access denied'}), 403
 
         db.session.delete(booking)
@@ -262,19 +262,19 @@ def delete_booking(current_user_or_admin, id):
 @jwt_protected()
 def get_bookings_for_user(current_user_or_admin):
     try:
-        if current_user_or_admin.is_admin:
+        # Check if the user is an admin by their role
+        if current_user_or_admin.role == 'admin':
             # Admin sees all bookings with user information
             bookings_with_users = db.session.query(Booking, User.name, User.email)\
-                .join(User, Booking.user_id == User.id)\
-                .all()
-            
+                .join(User, Booking.user_id == User.id).all()
+
             result = []
-            for booking, username, email in bookings_with_users:
+            for booking, name, email in bookings_with_users:
                 booking_data = booking.serialize()
-                booking_data['user_name'] = username
+                booking_data['user_name'] = name
                 booking_data['user_email'] = email
                 result.append(booking_data)
-            
+
             return jsonify(result), 200
         else:
             # User sees only their own bookings without user_id
@@ -284,9 +284,10 @@ def get_bookings_for_user(current_user_or_admin):
                 booking_data = booking.serialize()
                 # Remove user_id from response for regular users
                 booking_data.pop('user_id', None)
+                booking_data.pop('id', None)
                 result.append(booking_data)
-            
+
             return jsonify(result), 200
-            
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
