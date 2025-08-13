@@ -12,7 +12,7 @@ from models import db
 from routes.auth_route import auth_bp #helps solve the CORS issue
 from routes.pickup_dropoff_route import pickup_bp
 from routes.booking_route import booking_bp
-from routes.pickup_dropoff_route import pickup_dropoff_bp
+from routes.pickup_dropoff_route import pickup_bp
 # import booking management logic(user bookings,canceling,etc)
 import os 
 from datetime import timedelta
