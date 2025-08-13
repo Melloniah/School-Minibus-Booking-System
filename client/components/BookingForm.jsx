@@ -12,13 +12,13 @@ import { API_BASE } from '../lib/api';
 
 
 const getRoutes = () =>
-  axios.get(`${API_BASE}/routes/`);
+  axios.get(`${API_BASE}/routes/`, {withCredentials:true});
 
 const getBusesByRoute = (routeId) =>
-  axios.get(`${API_BASE}/buses?route_id=${routeId}`);
+  axios.get(`${API_BASE}/buses?route_id=${routeId}`, {withCredentials:true});
 
 const getStopsByRoute = (routeId) =>
-  axios.get(`${API_BASE}/location/by-route?route_id=${routeId}`);
+  axios.get(`${API_BASE}/location/by-route?route_id=${routeId}`, {withCredentials:true});
 
 const createBooking = (data) =>
   axios.post(`${API_BASE}/bookings/`, data, {
